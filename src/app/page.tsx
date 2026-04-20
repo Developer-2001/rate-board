@@ -1,64 +1,73 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import Header from "@/components/Header";
+import useFingerprint from "@/hooks/auth/useFingerprint";
+import useAuthBootstrap from "@/hooks/auth/useAuthBootstrap";
+import { useClient } from "@/context/ClientContext";
+import { useRouter } from "next/navigation";
+
+export default function HomePage() {
+  const router = useRouter();
+  const fingerPrintId = useFingerprint();
+  const { clientData } = useClient();
+  const { isBootstrapping } = useAuthBootstrap({
+    fingerPrintId,
+    router,
+    mode: "home",
+  });
+
+  if (isBootstrapping || !clientData) {
+    return (
+      <div className="flex min-h-screen flex-col bg-stone-950 text-stone-100">
+        <Header />
+        <main className="flex flex-1 items-center justify-center p-6">
+          <div className="rounded-2xl border border-amber-500/20 bg-stone-900 px-8 py-6 text-center shadow-2xl">
+            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-amber-500/30 border-t-amber-400" />
+            <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
+              Verifying session
+            </p>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <div className="flex min-h-screen flex-col bg-stone-950 text-stone-100">
+      <Header />
+      <main className="flex flex-1 items-center justify-center p-6">
+        <section className="w-full max-w-4xl rounded-[2rem] border border-amber-500/20 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.16),_rgba(28,25,23,0.98)_55%)] p-8 shadow-[0_40px_120px_rgba(0,0,0,0.45)]">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-amber-300">
+            Rate Board
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+          <h1 className="text-3xl font-semibold text-white sm:text-4xl">
+            Authentication successful
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-7 text-stone-300 sm:text-base">
+            Your client session is restored from encrypted local storage. The live
+            rate board API can now use a refreshed bearer token whenever we add it
+            in the next iteration.
+          </p>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
+                Client ID
+              </p>
+              <p className="mt-2 text-xl font-medium text-white">
+                {clientData.ClientId}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+              <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
+                System Name
+              </p>
+              <p className="mt-2 text-xl font-medium text-white">
+                {clientData.SysName}
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
