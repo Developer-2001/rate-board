@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   Expand,
   Minimize,
-  Settings2,
+  Settings,
 } from "lucide-react";
 import Alert from "@/components/modals/Alert";
 import RateBoardSettingsDrawer from "@/components/RateBoardSettingsDrawer";
@@ -57,6 +57,7 @@ function formatBoardSeconds(date: Date) {
 
 function formatRate(value: number) {
   return new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(value);
 }
@@ -73,6 +74,7 @@ export default function HomePage() {
   const [now, setNow] = useState(() => new Date());
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showFloatingButtons, setShowFloatingButtons] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [themeId, setThemeId] = useState<RateBoardThemeId>(
@@ -167,6 +169,26 @@ export default function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    let timeoutId = 0;
+
+    const showButtons = () => {
+      setShowFloatingButtons(true);
+      window.clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        setShowFloatingButtons(false);
+      }, 5000);
+    };
+
+    showButtons();
+    window.addEventListener("mousemove", showButtons);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.removeEventListener("mousemove", showButtons);
+    };
+  }, []);
+
   const groupedRates = useMemo(() => {
     return {
       gold: rates.filter((item) => item.metal === "Gold"),
@@ -242,31 +264,10 @@ export default function HomePage() {
   return (
     <>
       <div className={`min-h-screen ${theme.appBg} text-stone-100`}>
-        <main className="mx-auto flex min-h-[calc(100vh-1.5rem)] w-full max-w-[1800px]">
+        <main className="mx-auto flex h-screen w-full max-w-450">
           <section
             className={`relative flex w-full flex-col border p-4 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-6 lg:p-6 ${theme.panelBorder} ${theme.surface}`}
           >
-            <div className="absolute right-1 top-1 z-10 flex gap-2">
-              <button
-                type="button"
-                onClick={() => setIsSettingsOpen(true)}
-                className={`cursor-pointer rounded-lg border px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] transition ${theme.topButton} ${theme.topButtonHover}`}
-              >
-                <Settings2 width={14} height={14} />
-              </button>
-              <button
-                type="button"
-                onClick={toggleFullscreen}
-                className={`cursor-pointer rounded-lg border px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] transition ${theme.topButton} ${theme.topButtonHover}`}
-              >
-                {isFullscreen ? (
-                  <Minimize width={14} height={14} />
-                ) : (
-                  <Expand width={14} height={14} />
-                )}
-              </button>
-            </div>
-
             <div className="grid grid-cols-3 gap-6 pt-8 sm:grid-cols-3 lg:grid-cols-[260px_1fr_280px] lg:items-start lg:pt-2">
               <div>
                 <p className="text-sm font-light tracking-tight text-white sm:text-xl xl:text-3xl">
@@ -374,6 +375,35 @@ export default function HomePage() {
           </section>
         </main>
       </div>
+      <div
+        className={`fixed bottom-10 right-4 z-20 flex flex-col gap-2 transition-all duration-300 sm:bottom-6 sm:right-6 ${
+          showFloatingButtons
+            ? "translate-y-0 opacity-100"
+            : "pointer-events-none translate-y-3 opacity-0"
+        }`}
+      >
+        <button
+          type="button"
+          onClick={() => setIsSettingsOpen(true)}
+          className={`cursor-pointer rounded-lg border px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] transition ${theme.topButton} ${theme.topButtonHover}`}
+        >
+          <Settings width={24} height={24} />
+        </button>
+        
+        <button
+          type="button"
+          onClick={toggleFullscreen}
+          className={`cursor-pointer rounded-lg border px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] transition ${theme.topButton} ${theme.topButtonHover}`}
+        >
+          {isFullscreen ? (
+            <Minimize width={24} height={24} />
+          ) : (
+            <Expand width={24} height={24} />
+          )}
+        </button>
+        
+      </div>
+
 
       <RateBoardSettingsDrawer
         open={isSettingsOpen}

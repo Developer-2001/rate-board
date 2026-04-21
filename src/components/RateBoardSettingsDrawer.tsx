@@ -96,9 +96,9 @@ export default function RateBoardSettingsDrawer({
           open ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex items-center justify-between border-b border-amber-500/20 px-6 py-5">
+        <div className="flex items-center justify-between border-b border-amber-500/20 px-6 py-3">
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl bg-white/5 p-2 text-amber-300">
+            <div className="rounded-2xl bg-white/5 text-amber-300">
               <Settings2 className="h-5 w-5" />
             </div>
             <div>
