@@ -58,10 +58,10 @@ export default function CorporateIdPage() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-stone-950 text-stone-100">
       <Header />
-      <main className="flex flex-1 items-center justify-center bg-gray-100 p-1 lg:p-4">
-        <div className="flex w-full flex-col overflow-hidden rounded-md bg-white shadow-lg md:flex-row md:flex-1 lg:max-w-5xl">
+      <main className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+        <div className="w-full max-w-6xl">
           <ClientLoginForm
             corporateId={corporateId}
             setCorporateId={setCorporateId}

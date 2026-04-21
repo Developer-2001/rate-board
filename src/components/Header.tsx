@@ -25,15 +25,15 @@ export default function Header() {
   const [contactSupportModalOpen, setContactSupportModalOpen] = useState(false);
 
   return (
-    <header className="flex w-full items-center justify-between border-b border-stone-200 bg-gray-100 px-4 py-2 shadow-sm">
+    <header className="flex w-full items-center justify-between border-b border-amber-500/10 bg-stone-950/95 px-4 py-3 text-stone-100 shadow-[0_10px_40px_rgba(0,0,0,0.25)] backdrop-blur-sm">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-700 text-sm font-bold text-white shadow-md">
-          JP
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-700 text-sm font-bold text-stone-950 shadow-md">
+          RB
         </div>
         <div>
-          <h1 className="text-md font-bold text-gray-800">JewellPlus Admin</h1>
-          <p className="hidden text-xs leading-tight text-gray-500 md:block">
-            Inventory & CRM Management
+          <h1 className="text-md font-bold text-white">Rate Board Access</h1>
+          <p className="hidden text-xs leading-tight text-stone-400 md:block">
+            Corporate authentication console
           </p>
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function Header() {
           href="https://www.parasinfotech.co.in"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-gray-600 transition-colors hover:text-blue-600"
+          className="text-stone-400 transition-colors hover:text-amber-300"
         >
           Paras Infotech
         </Link>
@@ -53,7 +53,7 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setContactSupportModalOpen(true)}
-          className="flex items-center gap-1 rounded-lg px-2 py-1 text-gray-600 transition-colors hover:text-blue-600"
+          className="flex items-center gap-1 rounded-lg px-2 py-1 text-stone-300 transition-colors hover:text-amber-300"
         >
           <InfoIcon className="h-4 w-4" />
           <span className="hidden text-sm font-medium md:block">Contact Support</span>

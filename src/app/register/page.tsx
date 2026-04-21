@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
 import Modal from "@/components/modals/statusMsg";
 import { detectAndLogDevice } from "@/utils/identifyDevice";
 import { registerDevice } from "@/utils/authApi";
@@ -36,7 +35,7 @@ function RegisterPage() {
       return;
     }
 
-    if (!clientData || !fingerPrintId) {
+    if (!clientData) {
       router.replace("/corporateId");
     }
   }, [clientData, fingerPrintId, isHydrated, isVerified, router]);
@@ -121,110 +120,167 @@ function RegisterPage() {
     }
   };
 
-  const classNameInput = `w-full rounded-lg border border-gray-300 px-4 py-2 text-black outline-none transition-all focus:border-pink-500 focus:ring-1 focus:ring-pink-500 ${
-    isLoading ? "cursor-not-allowed bg-gray-100" : ""
+  const classNameButton = `flex min-h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-700 px-5 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-stone-950 shadow-[0_16px_40px_rgba(251,191,36,0.2)] transition-all ${
+    isLoading
+      ? "cursor-wait opacity-70"
+      : "hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(251,191,36,0.28)]"
   }`;
-  const classNameButton = `flex min-h-[42px] w-full items-center justify-center rounded-lg bg-gradient-to-r from-pink-400 to-pink-700 py-2.5 font-medium text-white transition-colors ${
-    isLoading ? "cursor-wait opacity-70" : "hover:from-pink-500 hover:to-pink-800"
+
+  const themedInputClass = `w-full rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-base text-white outline-none transition-all duration-300 placeholder:text-stone-500 focus:border-amber-400/60 focus:bg-white/8 focus:ring-2 focus:ring-amber-400/20 ${
+    isLoading ? "cursor-not-allowed opacity-70" : "hover:border-white/20"
   }`;
+  const isFingerprintReady = Boolean(fingerPrintId);
 
   return (
-    <>
-      <Header />
-      <Suspense fallback={<p>Loading...</p>}>
-        <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
-            <h2 className="mb-6 text-center text-2xl font-bold text-gray-900">
-              Device Registration
-            </h2>
+    <Suspense fallback={<p>Loading...</p>}>
+      <div className="flex min-h-screen items-center justify-center bg-stone-950 px-4 py-8 text-stone-100 sm:px-6 lg:px-8">
+        <section className="w-full max-w-6xl rounded-[2rem] border border-amber-500/20 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.16),_rgba(28,25,23,0.98)_55%)] p-6 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10">
+          <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+            <div className="max-w-2xl">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-amber-300">
+                Rate Board
+              </p>
+              <h2 className="text-3xl font-semibold text-white sm:text-4xl">
+                Device registration
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-stone-300 sm:text-base">
+                This device is not registered yet. Send the registration request so
+                the store can approve this screen for live gold, silver, and
+                platinum rates.
+              </p>
 
-            <form onSubmit={handleRegister}>
-              <div className="mb-4">
-                <label
-                  htmlFor="deviceName"
-                  className="mb-1 block px-1 text-md font-medium text-gray-700"
-                >
-                  Device Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="deviceName"
-                  value={deviceName}
-                  onChange={(e) => setDeviceName(e.target.value)}
-                  placeholder="Enter Device Name"
-                  required
-                  className={classNameInput}
-                  autoComplete="off"
-                />
+              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
+                    Client ID
+                  </p>
+                  <p className="mt-2 text-xl font-medium text-white">
+                    {clientData?.ClientId || "-"}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
+                    System Name
+                  </p>
+                  <p className="mt-2 text-xl font-medium text-white">
+                    {clientData?.SysName || "-"}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
+                    Browser
+                  </p>
+                  <p className="mt-2 text-lg font-medium text-white">
+                    {deviceInfo.browser || "-"}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
+                    Location
+                  </p>
+                  <p className="mt-2 text-lg font-medium text-white">
+                    {deviceInfo.location || "-"}
+                  </p>
+                </div>
               </div>
+            </div>
 
-              <div className="mb-4">
-                <label
-                  htmlFor="counter"
-                  className="mb-1 block px-1 text-md font-medium text-gray-700"
-                >
-                  Counter Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="counter"
-                  value={counter}
-                  onChange={(e) => setCounter(e.target.value)}
-                  placeholder="Enter Counter Name"
-                  required
-                  className={classNameInput}
-                  autoComplete="off"
-                />
-              </div>
+            <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:p-6">
+              <form onSubmit={handleRegister}>
+                <div className="mb-5">
+                  <label
+                    htmlFor="deviceName"
+                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em] text-stone-400"
+                  >
+                    Device Name
+                  </label>
+                  <input
+                    type="text"
+                    id="deviceName"
+                    value={deviceName}
+                    onChange={(e) => setDeviceName(e.target.value)}
+                    placeholder="Enter device name"
+                    required
+                    className={themedInputClass}
+                    autoComplete="off"
+                  />
+                </div>
 
-              <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-4 text-sm text-gray-600">
-                <p>
-                  Client: <span className="font-medium">{clientData?.ClientId || "-"}</span>
-                </p>
-                <p>
-                  System: <span className="font-medium">{clientData?.SysName || "-"}</span>
-                </p>
-                <p>
-                  Browser: <span className="font-medium">{deviceInfo.browser || "-"}</span>
-                </p>
-              </div>
+                <div className="mb-5">
+                  <label
+                    htmlFor="counter"
+                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em] text-stone-400"
+                  >
+                    Counter Name
+                  </label>
+                  <input
+                    type="text"
+                    id="counter"
+                    value={counter}
+                    onChange={(e) => setCounter(e.target.value)}
+                    placeholder="Enter counter name"
+                    required
+                    className={themedInputClass}
+                    autoComplete="off"
+                  />
+                </div>
 
-              <div className="flex justify-center">
-                <button
-                  type="submit"
-                  className={classNameButton}
-                  disabled={isLoading || !clientData || !fingerPrintId}
-                >
-                  {isLoading ? (
-                    <span className="flex items-center gap-2">
-                      <svg
-                        className="h-5 w-5 animate-spin text-white"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                          fill="none"
-                        />
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                        />
-                      </svg>
+                <div className="mb-6 rounded-2xl border border-white/10 bg-stone-950/40 p-4 text-sm text-stone-300">
+                  <p>
+                    Device Type:{" "}
+                    <span className="font-medium text-white">{deviceIdentify.name}</span>
+                  </p>
+                  <p className="mt-2">
+                    Device OS:{" "}
+                    <span className="font-medium text-white">
+                      {deviceInfo.os || "-"}
                     </span>
-                  ) : (
-                    "Register"
+                  </p>
+                  {!isFingerprintReady && (
+                    <p className="mt-2 text-amber-300">
+                      Preparing device fingerprint...
+                    </p>
                   )}
-                </button>
-              </div>
-            </form>
+                </div>
+
+                <div className="flex justify-center">
+                  <button
+                    type="submit"
+                    className={classNameButton}
+                    disabled={isLoading || !clientData || !isFingerprintReady}
+                  >
+                    {isLoading ? (
+                      <span className="flex items-center gap-2 text-stone-950">
+                        <svg
+                          className="h-5 w-5 animate-spin"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                            fill="none"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                          />
+                        </svg>
+                        Sending
+                      </span>
+                    ) : (
+                      "Register"
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
+        </section>
 
         <Modal
           isOpen={isModalOpen}
@@ -235,8 +291,8 @@ function RegisterPage() {
           heading="Success"
           message="Request sent successfully. Please wait while your request is being accepted. Once accepted, you will be able to access this application."
         />
-      </Suspense>
-    </>
+      </div>
+    </Suspense>
   );
 }
 
