@@ -2,13 +2,25 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import useFingerprint from "@/hooks/auth/useFingerprint";
-import useAuthBootstrap from "@/hooks/auth/useAuthBootstrap";
-import useRateBoard from "@/hooks/useRateBoard";
-import { useClient } from "@/context/ClientContext";
-import { Expand, Minimize } from "lucide-react";
+import {
+  Expand,
+  Minimize,
+  Settings2,
+} from "lucide-react";
 import Alert from "@/components/modals/Alert";
+import RateBoardSettingsDrawer from "@/components/RateBoardSettingsDrawer";
 import RateBoardSkeleton from "@/components/RateBoardSkeleton";
+import { useClient } from "@/context/ClientContext";
+import useAuthBootstrap from "@/hooks/auth/useAuthBootstrap";
+import useFingerprint from "@/hooks/auth/useFingerprint";
+import useRateBoard from "@/hooks/useRateBoard";
+import {
+  DEFAULT_RATE_BOARD_THEME_ID,
+  getStoredRateBoardThemeId,
+  RATE_BOARD_THEMES,
+  RATE_BOARD_THEME_STORAGE_KEY,
+  type RateBoardThemeId,
+} from "@/utils/rateBoardTheme";
 
 const AUTO_RELOAD_FAILURE_COUNT = 4;
 
@@ -52,7 +64,7 @@ function formatRate(value: number) {
 export default function HomePage() {
   const router = useRouter();
   const fingerPrintId = useFingerprint();
-  const { clientData } = useClient();
+  const { clientData, clearClientSession } = useClient();
   const { isBootstrapping } = useAuthBootstrap({
     fingerPrintId,
     router,
@@ -60,9 +72,23 @@ export default function HomePage() {
   });
   const [now, setNow] = useState(() => new Date());
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const { rates, loading, error, hasFreshUpdate, consecutiveFailures } =
+  const [themeId, setThemeId] = useState<RateBoardThemeId>(
+    DEFAULT_RATE_BOARD_THEME_ID
+  );
+  const { board, rates, loading, error, hasFreshUpdate, consecutiveFailures } =
     useRateBoard(clientData?.ClientId ?? null);
+
+  const theme = RATE_BOARD_THEMES[themeId];
+  const themeOptions = Object.values(RATE_BOARD_THEMES);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      setThemeId(getStoredRateBoardThemeId());
+    });
+  }, []);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -121,16 +147,18 @@ export default function HomePage() {
 
   useEffect(() => {
     const handleKeyDown = async (event: KeyboardEvent) => {
-      if (event.key.toLowerCase() !== "f") {
-        return;
+      if (event.key.toLowerCase() === "f") {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
+          return;
+        }
+
+        await document.documentElement.requestFullscreen();
       }
 
-      if (document.fullscreenElement) {
-        await document.exitFullscreen();
-        return;
+      if (event.key === "Escape") {
+        setIsSettingsOpen(false);
       }
-
-      await document.documentElement.requestFullscreen();
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -155,9 +183,31 @@ export default function HomePage() {
     await document.documentElement.requestFullscreen();
   };
 
+  const handleThemeChange = (nextThemeId: RateBoardThemeId) => {
+    setThemeId(nextThemeId);
+    window.localStorage.setItem(RATE_BOARD_THEME_STORAGE_KEY, nextThemeId);
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+    } catch (logoutError) {
+      console.error("Logout route failed, clearing local session only.", logoutError);
+    } finally {
+      clearClientSession();
+      setIsSettingsOpen(false);
+      setIsLoggingOut(false);
+      router.replace("/corporateId");
+    }
+  };
+
   if (isBootstrapping) {
     return (
-      <div className="flex min-h-screen flex-col bg-stone-950 text-stone-100">
+      <div className={`flex min-h-screen flex-col ${theme.appBg} text-stone-100`}>
         <main className="flex flex-1 items-center justify-center p-6">
           <div className="rounded-2xl border border-amber-500/20 bg-stone-900 px-8 py-6 text-center shadow-2xl">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-amber-500/30 border-t-amber-400" />
@@ -171,13 +221,13 @@ export default function HomePage() {
   }
 
   if (!clientData) {
-    return <RateBoardSkeleton />;
+    return <RateBoardSkeleton themeId={themeId} />;
   }
 
   if (loading && rates.length === 0) {
     return (
       <>
-        <RateBoardSkeleton />
+        <RateBoardSkeleton themeId={themeId} />
         {alertMessage && (
           <Alert
             title="error"
@@ -191,117 +241,152 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="min-h-screen bg-stone-950 text-stone-100 ">
-        <main className="mx-auto flex min-h-[calc(100vh-1.5rem)] w-full max-w-450">
-        <section className="relative flex w-full flex-col rounded-sm, border border-amber-500/20 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.14),rgba(28,25,23,0.99)_55%)] p-4 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-6 lg:p-6">
-          <div className="absolute right-1 top-1 z-10 ">
-            <button
-              type="button"
-              onClick={toggleFullscreen}
-              className="rounded-lg border border-white/10 cursor-pointer bg-stone-900/80 px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-amber-300 transition hover:border-amber-300/40 hover:text-amber-200"
-            >
-              {isFullscreen ? (
-                <Minimize width={14} height={14} />
-              ) : (
-                <Expand width={14} height={14} />
-              )}
-            </button>
-          </div>
-
-          <div className="grid gap-6 pt-8 grid-cols-3 sm:grid-cols-3 lg:grid-cols-[260px_1fr_280px] lg:items-start lg:pt-2">
-            <div>
-              <p className="text-sm font-light tracking-tight text-white sm:text-xl xl:text-3xl">
-                {formatBoardDate(now)}
-              </p>
-              <p className="text-xs font-light text-stone-300 sm:text-lg xl:text-3xl">
-                {formatBoardDay(now)}
-              </p>
+      <div className={`min-h-screen ${theme.appBg} text-stone-100`}>
+        <main className="mx-auto flex min-h-[calc(100vh-1.5rem)] w-full max-w-[1800px]">
+          <section
+            className={`relative flex w-full flex-col border p-4 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-6 lg:p-6 ${theme.panelBorder} ${theme.surface}`}
+          >
+            <div className="absolute right-1 top-1 z-10 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setIsSettingsOpen(true)}
+                className={`cursor-pointer rounded-lg border px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] transition ${theme.topButton} ${theme.topButtonHover}`}
+              >
+                <Settings2 width={14} height={14} />
+              </button>
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className={`cursor-pointer rounded-lg border px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] transition ${theme.topButton} ${theme.topButtonHover}`}
+              >
+                {isFullscreen ? (
+                  <Minimize width={14} height={14} />
+                ) : (
+                  <Expand width={14} height={14} />
+                )}
+              </button>
             </div>
 
-            <div className="text-center">
-              <h1 className="mt-1 text-sm font-semibold uppercase tracking-widest text-white sm:text-2xl xl:text-5xl">
-                Today&apos;s Rate
-              </h1>
-            </div>
-
-            <div className="flex flex-col items-end">
-              <p className="text-sm font-light text-white sm:text-xl xl:text-3xl">
-                {formatBoardTime(now)}
-              </p>
-              <p className="text-xs font-light tracking-[0.08em] text-stone-300 sm:text-lg xl:text-3xl">
-                {formatBoardSeconds(now)}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center gap-3">
-            <span
-              className={`h-4 w-4 rounded-full ${
-                hasFreshUpdate
-                  ? "animate-pulse bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.85)]"
-                  : "bg-emerald-500/80 shadow-[0_0_16px_rgba(16,185,129,0.55)]"
-              }`}
-            />
-            <span className="text-base font-semibold uppercase tracking-[0.32em] text-emerald-300 xl:text-md">
-              Live
-            </span>
-          </div>
-
-          <div className="mt-2 flex-1 overflow-hidden rounded-4xl border border-amber-500/20 bg-[linear-gradient(180deg,rgba(35,29,23,0.92),rgba(24,21,19,0.98))] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-            <div className="grid grid-cols-[1.3fr_1fr_1fr] border-b border-amber-500/20 bg-linear-to-r from-amber-500 via-amber-400 to-amber-600 text-center text-md font-semibold uppercase tracking-[0.24em] text-stone-950 sm:text-3xl xl:text-4xl">
-              <div className="border-r border-stone-950/10 px-4 py-4">
-                Metal
+            <div className="grid grid-cols-3 gap-6 pt-8 sm:grid-cols-3 lg:grid-cols-[260px_1fr_280px] lg:items-start lg:pt-2">
+              <div>
+                <p className="text-sm font-light tracking-tight text-white sm:text-xl xl:text-3xl">
+                  {formatBoardDate(now)}
+                </p>
+                <p className={`text-xs font-light sm:text-lg xl:text-3xl ${theme.mutedText}`}>
+                  {formatBoardDay(now)}
+                </p>
               </div>
-              <div className="border-r border-stone-950/10 px-4 py-4">Sale</div>
-              <div className="px-4 py-4">Purchase</div>
+
+              <div className="text-center">
+               
+                <h1 className="text-sm font-semibold uppercase tracking-widest text-white sm:text-2xl xl:text-5xl">
+                  Today&apos;s Rate
+                </h1>
+              </div>
+
+              <div className="flex flex-col items-end">
+                <p className="text-sm font-light text-white sm:text-xl xl:text-3xl">
+                  {formatBoardTime(now)}
+                </p>
+                <p className={`text-xs font-light tracking-[0.08em] sm:text-lg xl:text-3xl ${theme.mutedText}`}>
+                  {formatBoardSeconds(now)}
+                </p>
+              </div>
             </div>
 
-            <div className="divide-y divide-amber-500/10">
-              {groupedRates.gold.map((item) => (
-                <div
-                  key={item.id}
-                  className="grid grid-cols-[1.3fr_1fr_1fr] bg-[linear-gradient(90deg,rgba(68,57,40,0.92),rgba(49,40,31,0.88))] text-amber-50"
-                >
-                  <div className="border-r border-amber-500/10 text-center px-4 py-4 text-md font-medium uppercase   sm:text-4xl xl:text-4xl">
-                    {item.label}
-                  </div>
-                  <div className="border-r border-amber-500/10 px-4 py-4 text-center text-md font-semibold text-amber-300   sm:text-4xl xl:text-4xl">
-                    {formatRate(item.saleRate)}
-                  </div>
-                  <div className="px-4 py-4 text-center text-md font-semibold text-white   sm:text-4xl xl:text-4xl">
-                    {formatRate(item.purchaseRate)}
-                  </div>
-                </div>
-              ))}
-
-              {groupedRates.silver.map((item) => (
-                <div
-                  key={item.id}
-                  className="grid grid-cols-[1.3fr_1fr_1fr] bg-[linear-gradient(90deg,rgba(47,47,50,0.95),rgba(34,34,37,0.9))] text-stone-100"
-                >
-                  <div className="border-r border-white/10 text-center px-4 py-4 text-md *:font-medium uppercase   sm:text-4xl xl:text-4xl">
-                    {item.label}
-                  </div>
-                  <div className="border-r border-white/10 px-4 py-4 text-center text-md font-semibold text-stone-200   sm:text-4xl xl:text-4xl">
-                    {formatRate(item.saleRate)}
-                  </div>
-                  <div className="px-4 py-4 text-center text-md font-semibold text-white   sm:text-4xl xl:text-4xl">
-                    {formatRate(item.purchaseRate)}
-                  </div>
-                </div>
-              ))}
-
-              {!loading && rates.length === 0 && (
-                <div className="px-6 py-12 text-center text-xl text-stone-300 xl:text-3xl">
-                  No gold or silver rates with non-zero sale and purchase values
-                  are available.
-                </div>
-              )}
+            <div className="flex items-center justify-center gap-3">
+              <span
+                className={`h-4 w-4 rounded-full ${
+                  hasFreshUpdate
+                    ? "animate-pulse bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.85)]"
+                    : "bg-emerald-500/80 shadow-[0_0_16px_rgba(16,185,129,0.55)]"
+                }`}
+              />
+              <span
+                className={`text-base font-semibold uppercase tracking-[0.32em] xl:text-sm ${theme.liveText}`}
+              >
+                Live
+              </span>
             </div>
-          </div>
-        </section>
+
+            <div
+              className={`mt-2 flex-1 overflow-hidden rounded-4xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] ${theme.panelBorder} ${theme.tableShell}`}
+            >
+              <div
+                className={`grid grid-cols-[1.3fr_1fr_1fr] border-b text-center text-md font-semibold uppercase tracking-[0.24em] sm:text-3xl xl:text-4xl ${theme.panelBorder} ${theme.tableHeader} ${theme.tableHeaderText}`}
+              >
+                <div className="border-r border-black/10 px-4 py-4">Metal</div>
+                <div className="border-r border-black/10 px-4 py-4">Sale</div>
+                <div className="px-4 py-4">Purchase</div>
+              </div>
+
+              <div className="divide-y divide-white/10">
+                {groupedRates.gold.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`grid grid-cols-[1.3fr_1fr_1fr] ${theme.goldRow}`}
+                  >
+                    <div className="border-r border-white/10 px-4 py-4 text-center text-md font-medium uppercase sm:text-4xl xl:text-4xl">
+                      {item.label}
+                    </div>
+                    <div
+                      className={`border-r border-white/10 px-4 py-4 text-center text-md font-semibold sm:text-4xl xl:text-4xl ${theme.primaryValue}`}
+                    >
+                      {formatRate(item.saleRate)}
+                    </div>
+                    <div
+                      className={`px-4 py-4 text-center text-md font-semibold sm:text-4xl xl:text-4xl ${theme.secondaryValue}`}
+                    >
+                      {formatRate(item.purchaseRate)}
+                    </div>
+                  </div>
+                ))}
+
+                {groupedRates.silver.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`grid grid-cols-[1.3fr_1fr_1fr] ${theme.silverRow}`}
+                  >
+                    <div className="border-r border-white/10 px-4 py-4 text-center text-md font-medium uppercase sm:text-4xl xl:text-4xl">
+                      {item.label}
+                    </div>
+                    <div
+                      className={`border-r border-white/10 px-4 py-4 text-center text-md font-semibold sm:text-4xl xl:text-4xl ${theme.primaryValue}`}
+                    >
+                      {formatRate(item.saleRate)}
+                    </div>
+                    <div
+                      className={`px-4 py-4 text-center text-md font-semibold sm:text-4xl xl:text-4xl ${theme.secondaryValue}`}
+                    >
+                      {formatRate(item.purchaseRate)}
+                    </div>
+                  </div>
+                ))}
+
+                {!loading && rates.length === 0 && (
+                  <div className={`px-6 py-12 text-center text-xl xl:text-3xl ${theme.mutedText}`}>
+                    No gold or silver rates with non-zero sale and purchase values
+                    are available.
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
         </main>
       </div>
+
+      <RateBoardSettingsDrawer
+        open={isSettingsOpen}
+        clientData={clientData}
+        firmName={board?.firm_name}
+        themes={themeOptions}
+        selectedThemeId={themeId}
+        onClose={() => setIsSettingsOpen(false)}
+        onThemeChange={handleThemeChange}
+        onLogout={handleLogout}
+        isLoggingOut={isLoggingOut}
+      />
+
       {alertMessage && (
         <Alert
           title="error"
