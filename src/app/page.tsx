@@ -58,7 +58,7 @@ export default function HomePage() {
   });
   const [now, setNow] = useState(() => new Date());
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { board, rates, loading, error, hasFreshUpdate, consecutiveFailures } =
+  const { rates, loading, error, hasFreshUpdate, consecutiveFailures } =
     useRateBoard(clientData?.ClientId ?? null);
 
   useEffect(() => {
@@ -152,27 +152,27 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 ">
       <main className="mx-auto flex min-h-[calc(100vh-1.5rem)] w-full max-w-450">
-        <section className="relative flex w-full flex-col rounded-[2.25rem] border border-amber-500/20 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.14),rgba(28,25,23,0.99)_55%)] p-4 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-6 lg:p-6">
-          <div className="absolute right-3 top-2 z-10 flex gap-2">
+        <section className="relative flex w-full flex-col rounded-sm, border border-amber-500/20 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.14),rgba(28,25,23,0.99)_55%)] p-4 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-6 lg:p-6">
+          <div className="absolute right-1 top-1 z-10 ">
             <button
               type="button"
               onClick={toggleFullscreen}
-              className="rounded-2xl border border-white/10 cursor-pointer bg-stone-900/80 px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-amber-300 transition hover:border-amber-300/40 hover:text-amber-200"
+              className="rounded-lg border border-white/10 cursor-pointer bg-stone-900/80 px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-amber-300 transition hover:border-amber-300/40 hover:text-amber-200"
             >
               {isFullscreen ? (
-                <Minimize width={16} height={16} />
+                <Minimize width={14} height={14} />
               ) : (
-                <Expand width={16} height={16} />
+                <Expand width={14} height={14} />
               )}
             </button>
           </div>
 
-          <div className="grid gap-6 pt-14 lg:grid-cols-[260px_1fr_280px] lg:items-start lg:pt-0">
+          <div className="grid gap-6 pt-10 sm:grid-cols-3 lg:grid-cols-[260px_1fr_280px] lg:items-start lg:pt-2">
             <div>
-              <p className="text-4xl font-light tracking-tight text-white sm:text-5xl xl:text-3xl">
+              <p className="text-4xl font-light tracking-tight text-white sm:text-xl xl:text-3xl">
                 {formatBoardDate(now)}
               </p>
-              <p className="mt-2 text-3xl font-light text-stone-300 sm:text-4xl xl:text-3xl">
+              <p className="text-3xl font-light text-stone-300 sm:text-lg xl:text-3xl">
                 {formatBoardDay(now)}
               </p>
             </div>
@@ -181,19 +181,19 @@ export default function HomePage() {
               <p className="text-sm font-semibold uppercase tracking-[0.55em] text-amber-300">
                 Rate Board
               </p>
-              <h1 className="mt-2 text-5xl font-semibold uppercase tracking-widest text-white sm:text-6xl xl:text-5xl">
+              <h1 className="mt-1 text-5xl font-semibold uppercase tracking-widest text-white sm:text-2xl xl:text-5xl">
                 Today&apos;s Rate
               </h1>
-              <p className="mt-2 text-lg uppercase tracking-[0.35em] text-stone-400 sm:text-xl xl:text-xl">
+              {/* <p className="mt-2 text-lg uppercase tracking-[0.35em] text-stone-400 sm:text-xl xl:text-xl">
                 {board?.firm_name}
-              </p>
+              </p> */}
             </div>
 
             <div className="flex flex-col items-end">
-              <p className="text-5xl font-light text-white sm:text-6xl xl:text-3xl">
+              <p className="text-4xl font-light text-white sm:text-xl xl:text-3xl">
                 {formatBoardTime(now)}
               </p>
-              <p className="text-3xl font-light tracking-[0.08em] text-stone-300 sm:text-4xl xl:text-3xl">
+              <p className="text-3xl font-light tracking-[0.08em] text-stone-300 sm:text-lg xl:text-3xl">
                 {formatBoardSeconds(now)}
               </p>
               {/* <p className="mt-4 text-right text-sm uppercase tracking-[0.24em] text-stone-500 xl:text-base">
@@ -216,7 +216,7 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className="mt-2 flex items-center justify-center gap-3">
+          <div className=" flex items-center justify-center gap-3">
             <span
               className={`h-4 w-4 rounded-full ${
                 hasFreshUpdate
