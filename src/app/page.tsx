@@ -26,8 +26,8 @@ const AUTO_RELOAD_FAILURE_COUNT = 4;
 
 function formatBoardDate(date: Date) {
   return new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
+    day: "numeric",
+    month: "long",
     year: "numeric",
   }).format(date);
 }
@@ -268,12 +268,12 @@ export default function HomePage() {
           <section
             className={`relative flex w-full flex-col border p-4 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-6 lg:p-6 ${theme.panelBorder} ${theme.surface}`}
           >
-            <div className="grid grid-cols-3 gap-6 pt-8 sm:grid-cols-3 lg:grid-cols-[260px_1fr_280px] lg:items-start lg:pt-2">
+            <div className="grid grid-cols-3 gap-6 pt-6 sm:grid-cols-3 lg:grid-cols-[260px_1fr_280px] lg:items-start lg:pt-2">
               <div>
-                <p className="text-sm font-light tracking-tight text-white sm:text-xl xl:text-3xl">
+                <p className="text-sm uppercase font-light tracking-tight text-white sm:text-xl xl:text-3xl">
                   {formatBoardDate(now)}
                 </p>
-                <p className={`text-xs font-light sm:text-lg xl:text-3xl ${theme.mutedText}`}>
+                <p className={`text-xs uppercase font-light sm:text-lg xl:text-3xl ${theme.mutedText}`}>
                   {formatBoardDay(now)}
                 </p>
               </div>
