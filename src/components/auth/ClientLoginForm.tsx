@@ -30,9 +30,9 @@ export default function ClientLoginForm({
   }`;
 
   return (
-    <section className="relative w-full rounded-[2rem] border border-amber-500/20 bg-[radial-gradient(circle_at_top,_rgba(251,191,36,0.16),_rgba(28,25,23,0.98)_55%)] p-6 text-stone-100 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10">
+    <section className="relative w-full rounded-4xl border border-amber-500/20 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.16),rgba(28,25,23,0.98)_55%)] p-6 text-stone-100 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10">
       {loading && (
-        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-[2rem] bg-stone-950/70 backdrop-blur-sm">
+        <div className="absolute inset-0 z-10 flex items-center justify-center rounded-4xl bg-stone-950/70 backdrop-blur-sm">
           <div className="text-center">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-amber-500/30 border-t-amber-400" />
             <p className="text-xs uppercase tracking-[0.35em] text-amber-300">

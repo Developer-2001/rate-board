@@ -117,7 +117,7 @@ export default function ContactSupport({
         </button>
 
         <div className="px-4 pb-6 pt-4 text-center sm:px-6">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl border border-slate-600/50 bg-gradient-to-br from-blue-500/30 to-purple-600/30 shadow-lg">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl border border-slate-600/50 bg-linear-to-br from-blue-500/30 to-purple-600/30 shadow-lg">
             <SupportIcon className="h-10 w-10 text-blue-300" />
           </div>
           <h2 className="mb-2 text-xl font-bold text-slate-100 sm:text-2xl">
@@ -135,7 +135,7 @@ export default function ContactSupport({
             className="flex w-full items-center justify-between rounded-xl border border-slate-600/50 bg-slate-700/50 p-4 text-left transition-all duration-200 hover:border-slate-500/60 hover:bg-slate-600/60"
           >
             <div className="flex min-w-0 flex-1 items-center space-x-4">
-              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-blue-400/30 bg-gradient-to-br from-blue-500/40 to-blue-600/40 shadow-lg">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-blue-400/30 bg-linear-to-br from-blue-500/40 to-blue-600/40 shadow-lg">
                 <PhoneIcon className="h-7 w-7 text-blue-200" />
               </div>
               <div className="min-w-0 flex-1">
@@ -145,7 +145,7 @@ export default function ContactSupport({
                 </p>
               </div>
             </div>
-            <div className="ml-2 flex flex-shrink-0 items-center space-x-2">
+            <div className="ml-2 flex shrink-0 items-center space-x-2">
               {copiedField === "phone" ? (
                 <div className="flex items-center space-x-1 text-green-400">
                   <CheckIcon className="h-4 w-4" />
@@ -163,7 +163,7 @@ export default function ContactSupport({
             className="flex w-full items-center justify-between rounded-xl border border-slate-600/50 bg-slate-700/50 p-4 text-left transition-all duration-200 hover:border-slate-500/60 hover:bg-slate-600/60"
           >
             <div className="flex min-w-0 flex-1 items-center space-x-4">
-              <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-lg border border-purple-400/30 bg-gradient-to-br from-purple-500/40 to-purple-600/40 shadow-lg">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-purple-400/30 bg-linear-to-br from-purple-500/40 to-purple-600/40 shadow-lg">
                 <MailIcon className="h-7 w-7 text-purple-200" />
               </div>
               <div className="min-w-0 flex-1">
@@ -173,7 +173,7 @@ export default function ContactSupport({
                 </p>
               </div>
             </div>
-            <div className="ml-2 flex flex-shrink-0 items-center space-x-2">
+            <div className="ml-2 flex shrink-0 items-center space-x-2">
               {copiedField === "email" ? (
                 <div className="flex items-center space-x-1 text-green-400">
                   <CheckIcon className="h-4 w-4" />
@@ -188,14 +188,14 @@ export default function ContactSupport({
           <div className="mt-6 flex flex-col space-y-2 sm:flex-row sm:space-x-3 sm:space-y-0">
             <a
               href="tel:7498242199"
-              className="flex flex-1 items-center justify-center space-x-2 rounded-xl border border-blue-500/30 bg-gradient-to-r from-blue-600 to-blue-700 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:from-blue-500 hover:to-blue-600 sm:text-base"
+              className="flex flex-1 items-center justify-center space-x-2 rounded-xl border border-blue-500/30 bg-linear-to-r from-blue-600 to-blue-700 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:from-blue-500 hover:to-blue-600 sm:text-base"
             >
               <PhoneIcon className="h-4 w-4" />
               <span>Call Now</span>
             </a>
             <a
               href="mailto:info@parasinfotech.co.in"
-              className="flex flex-1 items-center justify-center space-x-2 rounded-xl border border-purple-500/30 bg-gradient-to-r from-purple-600 to-purple-700 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:from-purple-500 hover:to-purple-600 sm:text-base"
+              className="flex flex-1 items-center justify-center space-x-2 rounded-xl border border-purple-500/30 bg-linear-to-r from-purple-600 to-purple-700 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:from-purple-500 hover:to-purple-600 sm:text-base"
             >
               <MailIcon className="h-4 w-4" />
               <span>Email</span>

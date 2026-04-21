@@ -27,7 +27,7 @@ export default function Header() {
   return (
     <header className="flex w-full items-center justify-between border-b border-amber-500/10 bg-stone-950/95 px-4 py-3 text-stone-100 shadow-[0_10px_40px_rgba(0,0,0,0.25)] backdrop-blur-sm">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 to-amber-700 text-sm font-bold text-stone-950 shadow-md">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-linear-to-br from-amber-400 to-amber-700 text-sm font-bold text-stone-950 shadow-md">
           RB
         </div>
         <div>
