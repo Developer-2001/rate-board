@@ -70,7 +70,7 @@ export default function useRateBoard(clientId: string | null): UseRateBoardResul
       previousSignatureRef.current = null;
       queueMicrotask(() => {
         setBoard(null);
-        setError("Client session is missing.");
+        setError(null);
         setLoading(false);
         setHasFreshUpdate(false);
         setLastChangedAt(null);
