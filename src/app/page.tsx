@@ -167,21 +167,21 @@ export default function HomePage() {
             </button>
           </div>
 
-          <div className="grid gap-6 pt-10 sm:grid-cols-3 lg:grid-cols-[260px_1fr_280px] lg:items-start lg:pt-2">
+          <div className="grid gap-6 pt-8 grid-cols-3 sm:grid-cols-3 lg:grid-cols-[260px_1fr_280px] lg:items-start lg:pt-2">
             <div>
-              <p className="text-4xl font-light tracking-tight text-white sm:text-xl xl:text-3xl">
+              <p className="text-sm font-light tracking-tight text-white sm:text-xl xl:text-3xl">
                 {formatBoardDate(now)}
               </p>
-              <p className="text-3xl font-light text-stone-300 sm:text-lg xl:text-3xl">
+              <p className="text-xs font-light text-stone-300 sm:text-lg xl:text-3xl">
                 {formatBoardDay(now)}
               </p>
             </div>
 
             <div className="text-center">
-              <p className="text-sm font-semibold uppercase tracking-[0.55em] text-amber-300">
+              {/* <p className="hidden sm:block text-xs sm:text-sm font-semibold uppercase tracking-[0.55em] text-amber-300">
                 Rate Board
-              </p>
-              <h1 className="mt-1 text-5xl font-semibold uppercase tracking-widest text-white sm:text-2xl xl:text-5xl">
+              </p> */}
+              <h1 className="mt-1 text-sm font-semibold uppercase tracking-widest text-white sm:text-2xl xl:text-5xl">
                 Today&apos;s Rate
               </h1>
               {/* <p className="mt-2 text-lg uppercase tracking-[0.35em] text-stone-400 sm:text-xl xl:text-xl">
@@ -190,10 +190,10 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col items-end">
-              <p className="text-4xl font-light text-white sm:text-xl xl:text-3xl">
+              <p className="text-sm font-light text-white sm:text-xl xl:text-3xl">
                 {formatBoardTime(now)}
               </p>
-              <p className="text-3xl font-light tracking-[0.08em] text-stone-300 sm:text-lg xl:text-3xl">
+              <p className="text-xs font-light tracking-[0.08em] text-stone-300 sm:text-lg xl:text-3xl">
                 {formatBoardSeconds(now)}
               </p>
               {/* <p className="mt-4 text-right text-sm uppercase tracking-[0.24em] text-stone-500 xl:text-base">
@@ -216,7 +216,7 @@ export default function HomePage() {
             </div>
           )}
 
-          <div className=" flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-3">
             <span
               className={`h-4 w-4 rounded-full ${
                 hasFreshUpdate
@@ -230,7 +230,7 @@ export default function HomePage() {
           </div>
 
           <div className="mt-2 flex-1 overflow-hidden rounded-4xl border border-amber-500/20 bg-[linear-gradient(180deg,rgba(35,29,23,0.92),rgba(24,21,19,0.98))] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-            <div className="grid grid-cols-[1.3fr_1fr_1fr] border-b border-amber-500/20 bg-linear-to-r from-amber-500 via-amber-400 to-amber-600 text-center text-2xl font-semibold uppercase tracking-[0.24em] text-stone-950 sm:text-3xl xl:text-4xl">
+            <div className="grid grid-cols-[1.3fr_1fr_1fr] border-b border-amber-500/20 bg-linear-to-r from-amber-500 via-amber-400 to-amber-600 text-center text-md font-semibold uppercase tracking-[0.24em] text-stone-950 sm:text-3xl xl:text-4xl">
               <div className="border-r border-stone-950/10 px-4 py-4">
                 Metal
               </div>
@@ -244,13 +244,13 @@ export default function HomePage() {
                   key={item.id}
                   className="grid grid-cols-[1.3fr_1fr_1fr] bg-[linear-gradient(90deg,rgba(68,57,40,0.92),rgba(49,40,31,0.88))] text-amber-50"
                 >
-                  <div className="border-r border-amber-500/10 text-center px-4 py-4 text-2xl font-medium uppercase   sm:text-4xl xl:text-4xl">
+                  <div className="border-r border-amber-500/10 text-center px-4 py-4 text-md font-medium uppercase   sm:text-4xl xl:text-4xl">
                     {item.label}
                   </div>
-                  <div className="border-r border-amber-500/10 px-4 py-4 text-center text-2xl font-semibold text-amber-300   sm:text-4xl xl:text-4xl">
+                  <div className="border-r border-amber-500/10 px-4 py-4 text-center text-md font-semibold text-amber-300   sm:text-4xl xl:text-4xl">
                     {formatRate(item.saleRate)}
                   </div>
-                  <div className="px-4 py-4 text-center text-2xl font-semibold text-white   sm:text-4xl xl:text-4xl">
+                  <div className="px-4 py-4 text-center text-md font-semibold text-white   sm:text-4xl xl:text-4xl">
                     {formatRate(item.purchaseRate)}
                   </div>
                 </div>
@@ -261,13 +261,13 @@ export default function HomePage() {
                   key={item.id}
                   className="grid grid-cols-[1.3fr_1fr_1fr] bg-[linear-gradient(90deg,rgba(47,47,50,0.95),rgba(34,34,37,0.9))] text-stone-100"
                 >
-                  <div className="border-r border-white/10 text-center px-4 py-4 text-2xl font-medium uppercase   sm:text-4xl xl:text-4xl">
+                  <div className="border-r border-white/10 text-center px-4 py-4 text-md *:font-medium uppercase   sm:text-4xl xl:text-4xl">
                     {item.label}
                   </div>
-                  <div className="border-r border-white/10 px-4 py-4 text-center text-2xl font-semibold text-stone-200   sm:text-4xl xl:text-4xl">
+                  <div className="border-r border-white/10 px-4 py-4 text-center text-md font-semibold text-stone-200   sm:text-4xl xl:text-4xl">
                     {formatRate(item.saleRate)}
                   </div>
-                  <div className="px-4 py-4 text-center text-2xl font-semibold text-white   sm:text-4xl xl:text-4xl">
+                  <div className="px-4 py-4 text-center text-md font-semibold text-white   sm:text-4xl xl:text-4xl">
                     {formatRate(item.purchaseRate)}
                   </div>
                 </div>
