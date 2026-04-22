@@ -23,6 +23,7 @@ import {
 } from "@/utils/rateBoardTheme";
 
 const AUTO_RELOAD_FAILURE_COUNT = 4;
+const ALERT_TIMEOUT_MS = 5000;
 
 function formatBoardDate(date: Date) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -145,6 +146,20 @@ export default function HomePage() {
       setAlertMessage(message);
     });
   }, [consecutiveFailures, error]);
+
+  useEffect(() => {
+    if (!alertMessage) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setAlertMessage(null);
+    }, ALERT_TIMEOUT_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [alertMessage]);
 
   useEffect(() => {
     const handleKeyDown = async (event: KeyboardEvent) => {
