@@ -15,12 +15,6 @@ export async function POST() {
     expires: new Date(0),
   });
 
-  response.cookies.set("buildNumber", "", {
-    httpOnly: false,
-    path: "/",
-    expires: new Date(0),
-  });
-
   response.cookies.set("Verified", "", {
     httpOnly: true,
     path: "/",

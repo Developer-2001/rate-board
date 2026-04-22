@@ -49,25 +49,6 @@ export async function POST() {
       expires: localEndOfDay(),
     });
 
-    const buildResponse = await fetch(`${baseApiUrl}/login/build`, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${bearerToken}`,
-      },
-    });
-
-    if (buildResponse.ok) {
-      const buildNumber = await buildResponse.text();
-
-      response.cookies.set("buildNumber", buildNumber, {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        expires: localEndOfDay(),
-      });
-    }
-
     return response;
   } catch (error) {
     console.error("Failed to fetch bearer token.", error);
