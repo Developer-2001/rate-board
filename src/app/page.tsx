@@ -33,8 +33,6 @@ const uiFont = Manrope({
 
 const AUTO_RELOAD_FAILURE_COUNT = 4;
 const ALERT_TIMEOUT_MS = 5000;
-const BOARD_UNIT_LABEL = "Per 10 gm / Per kg";
-const BOARD_DISCLAIMER = "Rates are indicative - Subject to change";
 
 function formatBoardDate(date: Date) {
   return new Intl.DateTimeFormat("en-GB", {
