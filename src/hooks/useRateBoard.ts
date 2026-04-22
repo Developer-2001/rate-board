@@ -30,6 +30,14 @@ function getRateLabel(item: RawRateItem) {
   return `${metal} ${suffix}`.trim().replace(/\s+/g, " ");
 }
 
+function getRateMultiplier(item: RawRateItem) {
+  if (item.Metal_name === "G") {
+    return 100;
+  }
+
+  return 1000;
+}
+
 function toDisplayRates(board: RateBoardResponse | null) {
   if (!board) {
     return [];
@@ -38,14 +46,18 @@ function toDisplayRates(board: RateBoardResponse | null) {
   return board.data
     .filter((item) => item.Metal_name === "G" || item.Metal_name === "S")
     .filter((item) => item.Srate > 0 && item.Prate > 0)
-    .map((item) => ({
-      id: `${item.Metal_name}-${item.Caret}-${item.Name}`,
-      metal: normalizeMetalName(item.Metal_name),
-      label: getRateLabel(item),
-      saleRate: item.Srate,
-      purchaseRate: item.Prate,
-      caret: item.Caret,
-    }))
+    .map((item) => {
+      const multiplier = getRateMultiplier(item);
+
+      return {
+        id: `${item.Metal_name}-${item.Caret}-${item.Name}`,
+        metal: normalizeMetalName(item.Metal_name),
+        label: getRateLabel(item),
+        saleRate: item.Srate * multiplier,
+        purchaseRate: item.Prate * multiplier,
+        caret: item.Caret,
+      };
+    })
     .sort((left, right) => {
       if (left.metal !== right.metal) {
         return left.metal === "Gold" ? -1 : 1;

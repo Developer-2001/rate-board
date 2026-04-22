@@ -57,8 +57,7 @@ function formatBoardSeconds(date: Date) {
 
 function formatRate(value: number) {
   return new Intl.NumberFormat("en-IN", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    maximumFractionDigits: 0,
   }).format(value);
 }
 
