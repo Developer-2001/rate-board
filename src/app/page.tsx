@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import type { CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Expand,
-  Minimize,
-  Settings,
-} from "lucide-react";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
+import { Expand, Minimize, Settings2 } from "lucide-react";
 import Alert from "@/components/modals/Alert";
 import RateBoardSettingsDrawer from "@/components/RateBoardSettingsDrawer";
 import RateBoardSkeleton from "@/components/RateBoardSkeleton";
@@ -22,21 +20,34 @@ import {
   type RateBoardThemeId,
 } from "@/utils/rateBoardTheme";
 
+const displayFont = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  style: ["normal", "italic"],
+});
+
+const uiFont = Manrope({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+});
+
 const AUTO_RELOAD_FAILURE_COUNT = 4;
 const ALERT_TIMEOUT_MS = 5000;
+const BOARD_UNIT_LABEL = "Per 10 gm / Per kg";
+const BOARD_DISCLAIMER = "Rates are indicative - Subject to change";
 
 function formatBoardDate(date: Date) {
   return new Intl.DateTimeFormat("en-GB", {
-    day: "numeric",
+    day: "2-digit",
     month: "long",
     year: "numeric",
-  }).format(date);
+  }).format(date).toUpperCase();
 }
 
 function formatBoardDay(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
     weekday: "long",
-  }).format(date);
+  }).format(date).toUpperCase();
 }
 
 function formatBoardTime(date: Date) {
@@ -44,7 +55,7 @@ function formatBoardTime(date: Date) {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  }).format(date);
+  }).format(date).toUpperCase();
 }
 
 function formatBoardSeconds(date: Date) {
@@ -85,6 +96,11 @@ export default function HomePage() {
 
   const theme = RATE_BOARD_THEMES[themeId];
   const themeOptions = Object.values(RATE_BOARD_THEMES);
+  const rowCount = Math.max(rates.length, 1);
+  const boardTitle = board?.firm_name?.trim() || "Jewellers";
+  const boardRootStyle = {
+    "--rows": rowCount,
+  } as CSSProperties;
 
   useEffect(() => {
     queueMicrotask(() => {
@@ -203,13 +219,6 @@ export default function HomePage() {
     };
   }, []);
 
-  const groupedRates = useMemo(() => {
-    return {
-      gold: rates.filter((item) => item.metal === "Gold"),
-      silver: rates.filter((item) => item.metal === "Silver"),
-    };
-  }, [rates]);
-
   const toggleFullscreen = async () => {
     if (document.fullscreenElement) {
       await document.exitFullscreen();
@@ -277,118 +286,161 @@ export default function HomePage() {
 
   return (
     <>
-      <div className={`min-h-screen ${theme.appBg} text-stone-100`}>
-        <main className="mx-auto flex h-screen w-full max-w-450">
-          <section
-            className={`relative flex w-full flex-col border p-4 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-6 lg:p-6 ${theme.panelBorder} ${theme.surface}`}
-          >
-            <div className="grid grid-cols-3 gap-6 pt-6 sm:grid-cols-3 lg:grid-cols-[260px_1fr_280px] lg:items-start lg:pt-2">
-              <div>
-                <p className="text-sm uppercase font-light tracking-tight text-white sm:text-xl xl:text-3xl">
-                  {formatBoardDate(now)}
-                </p>
-                <p className={`text-xs uppercase font-light sm:text-lg xl:text-3xl ${theme.mutedText}`}>
-                  {formatBoardDay(now)}
-                </p>
-              </div>
+      <div
+        className={`${uiFont.className} relative h-screen overflow-hidden ${theme.appBg} text-stone-100`}
+        style={boardRootStyle}
+      >
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 opacity-90">
+            <div className={`absolute inset-0 ${theme.surface}`} />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_38%)]" />
+            <div className="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.18),transparent_68%)]" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_72%)]" />
+          </div>
+        </div>
 
-              <div className="text-center">
-               
-                <h1 className="text-sm font-semibold uppercase tracking-widest text-white sm:text-2xl xl:text-5xl">
-                  Today&apos;s Rate
-                </h1>
-              </div>
-
-              <div className="flex flex-col items-end">
-                <p className="text-sm font-light text-white sm:text-xl xl:text-3xl">
-                  {formatBoardTime(now)}
-                </p>
-                <p className={`text-xs font-light tracking-[0.08em] sm:text-lg xl:text-3xl ${theme.mutedText}`}>
-                  {formatBoardSeconds(now)}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-3">
-              <span
-                className={`h-4 w-4 rounded-full ${
-                  hasFreshUpdate
-                    ? "animate-pulse bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.85)]"
-                    : "bg-emerald-500/80 shadow-[0_0_16px_rgba(16,185,129,0.55)]"
-                }`}
-              />
-              <span
-                className={`text-base font-semibold uppercase tracking-[0.32em] xl:text-sm ${theme.liveText}`}
-              >
-                Live
-              </span>
-            </div>
-
-            <div
-              className={`mt-2 flex-1 overflow-hidden rounded-4xl border shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] ${theme.panelBorder} ${theme.tableShell}`}
+        <div className="relative z-10 flex h-full flex-col">
+          <main className="mx-auto flex min-h-0 w-full max-w-480 flex-1">
+            <section
+              className={`relative flex min-h-0 w-full flex-col overflow-hidden rounded-md border px-3 py-3 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:px-4 sm:py-4 lg:px-8 lg:py-3 ${theme.panelBorder} ${theme.surface}`}
             >
-              <div
-                className={`grid grid-cols-[1.3fr_1fr_1fr] border-b text-center text-md font-semibold uppercase tracking-[0.24em] sm:text-3xl xl:text-4xl ${theme.panelBorder} ${theme.tableHeader} ${theme.tableHeaderText}`}
-              >
-                <div className="border-r border-black/10 px-4 py-4">Metal</div>
-                <div className="border-r border-black/10 px-4 py-4">Sale</div>
-                <div className="px-4 py-4">Purchase</div>
-              </div>
-
-              <div className="divide-y divide-white/10">
-                {groupedRates.gold.map((item) => (
-                  <div
-                    key={item.id}
-                    className={`grid grid-cols-[1.3fr_1fr_1fr] ${theme.goldRow}`}
+              <header className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-3 pb-3 sm:gap-4 sm:pb-5 lg:pb-2">
+                <div className="min-w-0 self-center">
+                  <p
+                    suppressHydrationWarning
+                    className="text-[clamp(0.8rem,1.5vw,2rem)] font-extrabold uppercase tracking-[0.14em] text-white"
                   >
-                    <div className="border-r border-white/10 px-4 py-4 text-center text-md font-medium uppercase sm:text-4xl xl:text-4xl">
-                      {item.label}
-                    </div>
-                    <div
-                      className={`border-r border-white/10 px-4 py-4 text-center text-md font-semibold sm:text-4xl xl:text-4xl ${theme.primaryValue}`}
-                    >
-                      {formatRate(item.saleRate)}
-                    </div>
-                    <div
-                      className={`px-4 py-4 text-center text-md font-semibold sm:text-4xl xl:text-4xl ${theme.secondaryValue}`}
-                    >
-                      {formatRate(item.purchaseRate)}
-                    </div>
-                  </div>
-                ))}
-
-                {groupedRates.silver.map((item) => (
-                  <div
-                    key={item.id}
-                    className={`grid grid-cols-[1.3fr_1fr_1fr] ${theme.silverRow}`}
+                    {formatBoardDate(now)}
+                  </p>
+                  <p
+                    suppressHydrationWarning
+                    className={`text-[clamp(0.6rem,1.35vw,1.8rem)] font-semibold uppercase tracking-[0.12em] ${theme.mutedText}`}
                   >
-                    <div className="border-r border-white/10 px-4 py-4 text-center text-md font-medium uppercase sm:text-4xl xl:text-4xl">
-                      {item.label}
-                    </div>
-                    <div
-                      className={`border-r border-white/10 px-4 py-4 text-center text-md font-semibold sm:text-4xl xl:text-4xl ${theme.primaryValue}`}
-                    >
-                      {formatRate(item.saleRate)}
-                    </div>
-                    <div
-                      className={`px-4 py-4 text-center text-md font-semibold sm:text-4xl xl:text-4xl ${theme.secondaryValue}`}
-                    >
-                      {formatRate(item.purchaseRate)}
-                    </div>
-                  </div>
-                ))}
+                    {formatBoardDay(now)}
+                  </p>
+                </div>
 
-                {!loading && rates.length === 0 && (
-                  <div className={`px-6 py-12 text-center text-xl xl:text-3xl ${theme.mutedText}`}>
-                    No gold or silver rates with non-zero sale and purchase values
-                    are available.
+                <div className="min-w-0 px-2 text-center">
+                  <p
+                    className={`${displayFont.className} ${theme.headingAccent} text-[clamp(0.6rem,1.65vw,1.5rem)] italic uppercase tracking-[0.16em]`}
+                  >
+                    {boardTitle}
+                  </p>
+                  <h1
+                    className={`${displayFont.className} ${theme.headingAccent} text-[clamp(0.8rem,7vw,4rem)] font-bold uppercase leading-[0.88] tracking-[-0.04em] drop-shadow-[0_0_28px_rgba(251,191,36,0.22)]`}
+                  >
+                    Today&apos;s Rate
+                  </h1>
+                  <div className="mt-1 flex items-center justify-center gap-3">
+                    <span
+                      className={`h-2.5 w-2.5 rounded-full ${
+                        hasFreshUpdate
+                          ? "animate-pulse bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.85)]"
+                          : "bg-emerald-500 shadow-[0_0_14px_rgba(16,185,129,0.6)]"
+                      }`}
+                    />
+                    <span
+                      className={`text-[clamp(0.8rem,1.2vw,1.4rem)] font-extrabold uppercase tracking-[0.35em] ${theme.liveText}`}
+                    >
+                      Live
+                    </span>
+                  </div>
+                </div>
+
+                <div className="min-w-0 self-center text-right">
+                  <p
+                    suppressHydrationWarning
+                    className={`${theme.headingAccent} text-[clamp(0.8rem,2.35vw,2rem)] font-extrabold tracking-[0.04em]`}
+                  >
+                    {formatBoardTime(now)}
+                  </p>
+                  <p
+                    suppressHydrationWarning
+                    className={`text-[clamp(0.6rem,1.55vw,1.8rem)] font-semibold tracking-[0.12em] ${theme.mutedText}`}
+                  >
+                    {formatBoardSeconds(now)}
+                  </p>
+                </div>
+              </header>
+
+              <div className="flex min-h-0 flex-1 flex-col">
+                <div
+                  className={`grid h-[clamp(3.25rem,6vh,5.5rem)] shrink-0 grid-cols-[1.08fr_1fr_1fr] items-center rounded-t-[22px] border px-4 sm:px-6 lg:px-10 ${theme.panelBorder} ${theme.tableHeader}`}
+                >
+                  <div
+                    className={`text-left text-[clamp(0.95rem,1.5vw,2rem)] font-extrabold uppercase tracking-[0.32em] ${theme.tableHeaderText}`}
+                  >
+                    Metal
+                  </div>
+                  <div
+                    className={`text-center text-[clamp(0.95rem,1.5vw,2rem)] font-extrabold uppercase tracking-[0.32em] ${theme.tableHeaderText}`}
+                  >
+                    Sale
+                  </div>
+                  <div
+                    className={`text-center text-[clamp(0.95rem,1.5vw,2rem)] font-extrabold uppercase tracking-[0.32em] ${theme.tableHeaderText}`}
+                  >
+                    Purchase
+                  </div>
+                </div>
+
+                {rates.length > 0 ? (
+                  <div
+                    className={`grid min-h-0 flex-1 overflow-hidden rounded-b-[22px] border-x border-b ${theme.panelBorder} ${theme.tableShell}`}
+                    style={{
+                      gridTemplateRows: `repeat(${rowCount}, minmax(0, 1fr))`,
+                    }}
+                  >
+                    {rates.map((item, index) => (
+                      <div
+                        key={item.id}
+                        className={`grid min-h-0 grid-cols-[1.08fr_1fr_1fr] items-center px-2 sm:px-6 lg:px-6 ${
+                          item.metal === "Gold" ? theme.goldRow : theme.silverRow
+                        } ${index === rates.length - 1 ? "" : "border-b border-white/8"}`}
+                        style={{
+                          boxShadow:
+                            index % 2 === 0
+                              ? "inset 0 1px 0 rgba(255,255,255,0.03), inset 0 -1px 0 rgba(0,0,0,0.18)"
+                              : "inset 0 -1px 0 rgba(0,0,0,0.18)",
+                        }}
+                      >
+                        <div
+                          className="truncate pr-4 text-left text-[clamp(1.4rem,min(calc(62vh/var(--rows)),4.8vw),5.4rem)] font-extrabold uppercase leading-none tracking-[0.01em] text-inherit"
+                          title={item.label}
+                        >
+                          {item.label}
+                        </div>
+                        <div
+                          className={`text-center text-[clamp(1.45rem,min(calc(66vh/var(--rows)),5vw),5.5rem)] font-extrabold leading-none tracking-[-0.03em] tabular-nums ${theme.primaryValue}`}
+                        >
+                          {formatRate(item.saleRate)}
+                        </div>
+                        <div
+                          className={`text-center text-[clamp(1.45rem,min(calc(66vh/var(--rows)),5vw),5.5rem)] font-extrabold leading-none tracking-[-0.03em] tabular-nums ${theme.secondaryValue}`}
+                        >
+                          {formatRate(item.purchaseRate)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div
+                    className={`flex min-h-0 flex-1 items-center justify-center rounded-b-[22px] border-x border-b px-6 text-center ${theme.panelBorder} ${theme.tableShell}`}
+                  >
+                    <p className={`text-xl font-semibold ${theme.mutedText}`}>
+                      No gold or silver rates with non-zero sale and purchase values
+                      are available.
+                    </p>
                   </div>
                 )}
               </div>
-            </div>
-          </section>
-        </main>
+
+          
+            </section>
+          </main>
+        </div>
       </div>
+
       <div
         className={`fixed bottom-10 right-4 z-20 flex flex-col gap-2 transition-all duration-300 sm:bottom-6 sm:right-6 ${
           showFloatingButtons
@@ -401,9 +453,9 @@ export default function HomePage() {
           onClick={() => setIsSettingsOpen(true)}
           className={`cursor-pointer rounded-lg border px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] transition ${theme.topButton} ${theme.topButtonHover}`}
         >
-          <Settings width={24} height={24} />
+          <Settings2 width={24} height={24} />
         </button>
-        
+
         <button
           type="button"
           onClick={toggleFullscreen}
@@ -415,9 +467,7 @@ export default function HomePage() {
             <Expand width={24} height={24} />
           )}
         </button>
-        
       </div>
-
 
       <RateBoardSettingsDrawer
         open={isSettingsOpen}
