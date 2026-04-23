@@ -1,16 +1,10 @@
 "use client";
 
-import { Manrope } from "next/font/google";
 import {
   DEFAULT_RATE_BOARD_THEME_ID,
   RATE_BOARD_THEMES,
   type RateBoardThemeId,
 } from "@/utils/rateBoardTheme";
-
-const uiFont = Manrope({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-});
 
 type RateBoardSkeletonProps = {
   themeId?: RateBoardThemeId;
@@ -23,7 +17,7 @@ export default function RateBoardSkeleton({
 
   return (
     <div
-      className={`${uiFont.className} relative flex min-h-screen flex-col overflow-hidden ${theme.appBg} text-stone-100`}
+      className={`relative flex min-h-screen flex-col overflow-hidden ${theme.appBg} text-stone-100`}
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 opacity-90">

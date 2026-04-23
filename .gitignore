@@ -16,6 +16,7 @@
 # next.js
 /.next/
 /out/
+/release/
 
 # production
 /build
@@ -23,6 +24,11 @@
 # misc
 .DS_Store
 *.pem
+*.log
+
+# editor
+.idea/
+.vscode/
 
 # debug
 npm-debug.log*
@@ -40,5 +46,17 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-#package-lock.json
-package-lock.json
+# android
+android/.gradle/
+android/.idea/
+android/local.properties
+android/captures/
+android/app/src/main/assets/
+android/app/build/
+android/build/
+android/**/*.iml
+
+# signing files
+*.jks
+*.keystore
+*.p12

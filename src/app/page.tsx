@@ -3,7 +3,6 @@
 import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Cormorant_Garamond, Manrope } from "next/font/google";
 import { Expand, Minimize, Settings2 } from "lucide-react";
 import Alert from "@/components/modals/Alert";
 import RateBoardSettingsDrawer from "@/components/RateBoardSettingsDrawer";
@@ -12,6 +11,7 @@ import { useClient } from "@/context/ClientContext";
 import useAuthBootstrap from "@/hooks/auth/useAuthBootstrap";
 import useFingerprint from "@/hooks/auth/useFingerprint";
 import useRateBoard from "@/hooks/useRateBoard";
+import { logout } from "@/utils/authApi";
 import {
   DEFAULT_RATE_BOARD_THEME_ID,
   getStoredRateBoardThemeId,
@@ -19,17 +19,6 @@ import {
   RATE_BOARD_THEME_STORAGE_KEY,
   type RateBoardThemeId,
 } from "@/utils/rateBoardTheme";
-
-const displayFont = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  style: ["normal", "italic"],
-});
-
-const uiFont = Manrope({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-});
 
 const AUTO_RELOAD_FAILURE_COUNT = 4;
 const ALERT_TIMEOUT_MS = 5000;
@@ -235,11 +224,9 @@ export default function HomePage() {
     setIsLoggingOut(true);
 
     try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-      });
+      await logout();
     } catch (logoutError) {
-      console.error("Logout route failed, clearing local session only.", logoutError);
+      console.error("Logout failed, clearing local session only.", logoutError);
     } finally {
       clearClientSession();
       setIsSettingsOpen(false);
@@ -285,7 +272,7 @@ export default function HomePage() {
   return (
     <>
       <div
-        className={`${uiFont.className} relative h-screen overflow-hidden ${theme.appBg} text-stone-100`}
+        className={`relative h-screen overflow-hidden ${theme.appBg} text-stone-100`}
         style={boardRootStyle}
       >
         <div className="pointer-events-none absolute inset-0">
@@ -320,12 +307,14 @@ export default function HomePage() {
 
                 <div className="min-w-0 px-2 text-center">
                   <p
-                    className={`${displayFont.className} ${theme.headingAccent} text-[clamp(0.6rem,1.65vw,1.5rem)] italic uppercase tracking-[0.16em]`}
+                    className={`${theme.headingAccent} text-[clamp(0.6rem,1.65vw,1.5rem)] italic uppercase tracking-[0.16em]`}
+                    style={{ fontFamily: "var(--app-font-display)" }}
                   >
                     {boardTitle}
                   </p>
                   <h1
-                    className={`${displayFont.className} ${theme.headingAccent} text-[clamp(0.8rem,7vw,4rem)] font-bold uppercase leading-[0.88] tracking-[-0.04em] drop-shadow-[0_0_28px_rgba(251,191,36,0.22)]`}
+                    className={`${theme.headingAccent} text-[clamp(0.8rem,7vw,4rem)] font-bold uppercase leading-[0.88] tracking-[-0.04em] drop-shadow-[0_0_28px_rgba(251,191,36,0.22)]`}
+                    style={{ fontFamily: "var(--app-font-display)" }}
                   >
                     Today&apos;s Rate
                   </h1>

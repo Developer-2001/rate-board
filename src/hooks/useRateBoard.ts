@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DisplayRateItem, RateBoardResponse, RawRateItem } from "@/types/rateBoard";
+import { fetchRateBoard } from "@/utils/rateBoardApi";
 
 type UseRateBoardResult = {
   board: RateBoardResponse | null;
@@ -112,21 +113,11 @@ export default function useRateBoard(clientId: string | null): UseRateBoardResul
           setLoading(true);
         }
 
-        const response = await fetch(`/api/rate-board/${clientId}`, {
-          method: "GET",
-          cache: "no-store",
-        });
-        const payload = await response.json();
-
-        if (!response.ok) {
-          throw new Error(payload.message || "Failed to fetch rate board data.");
-        }
-
         if (!isActive) {
           return;
         }
 
-        const nextBoard = payload.data as RateBoardResponse;
+        const nextBoard = (await fetchRateBoard(clientId)) as RateBoardResponse;
         const nextSignature = JSON.stringify(nextBoard.data);
 
         if (previousSignatureRef.current && previousSignatureRef.current !== nextSignature) {

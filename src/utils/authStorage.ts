@@ -4,6 +4,7 @@ import CryptoJS from "crypto-js";
 import { AuthSnapshot, ClientData } from "@/types/auth";
 
 const STORAGE_KEYS = {
+  bearerToken: "rate-board.auth.bearerToken",
   corporateId: "rate-board.auth.corporateId",
   clientId: "rate-board.auth.clientId",
   clientData: "rate-board.auth.clientData",
@@ -73,6 +74,14 @@ export function storeCorporateId(corporateId: string) {
   setEncryptedItem(STORAGE_KEYS.corporateId, corporateId);
 }
 
+export function storeBearerToken(token: string) {
+  setEncryptedItem(STORAGE_KEYS.bearerToken, token);
+}
+
+export function readBearerToken() {
+  return getEncryptedItem<string>(STORAGE_KEYS.bearerToken);
+}
+
 export function storeClientData(corporateId: string, clientData: ClientData) {
   setEncryptedItem(STORAGE_KEYS.corporateId, corporateId);
   setEncryptedItem(STORAGE_KEYS.clientId, clientData.ClientId);
@@ -84,6 +93,7 @@ export function storeVerificationStatus(isVerified: boolean) {
 }
 
 export function clearAuthStorage() {
+  removeItem(STORAGE_KEYS.bearerToken);
   removeItem(STORAGE_KEYS.corporateId);
   removeItem(STORAGE_KEYS.clientId);
   removeItem(STORAGE_KEYS.clientData);
