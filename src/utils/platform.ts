@@ -1,13 +1,13 @@
 "use client";
 
-import { Capacitor } from "@capacitor/core";
+import { getPlatform } from "@/lib/device/platform";
 
 export function isElectronApp() {
-  return typeof window !== "undefined" && Boolean(window.desktopApi);
+  return getPlatform() === "electron";
 }
 
 export function isNativeApp() {
-  return typeof window !== "undefined" && Capacitor.isNativePlatform();
+  return getPlatform() === "android";
 }
 
 export function getDesktopApi() {

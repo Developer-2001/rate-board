@@ -73,6 +73,18 @@ const temporaryMoves = [
     ),
   },
   {
+    source: path.join(rootDir, "src", "app", "api", "device", "register", "route.ts"),
+    backup: path.join(
+      backupRootDir,
+      "src",
+      "app",
+      "api",
+      "device",
+      "register",
+      "route.ts"
+    ),
+  },
+  {
     source: path.join(rootDir, "src", "app", "api", "rate-board", "[clientId]", "route.ts"),
     backup: path.join(
       backupRootDir,

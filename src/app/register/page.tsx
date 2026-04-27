@@ -4,10 +4,14 @@ import dynamic from "next/dynamic";
 import { Suspense, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Modal from "@/components/modals/statusMsg";
+import useDeviceId from "@/hooks/auth/useDeviceId";
 import { detectAndLogDevice } from "@/utils/identifyDevice";
 import { registerDevice } from "@/utils/authApi";
 import { useClient } from "@/context/ClientContext";
-import useFingerprint from "@/hooks/auth/useFingerprint";
+
+function trimForBackend(value: string, maxLength: number) {
+  return value.trim().slice(0, maxLength);
+}
 
 function RegisterPage() {
   const [deviceName, setDeviceName] = useState("");
@@ -21,9 +25,10 @@ function RegisterPage() {
   });
 
   const router = useRouter();
-  const fingerPrintId = useFingerprint();
+  const { deviceId, loading: isDeviceIdLoading } = useDeviceId();
   const { clientData, isHydrated, isVerified } = useClient();
   const deviceIdentify = detectAndLogDevice();
+  const safeDeviceName = trimForBackend(deviceIdentify.name || "Android Device", 24);
 
   useEffect(() => {
     if (!isHydrated) {
@@ -38,7 +43,7 @@ function RegisterPage() {
     if (!clientData) {
       router.replace("/corporateId");
     }
-  }, [clientData, fingerPrintId, isHydrated, isVerified, router]);
+  }, [clientData, deviceId, isHydrated, isVerified, router]);
 
   useEffect(() => {
     const fetchDeviceInfo = async () => {
@@ -90,7 +95,7 @@ function RegisterPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!clientData || !fingerPrintId) {
+    if (!clientData || !deviceId) {
       router.replace("/corporateId");
       return;
     }
@@ -98,11 +103,11 @@ function RegisterPage() {
     const userRegisterData = {
       clientid: clientData.ClientId,
       sysname: clientData.SysName,
-      deviceid: fingerPrintId,
-      devicename: deviceIdentify.name,
+      deviceid: deviceId,
+      devicename: safeDeviceName,
       deviceos: deviceInfo.os,
-      requestby: `${deviceName}-${counter}`,
-      narration: `Device Name: ${deviceInfo.location}`,
+      requestby: trimForBackend(`${deviceName}-${counter}`, 40),
+      narration: trimForBackend(`Device Name: ${deviceInfo.location}`, 80),
     };
 
     setIsLoading(true);
@@ -129,7 +134,7 @@ function RegisterPage() {
   const themedInputClass = `w-full rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-base text-white outline-none transition-all duration-300 placeholder:text-stone-500 focus:border-amber-400/60 focus:bg-white/8 focus:ring-2 focus:ring-amber-400/20 ${
     isLoading ? "cursor-not-allowed opacity-70" : "hover:border-white/20"
   }`;
-  const isFingerprintReady = Boolean(fingerPrintId);
+  const isDeviceReady = Boolean(deviceId);
 
   return (
     <Suspense fallback={<p>Loading...</p>}>
@@ -228,7 +233,7 @@ function RegisterPage() {
                 <div className="mb-6 rounded-2xl border border-white/10 bg-stone-950/40 p-4 text-sm text-stone-300">
                   <p>
                     Device Type:{" "}
-                    <span className="font-medium text-white">{deviceIdentify.name}</span>
+                    <span className="font-medium text-white">{safeDeviceName}</span>
                   </p>
                   <p className="mt-2">
                     Device OS:{" "}
@@ -236,9 +241,9 @@ function RegisterPage() {
                       {deviceInfo.os || "-"}
                     </span>
                   </p>
-                  {!isFingerprintReady && (
+                  {!isDeviceReady && (
                     <p className="mt-2 text-amber-300">
-                      Preparing device fingerprint...
+                      {isDeviceIdLoading ? "Preparing device ID..." : "Waiting for device ID..."}
                     </p>
                   )}
                 </div>
@@ -247,7 +252,7 @@ function RegisterPage() {
                   <button
                     type="submit"
                     className={classNameButton}
-                    disabled={isLoading || !clientData || !isFingerprintReady}
+                    disabled={isLoading || !clientData || !isDeviceReady}
                   >
                     {isLoading ? (
                       <span className="flex items-center gap-2 text-stone-950">

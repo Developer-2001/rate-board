@@ -2,6 +2,9 @@ export {};
 
 declare global {
   interface Window {
+    electron?: {
+      getDeviceId: () => Promise<string>;
+    };
     desktopApi?: {
       auth: {
         fetchBearerToken: () => Promise<void>;

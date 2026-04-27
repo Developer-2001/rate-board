@@ -2,16 +2,17 @@
 
 ## What We Did
 
-This project was converted from a standard Next.js app into:
+This project now runs in three practical environments:
 
-- a Windows desktop app using Electron
-- an Android app using Capacitor
+- web browser through Next.js
+- Windows desktop app through Electron
+- Android app through Capacitor
 
-The app now builds as a static export with:
+The Android and desktop builds use a static export from Next.js:
 
 - `Next.js output: "export"`
-- Electron loading local files from `out/`
-- Capacitor using the same exported `out/` build for Android
+- Electron loads files from `out/`
+- Capacitor syncs the same `out/` build into `android/`
 
 ## Main Changes
 
@@ -31,21 +32,24 @@ images: { unoptimized: true }
 
 Result:
 
-- static web build is generated in `out/`
+- static frontend build is generated in `out/`
 
 ### 2. Desktop app with Electron
 
 Files:
 
-- `electron/main.js`
-- `electron/preload.js`
+- `electron/main.ts`
+- `electron/preload.ts`
+- generated runtime files: `electron/main.js`, `electron/preload.js`
 
 What they do:
 
 - open the app in Electron
 - load local exported files in production
 - load `http://localhost:3000` in Electron dev mode
-- expose secure IPC APIs for auth and rate-board requests
+- expose secure IPC APIs for auth, rate-board access, and desktop device ID
+- keep `contextIsolation: true` and avoid direct Node access in the renderer
+- load `.env.local` and `.env` explicitly in the Electron main process using `dotenv`
 
 Desktop build config is inside:
 
@@ -61,10 +65,29 @@ Files:
 What they do:
 
 - use `out/` as the mobile app web assets
-- sync exported files into Android project
+- sync exported files into the Android project
 - allow opening the Android project in Android Studio
+- persist Android device IDs with `@capacitor/preferences`
 
-### 4. Runtime API layer
+### 4. Cross-platform device ID layer
+
+Files:
+
+- `src/lib/device/getDeviceId.ts`
+- `src/lib/device/platform.ts`
+- `src/lib/fingerprint.ts`
+- `src/hooks/auth/useDeviceId.ts`
+- `src/utils/identifyDevice.ts`
+
+What they do:
+
+- keep the existing web fingerprint flow intact
+- use fingerprint on web
+- use UUID + `electron-store` on Electron
+- use UUID + `@capacitor/preferences` on Android
+- expose shared helpers like `getDeviceId()` and `useDeviceId()`
+
+### 5. Runtime API layer
 
 Files:
 
@@ -79,14 +102,24 @@ What they do:
 - detect Electron / Android / browser runtime
 - use Electron IPC on desktop
 - use Capacitor native HTTP on Android
-- use direct HTTP/static-friendly requests instead of Next.js API routes
+- use fetch-based Next.js API routes on normal web
+- keep the auth flow shared across all runtimes
 
-## Important Removed Server-Side Parts
+## Environment Handling
 
-These were removed because static export does not support them:
+- Web and the Next.js renderer continue using:
+  - `process.env.NEXT_PUBLIC_BASE_API_URL`
+  - `process.env.NEXT_PUBLIC_SECRET_KEY`
+- These `NEXT_PUBLIC_*` values are injected by Next.js at build time for frontend code
+- Capacitor does not load `.env` at runtime
+- Electron main process is separate from Next.js, so it loads `.env.local` and `.env` itself with `dotenv`
+- Desktop packaging includes `.env.local` and `.env` in the Electron build files list
 
-- `middleware.ts`
-- `src/app/api/**`
+## Registration Notes
+
+- Android registration now shortens the detected device name before sending it to the backend
+- This avoids SQL truncation errors caused by long model strings like `CPH2781 Build/...`
+- If you change registration fields or device detection logic, rebuild Android before testing again
 
 ## Important Scripts
 
@@ -95,14 +128,17 @@ From `package.json`:
 ```json
 {
   "dev": "next dev",
-  "dev:electron": "concurrently -k \"next dev\" \"wait-on tcp:3000 && cross-env ELECTRON_DEV_SERVER_URL=http://localhost:3000 electron .\"",
+  "dev:electron": "npm run build:electron:ts && concurrently -k \"next dev\" \"wait-on tcp:3000 && cross-env ELECTRON_DEV_SERVER_URL=http://localhost:3000 electron .\"",
   "build": "next build",
   "build:web": "next build",
-  "build:desktop": "npm run build:web && electron-builder --win nsis",
-  "build:android": "npm run build:web && npx cap sync android",
+  "build:electron:ts": "tsc -p electron/tsconfig.json",
+  "build:static": "node scripts/build-static.mjs",
+  "build:desktop": "npm run build:electron:ts && npm run build:static && electron-builder --win nsis",
+  "build:android": "npm run build:static && npx cap sync android",
   "cap:sync": "npx cap sync",
   "cap:open:android": "npx cap open android",
-  "start": "serve out"
+  "start": "next start",
+  "start:static": "serve out"
 }
 ```
 
@@ -110,19 +146,23 @@ From `package.json`:
 
 ```text
 rate-board/
-├─ android/
-├─ electron/
-│  ├─ main.js
-│  └─ preload.js
-├─ out/
-├─ release/
-├─ capacitor.config.ts
-├─ next.config.ts
-├─ package.json
-└─ src/
-   ├─ hooks/
-   ├─ types/
-   └─ utils/
+|- android/
+|- electron/
+|  |- main.ts
+|  |- preload.ts
+|  |- main.js
+|  `- preload.js
+|- out/
+|- release/
+|- capacitor.config.ts
+|- next.config.ts
+|- package.json
+`- src/
+   |- app/
+   |- hooks/
+   |- lib/
+   |- types/
+   `- utils/
 ```
 
 ## Commands To Use
@@ -163,12 +203,6 @@ Output:
 release\Rate Board-0.1.0-Setup.exe
 ```
 
-### Add Android platform
-
-```powershell
-npx cap add android
-```
-
 ### Build and sync Android
 
 ```powershell
@@ -204,8 +238,8 @@ These were already run successfully:
 
 - `npm run lint`
 - `npm run build`
+- `npm run build:electron:ts`
 - `npm run build:desktop`
-- `npx cap add android`
 - `npm run build:android`
 
 ## Notes
@@ -213,4 +247,4 @@ These were already run successfully:
 - Desktop installer is generated successfully.
 - Android project is created and synced successfully.
 - Electron currently uses `src/app/favicon.ico` as app icon.
-- Static export means no Next.js API routes and no middleware.
+- `build:static` temporarily moves `middleware.ts` and `src/app/api/**` out of the way during static export, then restores them.

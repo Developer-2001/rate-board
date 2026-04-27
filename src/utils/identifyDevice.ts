@@ -3,6 +3,15 @@ export interface DeviceInfo {
   name: string;
 }
 
+function normalizeDeviceName(name: string) {
+  return name
+    .replace(/\s*Build\/.*$/i, "")
+    .split(";")[0]
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 24);
+}
+
 export function detectAndLogDevice(): DeviceInfo {
   const ua =
     typeof navigator !== "undefined"
@@ -34,7 +43,7 @@ export function detectAndLogDevice(): DeviceInfo {
   if (isAndroid) {
     const match = ua.match(/Android\s[\d.]+;\s([^)]+)/i);
     if (match && match[1]) {
-      name = match[1].trim();
+      name = normalizeDeviceName(match[1]);
     }
   } else if (isIOS) {
     if (/ipad/.test(lowerUa)) {
@@ -66,5 +75,5 @@ export function detectAndLogDevice(): DeviceInfo {
         : "Desktop";
   }
 
-  return { type, name };
+  return { type, name: normalizeDeviceName(name) || name };
 }

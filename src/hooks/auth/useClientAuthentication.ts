@@ -8,7 +8,7 @@ export default function useClientAuthentication(
   corporateId: string,
   setError: (value: string) => void,
   router: AppRouterInstance,
-  fingerPrintId: string | null,
+  deviceId: string | null,
   setIsLoading: (value: boolean) => void,
   setShowAccessDenied: (value: boolean) => void,
   setMessage?: (value: string | null) => void,
@@ -27,8 +27,8 @@ export default function useClientAuthentication(
         return;
       }
 
-      if (!fingerPrintId) {
-        setError("Device fingerprint is not ready yet. Please try again.");
+      if (!deviceId) {
+        setError("Device ID is not ready yet. Please try again.");
         return;
       }
 
@@ -36,7 +36,7 @@ export default function useClientAuthentication(
       setCorporateIdentity(trimmedCorporateId);
 
       try {
-        const result = await runAuthenticationFlow(trimmedCorporateId, fingerPrintId);
+        const result = await runAuthenticationFlow(trimmedCorporateId, deviceId);
 
         setClientSession(trimmedCorporateId, result.clientData);
         setVerificationState(result.status === "approved");
@@ -72,7 +72,7 @@ export default function useClientAuthentication(
     },
     [
       corporateId,
-      fingerPrintId,
+      deviceId,
       router,
       setClientSession,
       setCorporateIdentity,

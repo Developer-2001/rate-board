@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import ClientLoginForm from "@/components/auth/ClientLoginForm";
 import useAuthBootstrap from "@/hooks/auth/useAuthBootstrap";
 import useClientAuthentication from "@/hooks/auth/useClientAuthentication";
-import useFingerprint from "@/hooks/auth/useFingerprint";
+import useDeviceId from "@/hooks/auth/useDeviceId";
 import Modal from "@/components/modals/statusMsg";
 import Header from "@/components/Header";
 import TermsAndConditionsModal from "@/components/modals/TermsAndConditionsModal";
@@ -23,10 +23,10 @@ export default function CorporateIdPage() {
   );
 
   const router = useRouter();
-  const fingerPrintId = useFingerprint();
+  const { deviceId } = useDeviceId();
 
   const { isBootstrapping } = useAuthBootstrap({
-    fingerPrintId,
+    deviceId,
     router,
     mode: "login",
     onAccessDenied: () => setShowAccessDenied(true),
@@ -50,7 +50,7 @@ export default function CorporateIdPage() {
     corporateId,
     setError,
     router,
-    fingerPrintId,
+    deviceId,
     setIsLoading,
     setShowAccessDenied,
     setMessage,

@@ -13,7 +13,7 @@ import { fetchBearerToken } from "@/utils/authApi";
 import { runAuthenticationFlow } from "@/utils/clientAuthFlow";
 
 type UseAuthBootstrapOptions = {
-  fingerPrintId: string | null;
+  deviceId: string | null;
   router: AppRouterInstance;
   mode: "login" | "home";
   onAccessDenied?: () => void;
@@ -25,7 +25,7 @@ type UseAuthBootstrapOptions = {
 };
 
 export default function useAuthBootstrap({
-  fingerPrintId,
+  deviceId,
   router,
   mode,
   onAccessDenied,
@@ -43,7 +43,7 @@ export default function useAuthBootstrap({
   const [isBootstrapping, setIsBootstrapping] = useState(true);
 
   useEffect(() => {
-    if (!isHydrated || !fingerPrintId) {
+    if (!isHydrated || !deviceId) {
       return;
     }
 
@@ -81,7 +81,7 @@ export default function useAuthBootstrap({
           return;
         }
 
-        const result = await runAuthenticationFlow(corporateIdentity, fingerPrintId);
+        const result = await runAuthenticationFlow(corporateIdentity, deviceId);
 
         if (!isActive) {
           return;
@@ -142,7 +142,7 @@ export default function useAuthBootstrap({
   }, [
     clearClientSession,
     corporateId,
-    fingerPrintId,
+    deviceId,
     hydrateClientState,
     isHydrated,
     mode,

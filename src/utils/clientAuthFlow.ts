@@ -23,7 +23,7 @@ export type AuthFlowResult =
 
 export async function runAuthenticationFlow(
   corporateId: string,
-  fingerPrintId: string
+  deviceId: string
 ): Promise<AuthFlowResult> {
   await fetchBearerToken();
 
@@ -35,7 +35,7 @@ export async function runAuthenticationFlow(
   const verifyResponse = await verifyDevice({
     clientId: clientData.ClientId,
     SysName: clientData.SysName,
-    fingerPrintId,
+    fingerPrintId: deviceId,
   });
 
   const deviceStatus = verifyResponse.data?.Device ?? "";

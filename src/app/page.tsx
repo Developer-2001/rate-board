@@ -9,7 +9,7 @@ import RateBoardSettingsDrawer from "@/components/RateBoardSettingsDrawer";
 import RateBoardSkeleton from "@/components/RateBoardSkeleton";
 import { useClient } from "@/context/ClientContext";
 import useAuthBootstrap from "@/hooks/auth/useAuthBootstrap";
-import useFingerprint from "@/hooks/auth/useFingerprint";
+import useDeviceId from "@/hooks/auth/useDeviceId";
 import useRateBoard from "@/hooks/useRateBoard";
 import { logout } from "@/utils/authApi";
 import {
@@ -62,10 +62,10 @@ function formatRate(value: number) {
 
 export default function HomePage() {
   const router = useRouter();
-  const fingerPrintId = useFingerprint();
+  const { deviceId } = useDeviceId();
   const { clientData, clearClientSession } = useClient();
   const { isBootstrapping } = useAuthBootstrap({
-    fingerPrintId,
+    deviceId,
     router,
     mode: "home",
   });
