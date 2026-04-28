@@ -22,10 +22,23 @@ const RATE_BOARD_API_URL = "https://report-api-742717265610.asia-south1.run.app/
 const APP_PROTOCOL = "app";
 const APP_HOST = "-";
 const OUT_DIR = node_path_1.default.join(__dirname, "..", "out");
-const DEV_SERVER_URL = process.env.ELECTRON_DEV_SERVER_URL;
+const DEV_SERVER_URL = electron_1.app.isPackaged
+    ? undefined
+    : process.env.ELECTRON_DEV_SERVER_URL;
 const deviceStore = new electron_store_1.default({
     name: "rate-board-device",
 });
+electron_1.protocol.registerSchemesAsPrivileged([
+    {
+        scheme: APP_PROTOCOL,
+        privileges: {
+            standard: true,
+            secure: true,
+            supportFetchAPI: true,
+            corsEnabled: true,
+        },
+    },
+]);
 let fallbackDesktopDeviceId = null;
 let bearerToken = null;
 if (!BASE_API_URL) {

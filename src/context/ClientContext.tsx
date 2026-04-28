@@ -39,12 +39,21 @@ export const ClientProvider = ({ children }: { children: React.ReactNode }) => {
   const [isHydrated, setIsHydrated] = useState(false);
 
   const hydrateClientState = useCallback(() => {
-    const snapshot = readAuthStorage();
-    setCorporateId(snapshot.corporateId);
-    setClientId(snapshot.clientId);
-    setClientData(snapshot.clientData);
-    setIsVerified(snapshot.isVerified);
-    setIsHydrated(true);
+    try {
+      const snapshot = readAuthStorage();
+      setCorporateId(snapshot.corporateId);
+      setClientId(snapshot.clientId);
+      setClientData(snapshot.clientData);
+      setIsVerified(snapshot.isVerified);
+    } catch (error) {
+      console.warn("Failed to hydrate auth storage.", error);
+      setCorporateId(null);
+      setClientId(null);
+      setClientData(null);
+      setIsVerified(false);
+    } finally {
+      setIsHydrated(true);
+    }
   }, []);
 
   useEffect(() => {

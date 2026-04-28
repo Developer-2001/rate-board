@@ -20,7 +20,9 @@ const RATE_BOARD_API_URL =
 const APP_PROTOCOL = "app";
 const APP_HOST = "-";
 const OUT_DIR = path.join(__dirname, "..", "out");
-const DEV_SERVER_URL = process.env.ELECTRON_DEV_SERVER_URL;
+const DEV_SERVER_URL = app.isPackaged
+  ? undefined
+  : process.env.ELECTRON_DEV_SERVER_URL;
 
 type DeviceStoreShape = {
   deviceId?: string;
@@ -34,6 +36,18 @@ type DeviceStoreAccess = {
 const deviceStore = new Store<DeviceStoreShape>({
   name: "rate-board-device",
 }) as unknown as DeviceStoreAccess;
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: APP_PROTOCOL,
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+    },
+  },
+]);
 
 let fallbackDesktopDeviceId: string | null = null;
 let bearerToken: string | null = null;
