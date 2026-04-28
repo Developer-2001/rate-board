@@ -39,7 +39,9 @@ let fallbackDesktopDeviceId: string | null = null;
 let bearerToken: string | null = null;
 
 if (!BASE_API_URL) {
-  throw new Error("NEXT_PUBLIC_BASE_API_URL is not available in the Electron main process.");
+  throw new Error(
+    "NEXT_PUBLIC_BASE_API_URL is not available in the Electron main process.",
+  );
 }
 
 function debugLog(message: string, payload?: unknown) {
@@ -61,7 +63,10 @@ function getStoredDesktopDeviceId() {
     return nextDeviceId;
   } catch (error) {
     fallbackDesktopDeviceId ??= uuidv4();
-    debugLog("Electron store unavailable, using in-memory fallback UUID.", error);
+    debugLog(
+      "Electron store unavailable, using in-memory fallback UUID.",
+      error,
+    );
     return fallbackDesktopDeviceId;
   }
 }
@@ -75,12 +80,18 @@ function getErrorMessage(payload: unknown, fallbackMessage: string) {
   return fallbackMessage;
 }
 
-async function fetchJson(url: string, init: RequestInit, fallbackMessage: string) {
+async function fetchJson(
+  url: string,
+  init: RequestInit,
+  fallbackMessage: string,
+) {
   const response = await fetch(url, init);
   const payload = await response.json().catch(() => null);
 
   if (!response.ok) {
-    const error = new Error(getErrorMessage(payload, fallbackMessage)) as Error & {
+    const error = new Error(
+      getErrorMessage(payload, fallbackMessage),
+    ) as Error & {
       status?: number;
     };
     error.status = response.status;
@@ -101,16 +112,19 @@ function getExpiryWarningMessage(clientData: { LicenseSupportDate: string }) {
   }
 
   const daysUntilExpiry = Math.ceil(
-    (licenseDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    (licenseDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
   );
   const actualExpiryDate = new Date(licenseDate);
   actualExpiryDate.setDate(licenseDate.getDate() + 1);
 
-  return `Your subscription will expire on ${actualExpiryDate.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  })} (${daysUntilExpiry} days remaining)`;
+  return `Your subscription will expire on ${actualExpiryDate.toLocaleDateString(
+    "en-GB",
+    {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    },
+  )} (${daysUntilExpiry} days remaining)`;
 }
 
 function validateClientLicense(clientData: {
@@ -119,7 +133,9 @@ function validateClientLicense(clientData: {
   LicenseSupportDate: string;
 }) {
   if (!clientData.ClientId) {
-    const error = new Error("The id does not exists") as Error & { status?: number };
+    const error = new Error("The id does not exists") as Error & {
+      status?: number;
+    };
     error.status = 400;
     throw error;
   }
@@ -148,7 +164,9 @@ function validateClientLicense(clientData: {
 
 function ensureBearerToken() {
   if (!bearerToken) {
-    const error = new Error("Bearer token not found.") as Error & { status?: number };
+    const error = new Error("Bearer token not found.") as Error & {
+      status?: number;
+    };
     error.status = 401;
     throw error;
   }
@@ -168,7 +186,9 @@ async function fetchBearerToken() {
   const token = (await response.text()).trim();
 
   if (!response.ok || !token) {
-    const error = new Error("Failed to fetch bearer token.") as Error & { status?: number };
+    const error = new Error("Failed to fetch bearer token.") as Error & {
+      status?: number;
+    };
     error.status = response.status || 502;
     throw error;
   }
@@ -243,79 +263,95 @@ ipcMain.handle("auth:fetchBearerToken", async () => {
   await fetchBearerToken();
 });
 
-ipcMain.handle("auth:fetchCorporateClientData", async (_event, corporateId: string) => {
-  const payload = await fetchJson(
-    `${BASE_API_URL}/login/corporateid/${encodeURIComponent(String(corporateId).trim())}`,
-    {
-      method: "GET",
+ipcMain.handle(
+  "auth:fetchCorporateClientData",
+  async (_event, corporateId: string) => {
+    const payload = await fetchJson(
+      `${BASE_API_URL}/login/corporateid/${encodeURIComponent(String(corporateId).trim())}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${ensureBearerToken()}`,
+          "Content-Type": "application/json",
+        },
+      },
+      "Failed to retrieve data from the server.",
+    );
+
+    validateClientLicense(
+      payload as {
+        ClientId?: string;
+        ServerIp?: string;
+        LicenseSupportDate: string;
+      },
+    );
+
+    return {
+      data: payload,
+      message: "Data retrieved successfully.",
+      warningMessage: getExpiryWarningMessage(
+        payload as { LicenseSupportDate: string },
+      ),
+    };
+  },
+);
+
+ipcMain.handle(
+  "auth:verifyDevice",
+  async (
+    _event,
+    params: {
+      clientId: string;
+      SysName: string;
+      fingerPrintId: string;
+    },
+  ) => {
+    const payload = await fetchJson(
+      `${BASE_API_URL}/login/device/${encodeURIComponent(params.clientId)}/${encodeURIComponent(
+        params.SysName,
+      )}/${encodeURIComponent(params.fingerPrintId)}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${ensureBearerToken()}`,
+          "Content-Type": "application/json",
+        },
+      },
+      "Failed to fetch device data.",
+    );
+
+    return {
+      data: payload,
+      message: "Device data retrieved successfully.",
+    };
+  },
+);
+
+ipcMain.handle(
+  "auth:registerDevice",
+  async (_event, payload: Record<string, unknown>) => {
+    const response = await fetch(`${BASE_API_URL}/login/register_device`, {
+      method: "POST",
       headers: {
         Authorization: `Bearer ${ensureBearerToken()}`,
         "Content-Type": "application/json",
       },
-    },
-    "Failed to retrieve data from the server."
-  );
+      body: JSON.stringify({ ...payload, device_type: "R" }),
+    });
 
-  validateClientLicense(payload as {
-    ClientId?: string;
-    ServerIp?: string;
-    LicenseSupportDate: string;
-  });
+    if (!response.ok) {
+      const message = (await response.text()) || "Failed to register device.";
+      const error = new Error(message) as Error & { status?: number };
+      error.status = response.status;
+      throw error;
+    }
 
-  return {
-    data: payload,
-    message: "Data retrieved successfully.",
-    warningMessage: getExpiryWarningMessage(payload as { LicenseSupportDate: string }),
-  };
-});
-
-ipcMain.handle("auth:verifyDevice", async (_event, params: {
-  clientId: string;
-  SysName: string;
-  fingerPrintId: string;
-}) => {
-  const payload = await fetchJson(
-    `${BASE_API_URL}/login/device/${encodeURIComponent(params.clientId)}/${encodeURIComponent(
-      params.SysName
-    )}/${encodeURIComponent(params.fingerPrintId)}`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${ensureBearerToken()}`,
-        "Content-Type": "application/json",
-      },
-    },
-    "Failed to fetch device data."
-  );
-
-  return {
-    data: payload,
-    message: "Device data retrieved successfully.",
-  };
-});
-
-ipcMain.handle("auth:registerDevice", async (_event, payload: Record<string, unknown>) => {
-  const response = await fetch(`${BASE_API_URL}/login/register_device`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${ensureBearerToken()}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ ...payload, device_type: "R" }),
-  });
-
-  if (!response.ok) {
-    const message = (await response.text()) || "Failed to register device.";
-    const error = new Error(message) as Error & { status?: number };
-    error.status = response.status;
-    throw error;
-  }
-
-  return {
-    success: true,
-    message: "Registered successfully.",
-  };
-});
+    return {
+      success: true,
+      message: "Registered successfully.",
+    };
+  },
+);
 
 ipcMain.handle("auth:logout", async () => {
   bearerToken = null;
@@ -331,7 +367,7 @@ ipcMain.handle("rate-board:fetch", async (_event, clientId: string) => {
       },
       cache: "no-store",
     },
-    "Failed to fetch rate board data."
+    "Failed to fetch rate board data.",
   );
 
   return {

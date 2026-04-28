@@ -138,7 +138,13 @@ function RegisterPage() {
 
   return (
     <Suspense fallback={<p>Loading...</p>}>
-      <div className="flex min-h-screen items-center justify-center bg-stone-950 px-4 py-8 text-stone-100 sm:px-6 lg:px-8">
+      <div
+        className="flex min-h-screen items-center justify-center bg-stone-950 px-4 py-8 text-stone-100 sm:px-6 lg:px-8"
+        style={{
+          paddingTop: "calc(2rem + env(safe-area-inset-top))",
+          paddingBottom: "calc(2rem + env(safe-area-inset-bottom))",
+        }}
+      >
         <section className="w-full max-w-6xl rounded-4xl border border-amber-500/20 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.16),rgba(28,25,23,0.98)_55%)] p-6 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
             <div className="max-w-2xl">

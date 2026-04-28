@@ -92,9 +92,13 @@ export default function RateBoardSettingsDrawer({
       />
 
       <aside
-        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l  border-amber-500/20 bg-stone-950/95 text-stone-100 shadow-2xl backdrop-blur-xl transition-transform duration-300 ${
+        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-amber-500/20 bg-stone-950/95 text-stone-100 shadow-2xl backdrop-blur-xl transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
+        style={{
+          paddingTop: "env(safe-area-inset-top)",
+          paddingBottom: "env(safe-area-inset-bottom)",
+        }}
       >
         <div className="flex items-center justify-between border-b border-amber-500/20 px-6 py-3">
           <div className="flex items-center gap-3">

@@ -81,10 +81,14 @@ const Alert: React.FC<AlertProps> = ({ title, message, onClose }) => {
 
   return (
     <div
-      className={`fixed top-24 right-4 z-9999 px-4 py-2 rounded-lg shadow-lg text-lg p-4 animate-slideIn border ${variantClasses[title]} ${onClose ? "cursor-pointer" : ""}`}
+      className={`fixed right-4 z-9999 px-4 py-2 rounded-lg shadow-lg text-lg p-4 animate-slideIn border ${variantClasses[title]} ${onClose ? "cursor-pointer" : ""}`}
       onClick={onClose}
       role="alert"
-      style={{ minWidth: 320, maxWidth: 400 }}
+      style={{
+        minWidth: 320,
+        maxWidth: 400,
+        top: "calc(1.5rem + env(safe-area-inset-top))",
+      }}
     >
       <div className="flex items-start gap-4">
         <div className="mt-1">{icons[title]}</div>

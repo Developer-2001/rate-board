@@ -28,13 +28,17 @@ function formatBoardDate(date: Date) {
     day: "2-digit",
     month: "long",
     year: "numeric",
-  }).format(date).toUpperCase();
+  })
+    .format(date)
+    .toUpperCase();
 }
 
 function formatBoardDay(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
     weekday: "long",
-  }).format(date).toUpperCase();
+  })
+    .format(date)
+    .toUpperCase();
 }
 
 function formatBoardTime(date: Date) {
@@ -42,7 +46,9 @@ function formatBoardTime(date: Date) {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
-  }).format(date).toUpperCase();
+  })
+    .format(date)
+    .toUpperCase();
 }
 
 function formatBoardSeconds(date: Date) {
@@ -76,7 +82,7 @@ export default function HomePage() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [themeId, setThemeId] = useState<RateBoardThemeId>(
-    DEFAULT_RATE_BOARD_THEME_ID
+    DEFAULT_RATE_BOARD_THEME_ID,
   );
   const { board, rates, loading, error, hasFreshUpdate, consecutiveFailures } =
     useRateBoard(clientData?.ClientId ?? null);
@@ -237,7 +243,9 @@ export default function HomePage() {
 
   if (isBootstrapping) {
     return (
-      <div className={`flex min-h-screen flex-col ${theme.appBg} text-stone-100`}>
+      <div
+        className={`flex min-h-screen flex-col ${theme.appBg} text-stone-100`}
+      >
         <main className="flex flex-1 items-center justify-center p-6">
           <div className="rounded-2xl border border-amber-500/20 bg-stone-900 px-8 py-6 text-center shadow-2xl">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-amber-500/30 border-t-amber-400" />
@@ -382,7 +390,9 @@ export default function HomePage() {
                       <div
                         key={item.id}
                         className={`grid min-h-0 grid-cols-[1.08fr_1fr_1fr] items-center px-2 sm:px-6 lg:px-6 ${
-                          item.metal === "Gold" ? theme.goldRow : theme.silverRow
+                          item.metal === "Gold"
+                            ? theme.goldRow
+                            : theme.silverRow
                         } ${index === rates.length - 1 ? "" : "border-b border-white/8"}`}
                         style={{
                           boxShadow:
@@ -415,25 +425,26 @@ export default function HomePage() {
                     className={`flex min-h-0 flex-1 items-center justify-center rounded-b-[22px] border-x border-b px-6 text-center ${theme.panelBorder} ${theme.tableShell}`}
                   >
                     <p className={`text-xl font-semibold ${theme.mutedText}`}>
-                      No gold or silver rates with non-zero sale and purchase values
-                      are available.
+                      No gold or silver rates with non-zero sale and purchase
+                      values are available.
                     </p>
                   </div>
                 )}
               </div>
-
-          
             </section>
           </main>
         </div>
       </div>
 
       <div
-        className={`fixed bottom-10 right-4 z-20 flex flex-col gap-2 transition-all duration-300 sm:bottom-6 sm:right-6 ${
+        className={`fixed right-4 z-20 flex flex-col gap-2 transition-all duration-300 sm:right-6 ${
           showFloatingButtons
             ? "translate-y-0 opacity-100"
             : "pointer-events-none translate-y-3 opacity-0"
         }`}
+        style={{
+          bottom: "calc(2.5rem + env(safe-area-inset-bottom))",
+        }}
       >
         <button
           type="button"
