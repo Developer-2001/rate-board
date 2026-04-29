@@ -16,58 +16,24 @@ type RateBoardSettingsDrawerProps = {
   isLoggingOut: boolean;
 };
 
-const themeCardClasses: Record<
-  RateBoardThemeId,
-  {
-    card: string;
-    title: string;
-    description: string;
-    selected: string;
-  }
-> = {
-  amber: {
-    card: "border-amber-500/20 bg-[#1c1917] hover:border-amber-300/35",
-    title: "text-amber-50",
-    description: "text-amber-100/70",
-    selected:
-      "border-amber-300 bg-[#281f0a] shadow-[0_0_0_1px_rgba(252,211,77,0.22)]",
-  },
-  emerald: {
-    card: "border-emerald-500/20 bg-[#0a1411] hover:border-emerald-300/35",
-    title: "text-emerald-50",
-    description: "text-emerald-100/70",
-    selected:
-      "border-emerald-300 bg-[#071c16] shadow-[0_0_0_1px_rgba(110,231,183,0.22)]",
-  },
-  ruby: {
-    card: "border-rose-500/20 bg-[#1f0c10] hover:border-rose-300/35",
-    title: "text-rose-50",
-    description: "text-rose-100/70",
-    selected:
-      "border-rose-300 bg-[#2d0b14] shadow-[0_0_0_1px_rgba(253,164,175,0.22)]",
-  },
-  graphite: {
-    card: "border-zinc-500/20 bg-zinc-950/50 hover:border-zinc-400/40 hover:bg-zinc-900/70",
-    title: "text-zinc-50",
-    description: "text-zinc-300",
-    selected:
-      "border-zinc-300/50 bg-[#101012] shadow-[0_0_0_1px_rgba(212,212,216,0.18)]",
-  },
-  pearl: {
-    card: "border-zinc-300 bg-zinc-50 hover:border-zinc-500/50 hover:bg-white",
-    title: "text-zinc-950",
-    description: "text-zinc-600",
-    selected:
-      "border-zinc-950/50 bg-white shadow-[0_0_0_1px_rgba(24,24,27,0.16)]",
-  },
-  arctic: {
-    card: "border-cyan-400/20 bg-[#0a1618] hover:border-cyan-300/35",
-    title: "text-cyan-50",
-    description: "text-cyan-100/70",
-    selected:
-      "border-cyan-300 bg-[#0a1f22] shadow-[0_0_0_1px_rgba(165,243,252,0.22)]",
-  },
-};
+const WHITE_THEME_IDS: RateBoardThemeId[] = [
+  "pearl",
+  "warmSand",
+  "blushRose",
+  "sageMist",
+  "softLavender",
+  "powderBlue",
+  "creamTerracotta",
+];
+
+const BLACK_THEME_IDS: RateBoardThemeId[] = [
+  "graphite",
+  "amber",
+  "emerald",
+  "ruby",
+  "arctic",
+  "navyRose",
+];
 
 export default function RateBoardSettingsDrawer({
   open,
@@ -80,6 +46,8 @@ export default function RateBoardSettingsDrawer({
   onLogout,
   isLoggingOut,
 }: RateBoardSettingsDrawerProps) {
+  const whiteThemes = themes.filter((t) => WHITE_THEME_IDS.includes(t.id));
+  const blackThemes = themes.filter((t) => BLACK_THEME_IDS.includes(t.id));
   return (
     <>
       <div
@@ -155,51 +123,113 @@ export default function RateBoardSettingsDrawer({
           </section>
 
           <section className="mt-6">
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-stone-400">
                 Themes
               </p>
               <p className="mt-2 text-sm text-stone-500">
                 The selected theme is saved on this device for future visits.
               </p>
+            </div> */}
+
+            {/* White Themes */}
+            <div className="mb-4">
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-stone-500">
+                White Themes
+              </h3>
+              <div className="grid gap-3 grid-cols-2">
+                {whiteThemes.map((theme) => {
+                  const isSelected = theme.id === selectedThemeId;
+
+                  return (
+                    <button
+                      key={theme.id}
+                      type="button"
+                      onClick={() => onThemeChange(theme.id)}
+                      className="relative cursor-pointer rounded-3xl border p-4 text-left transition hover:scale-[1.01]"
+                      style={{
+                        background: theme.cardBg,
+                        borderColor: isSelected ? theme.accent : theme.border,
+                        boxShadow: isSelected
+                          ? `0 0 0 1px ${theme.accent}55`
+                          : "none",
+                      }}
+                    >
+                      <div className="flex gap-2">
+                        {theme.preview.map((color) => (
+                          <span
+                            key={color}
+                            className="h-4 w-8 rounded-full"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                      <p
+                        className="mt-4 text-sm font-semibold uppercase tracking-[0.24em]"
+                        style={{ color: theme.text }}
+                      >
+                        {theme.name}
+                      </p>
+                      <p
+                        className="mt-2 text-sm leading-6"
+                        style={{ color: theme.textDim }}
+                      >
+                        {theme.description}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            <div className="grid gap-3 grid-cols-2">
-              {themes.map((theme) => {
-                const isSelected = theme.id === selectedThemeId;
-                const cardTheme = themeCardClasses[theme.id];
+            {/* Black Themes */}
+            <div>
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-stone-500">
+                Black Themes
+              </h3>
+              <div className="grid gap-3 grid-cols-2">
+                {blackThemes.map((theme) => {
+                  const isSelected = theme.id === selectedThemeId;
 
-                return (
-                  <button
-                    key={theme.id}
-                    type="button"
-                    onClick={() => onThemeChange(theme.id)}
-                    className={`relative rounded-3xl cursor-pointer border p-4 text-left transition ${
-                      isSelected ? cardTheme.selected : cardTheme.card
-                    }`}
-                  >
-                    <div className="flex gap-2">
-                      {theme.preview.map((color) => (
-                        <span
-                          key={color}
-                          className="h-4 w-8 rounded-full"
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                    <p
-                      className={`mt-4 text-sm font-semibold uppercase tracking-[0.24em] ${cardTheme.title}`}
+                  return (
+                    <button
+                      key={theme.id}
+                      type="button"
+                      onClick={() => onThemeChange(theme.id)}
+                      className="relative cursor-pointer rounded-3xl border p-4 text-left transition hover:scale-[1.01]"
+                      style={{
+                        background: theme.cardBg,
+                        borderColor: isSelected ? theme.accent : theme.border,
+                        boxShadow: isSelected
+                          ? `0 0 0 1px ${theme.accent}55`
+                          : "none",
+                      }}
                     >
-                      {theme.name}
-                    </p>
-                    <p
-                      className={`mt-2 text-sm leading-6 ${cardTheme.description}`}
-                    >
-                      {theme.description}
-                    </p>
-                  </button>
-                );
-              })}
+                      <div className="flex gap-2">
+                        {theme.preview.map((color) => (
+                          <span
+                            key={color}
+                            className="h-4 w-8 rounded-full"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                      <p
+                        className="mt-4 text-sm font-semibold uppercase tracking-[0.24em]"
+                        style={{ color: theme.text }}
+                      >
+                        {theme.name}
+                      </p>
+                      <p
+                        className="mt-2 text-sm leading-6"
+                        style={{ color: theme.textDim }}
+                      >
+                        {theme.description}
+                      </p>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </section>
         </div>

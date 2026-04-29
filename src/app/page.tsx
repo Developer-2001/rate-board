@@ -10,7 +10,9 @@ import RateBoardSkeleton from "@/components/RateBoardSkeleton";
 import { useClient } from "@/context/ClientContext";
 import useAuthBootstrap from "@/hooks/auth/useAuthBootstrap";
 import useDeviceId from "@/hooks/auth/useDeviceId";
-import useRateBoard from "@/hooks/useRateBoard";
+import useRateBoard, {
+  RATE_BOARD_POLL_INTERVAL_MS,
+} from "@/hooks/useRateBoard";
 import { logout } from "@/utils/authApi";
 import {
   CURRENT_RATE_BOARD_THEME_DEFAULT_VERSION,
@@ -53,9 +55,9 @@ function formatBoardTime(date: Date) {
     .toUpperCase();
 }
 
-function formatBoardSeconds(date: Date) {
+function formatBoardTimeWithSeconds(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
-    hour: "2-digit",
+    hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
     hour12: false,
@@ -66,6 +68,30 @@ function formatRate(value: number) {
   return new Intl.NumberFormat("en-IN", {
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+function getMetalDisplay(label: string, metal: "Gold" | "Silver") {
+  if (metal === "Gold") {
+    const karat = label
+      .replace(/gold/gi, "")
+      .trim()
+      .replace(/\s+/g, " ");
+
+    return {
+      title: karat || label,
+      suffix: "GOLD",
+    };
+  }
+
+  const silverLabel = label
+    .replace(/silver/gi, "")
+    .trim()
+    .replace(/\s+/g, " ");
+
+  return {
+    title: "SILVER",
+    suffix: silverLabel || "PURE",
+  };
 }
 
 export default function HomePage() {
@@ -95,6 +121,9 @@ export default function HomePage() {
   const boardTitle = board?.firm_name?.trim() || "Jewellers";
   const boardRootStyle = {
     "--rows": rowCount,
+    background: theme.bg,
+    color: theme.text,
+    fontFamily: theme.fontBody,
   } as CSSProperties;
 
   useEffect(() => {
@@ -202,7 +231,7 @@ export default function HomePage() {
       window.clearTimeout(timeoutId);
       timeoutId = window.setTimeout(() => {
         setShowFloatingButtons(false);
-      }, 5000);
+      }, 2000);
     };
 
     showButtons();
@@ -286,31 +315,40 @@ export default function HomePage() {
   return (
     <>
       <div
-        className={`relative h-screen overflow-hidden ${theme.appBg} text-stone-100`}
+        className="relative h-screen overflow-hidden"
         style={boardRootStyle}
       >
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 opacity-90">
-            <div className={`absolute inset-0 ${theme.surface}`} />
-          </div>
-        </div>
+        <div
+          className="pointer-events-none absolute -right-[10%] -top-[20%] h-[60%] w-[60%] rounded-full"
+          style={{
+            background: `radial-gradient(circle, ${theme.accent}14 0%, transparent 70%)`,
+          }}
+        />
 
         <div className="relative z-10 flex h-full flex-col">
-          <main className="mx-auto flex min-h-0 w-full max-w-480 flex-1">
+          <main className="mx-auto flex min-h-0 w-full max-w-[1920px] flex-1">
             <section
-              className={`relative flex min-h-0 w-full flex-col overflow-hidden rounded-md border px-3 py-3 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:px-4 sm:py-4 lg:px-8 lg:py-3 ${theme.panelBorder} ${theme.surface}`}
+              className="relative flex min-h-0 w-full flex-col overflow-hidden px-[clamp(1rem,4.6vw,3rem)] py-[clamp(1rem,6.6vh,2.5rem)]"
             >
-              <header className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-3 pb-3 sm:gap-4 sm:pb-5 lg:pb-2">
-                <div className="min-w-0 self-center">
+              <header className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-3">
+                <div
+                  className="min-w-0"
+                  style={{ minWidth: "clamp(7rem, 15vw, 15rem)" }}
+                >
                   <p
                     suppressHydrationWarning
-                    className={`text-[clamp(0.8rem,1.5vw,2rem)] font-extrabold uppercase tracking-[0.14em] ${theme.headingAccent}`}
+                    className="text-[clamp(0.68rem,1.28vw,1.45rem)] font-medium uppercase leading-none tracking-[0.15em]"
+                    style={{
+                      color: theme.text,
+                      fontFamily: theme.fontBody,
+                    }}
                   >
                     {formatBoardDate(now)}
                   </p>
                   <p
                     suppressHydrationWarning
-                    className={`text-[clamp(0.6rem,1.35vw,1.8rem)] font-semibold uppercase tracking-[0.12em] ${theme.mutedText}`}
+                    className="mt-0.5 text-[clamp(0.58rem,1.1vw,1.2rem)] uppercase tracking-[0.2em]"
+                    style={{ color: theme.textDim }}
                   >
                     {formatBoardDay(now)}
                   </p>
@@ -318,65 +356,91 @@ export default function HomePage() {
 
                 <div className="min-w-0 px-2 text-center">
                   <p
-                    className={`${theme.headingAccent} text-[clamp(0.6rem,1.65vw,1.5rem)] italic uppercase tracking-[0.16em]`}
-                    style={{ fontFamily: "var(--app-font-display)" }}
+                    className="text-[clamp(0.55rem,1.05vw,1.05rem)] font-semibold uppercase tracking-[0.35em]"
+                    style={{ color: theme.accent }}
                   >
                     {boardTitle}
                   </p>
                   <h1
-                    className={`${theme.headingAccent} text-[clamp(0.8rem,7vw,4rem)] font-bold uppercase leading-[0.88] tracking-[-0.04em] drop-shadow-[0_0_28px_rgba(251,191,36,0.22)]`}
-                    style={{ fontFamily: "var(--app-font-display)" }}
+                    className="mt-0.5 whitespace-nowrap text-[clamp(1.4rem,3.35vw,4.25rem)] font-bold uppercase leading-none tracking-[0.04em]"
+                    style={{
+                      color: theme.text,
+                      fontFamily: theme.fontHead,
+                    }}
                   >
                     Today&apos;s Rate
                   </h1>
-                  <div className="mt-1 flex items-center justify-center gap-3">
-                    <span
-                      className={`h-2.5 w-2.5 rounded-full ${
-                        hasFreshUpdate
-                          ? "animate-pulse bg-emerald-400 shadow-[0_0_18px_rgba(52,211,153,0.85)]"
-                          : "bg-emerald-500 shadow-[0_0_14px_rgba(16,185,129,0.6)]"
-                      }`}
-                    />
-                    <span
-                      className={`text-[clamp(0.8rem,1.2vw,1.4rem)] font-extrabold uppercase tracking-[0.35em] ${theme.liveText}`}
-                    >
-                      Live
-                    </span>
+                  <div className="mt-2 flex items-center justify-center gap-3">
+                     <span
+                        className={`relative z-1 h-[clamp(0.38rem,0.75vw,0.55rem)] w-[clamp(0.38rem,0.75vw,0.55rem)] rounded-full ${
+                          hasFreshUpdate
+                            ? "animate-pulse"
+                            : "animate-[ratePulse_2s_ease-in-out_infinite]"
+                        }`}
+                        style={{
+                          background: theme.liveDot || "#e04040",
+                          boxShadow: `0 0 8px ${theme.liveDot || "#e04040"}aa`,
+                        }}
+                      />
+                      <span
+                        className="relative z-1 text-[clamp(0.48rem,0.95vw,0.9rem)] font-semibold uppercase tracking-[0.3em]"
+                      >
+                        Live
+                      </span>
                   </div>
                 </div>
 
-                <div className="min-w-0 self-center text-right">
+                <div className="min-w-0 text-right">
                   <p
                     suppressHydrationWarning
-                    className={`${theme.headingAccent} text-[clamp(0.8rem,2.35vw,2rem)] font-extrabold tracking-[0.04em]`}
+                    className="text-[clamp(0.68rem,1.28vw,1.45rem)] font-medium uppercase leading-none tracking-[0.15em]"
+                    style={{
+                      color: theme.text,
+                      fontFamily: theme.fontBody,
+                    }}
                   >
                     {formatBoardTime(now)}
                   </p>
                   <p
                     suppressHydrationWarning
-                    className={`text-[clamp(0.6rem,1.55vw,1.8rem)] font-semibold tracking-[0.12em] ${theme.mutedText}`}
+                    className="mt-[clamp(0.18rem,0.55vh,0.45rem)] pr-[0.12em] text-[clamp(0.72rem,1.35vw,1.45rem)] leading-none tracking-[0.15em] tabular-nums"
+                    style={{
+                      color: theme.textDim,
+                      fontFamily: theme.fontBody,
+                    }}
                   >
-                    {formatBoardSeconds(now)}
+                    {formatBoardTimeWithSeconds(now)}
                   </p>
                 </div>
               </header>
 
+              <div
+                className="my-[clamp(0.9rem,2.8vh,2rem)] h-px shrink-0"
+                style={{
+                  background: `linear-gradient(90deg, transparent, ${theme.accent}66, transparent)`,
+                }}
+              />
+
               <div className="flex min-h-0 flex-1 flex-col">
                 <div
-                  className={`grid h-[clamp(3.25rem,6vh,5.5rem)] shrink-0 grid-cols-[1.08fr_1fr_1fr] items-center rounded-t-[22px] border px-4 sm:px-6 lg:px-10 ${theme.panelBorder} ${theme.tableHeader}`}
+                  className="grid shrink-0 grid-cols-[1.4fr_1fr_1fr] items-center rounded-[clamp(0.35rem,0.8vw,0.5rem)] px-[clamp(1rem,2.3vw,1.5rem)] py-[clamp(0.62rem,1.75vh,0.85rem)]"
+                  style={{ background: theme.headerBg }}
                 >
                   <div
-                    className={`text-left text-[clamp(0.95rem,1.5vw,2rem)] font-extrabold uppercase tracking-[0.32em] ${theme.tableHeaderText}`}
+                    className="text-left text-[clamp(0.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
+                    style={{ color: theme.accent }}
                   >
                     Metal
                   </div>
                   <div
-                    className={`text-center text-[clamp(0.95rem,1.5vw,2rem)] font-extrabold uppercase tracking-[0.32em] ${theme.tableHeaderText}`}
+                    className="text-right text-[clamp(0.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
+                    style={{ color: theme.accent }}
                   >
                     Sale
                   </div>
                   <div
-                    className={`text-center text-[clamp(0.95rem,1.5vw,2rem)] font-extrabold uppercase tracking-[0.32em] ${theme.tableHeaderText}`}
+                    className="text-right text-[clamp(0.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
+                    style={{ color: theme.accent }}
                   >
                     Purchase
                   </div>
@@ -384,56 +448,89 @@ export default function HomePage() {
 
                 {rates.length > 0 ? (
                   <div
-                    className={`grid min-h-0 flex-1 overflow-hidden rounded-b-[22px] border-x border-b ${theme.panelBorder} ${theme.tableShell}`}
-                    style={{
-                      gridTemplateRows: `repeat(${rowCount}, minmax(0, 1fr))`,
-                    }}
+                    className="mt-1 flex min-h-0 flex-1 flex-col gap-[clamp(0.08rem,0.35vh,0.18rem)] overflow-hidden"
                   >
-                    {rates.map((item, index) => (
-                      <div
-                        key={item.id}
-                        className={`grid min-h-0 grid-cols-[1.08fr_1fr_1fr] items-center px-2 sm:px-6 lg:px-6 ${
-                          item.metal === "Gold"
-                            ? theme.goldRow
-                            : theme.silverRow
-                        } ${index === rates.length - 1 ? "" : "border-b border-white/8"}`}
-                        style={{
-                          boxShadow:
-                            index % 2 === 0
-                              ? "inset 0 1px 0 rgba(255,255,255,0.03), inset 0 -1px 0 rgba(0,0,0,0.18)"
-                              : "inset 0 -1px 0 rgba(0,0,0,0.18)",
-                        }}
-                      >
+                    {rates.map((item, index) => {
+                      const metalDisplay = getMetalDisplay(item.label, item.metal);
+                      const isSilver = item.metal === "Silver";
+                      const startsSilver =
+                        isSilver && rates[index - 1]?.metal !== "Silver";
+
+                      return (
                         <div
-                          className="truncate pr-4 text-left text-[clamp(1.4rem,min(calc(62vh/var(--rows)),4.8vw),5.4rem)] font-extrabold uppercase leading-none tracking-[0.01em] text-inherit"
-                          title={item.label}
+                          key={item.id}
+                          className="grid min-h-0 grid-cols-[1.4fr_1fr_1fr] items-center rounded-[clamp(0.25rem,0.6vw,0.4rem)] px-[clamp(1rem,2.3vw,1.5rem)] py-[clamp(0.7rem,min(calc(48vh/var(--rows)),2.3vw),1.15rem)]"
+                          style={{
+                            background: index % 2 === 0 ? theme.rowAlt : "transparent",
+                            marginTop: startsSilver
+                              ? "clamp(0.3rem, 1.2vh, 0.65rem)"
+                              : undefined,
+                            boxShadow: startsSilver
+                              ? `0 -1px 0 ${theme.border}`
+                              : undefined,
+                          }}
                         >
-                          {item.label}
+                          <div
+                            className="min-w-0 truncate pr-4 text-left leading-none"
+                            title={item.label}
+                          >
+                            <span
+                              className="align-baseline text-[clamp(1.12rem,min(calc(44vh/var(--rows)),2.4vw),2.65rem)] font-bold uppercase tracking-[0.02em]"
+                              style={{
+                                color: theme.text,
+                                fontFamily: theme.fontBody,
+                              }}
+                            >
+                              {metalDisplay.title}
+                            </span>
+                            <span
+                              className="ml-2 align-baseline text-[clamp(0.62rem,1.15vw,1.15rem)] font-normal uppercase tracking-[0.06em]"
+                              style={{
+                                color: isSilver
+                                  ? theme.textDim
+                                  : theme.goldLabel || theme.textDim,
+                                fontFamily: theme.fontBody,
+                              }}
+                            >
+                              {metalDisplay.suffix}
+                            </span>
+                          </div>
+                          <div
+                            className="text-right text-[clamp(1.12rem,min(calc(44vh/var(--rows)),2.35vw),2.65rem)] font-semibold leading-none tabular-nums"
+                            style={{
+                              color: theme.text,
+                            }}
+                          >
+                            ₹{formatRate(item.saleRate)}
+                          </div>
+                          <div
+                            className="text-right text-[clamp(1.12rem,min(calc(44vh/var(--rows)),2.35vw),2.65rem)] font-semibold leading-none tabular-nums"
+                            style={{
+                              color: theme.text,
+                            }}
+                          >
+                            ₹{formatRate(item.purchaseRate)}
+                          </div>
                         </div>
-                        <div
-                          className={`text-center text-[clamp(1.45rem,min(calc(66vh/var(--rows)),5vw),5.5rem)] font-extrabold leading-none tracking-[-0.03em] tabular-nums ${theme.primaryValue}`}
-                        >
-                          {formatRate(item.saleRate)}
-                        </div>
-                        <div
-                          className={`text-center text-[clamp(1.45rem,min(calc(66vh/var(--rows)),5vw),5.5rem)] font-extrabold leading-none tracking-[-0.03em] tabular-nums ${theme.secondaryValue}`}
-                        >
-                          {formatRate(item.purchaseRate)}
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 ) : (
                   <div
-                    className={`flex min-h-0 flex-1 items-center justify-center rounded-b-[22px] border-x border-b px-6 text-center ${theme.panelBorder} ${theme.tableShell}`}
+                    className="flex min-h-0 flex-1 items-center justify-center rounded-md px-6 text-center"
+                    style={{
+                      background: theme.rowAlt,
+                      color: theme.textDim,
+                    }}
                   >
-                    <p className={`text-xl font-semibold ${theme.mutedText}`}>
+                    <p className="text-xl font-semibold">
                       No gold or silver rates with non-zero sale and purchase
                       values are available.
                     </p>
                   </div>
                 )}
               </div>
+
             </section>
           </main>
         </div>

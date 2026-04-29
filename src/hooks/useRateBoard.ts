@@ -14,7 +14,7 @@ type UseRateBoardResult = {
   consecutiveFailures: number;
 };
 
-const POLL_INTERVAL_MS = 15000;
+export const RATE_BOARD_POLL_INTERVAL_MS = 2 * 60 * 1000;
 const FRESH_UPDATE_MS = 6000;
 
 function normalizeMetalName(value: string) {
@@ -156,7 +156,7 @@ export default function useRateBoard(clientId: string | null): UseRateBoardResul
     fetchBoard(true);
     const intervalId = window.setInterval(() => {
       fetchBoard(false);
-    }, POLL_INTERVAL_MS);
+    }, RATE_BOARD_POLL_INTERVAL_MS);
 
     return () => {
       isActive = false;
