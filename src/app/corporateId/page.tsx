@@ -58,7 +58,7 @@ export default function CorporateIdPage() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-stone-950 text-stone-100">
+    <div className="flex min-h-screen flex-col bg-[#0a0a0b] text-stone-100">
       <Header />
       <main className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
         <div className="w-full max-w-6xl">

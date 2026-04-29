@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 
 interface ContactSupportProps {
   open: boolean;
@@ -105,25 +106,25 @@ export default function ContactSupport({
     }
   };
 
-  return (
+  const modal = (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-2 backdrop-blur-sm">
-      <div className="relative max-h-[90vh] w-full max-w-md rounded-2xl border border-slate-700/50 bg-slate-800/95 shadow-2xl">
+      <div className="relative max-h-[90vh] w-full max-w-md rounded-2xl border border-zinc-400/20 bg-[#101012] shadow-2xl">
         <button
           type="button"
-          className="group absolute right-4 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-slate-600/50 bg-slate-700/80 transition-all duration-200 hover:bg-slate-600/80"
+          className="group absolute right-4 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-500/30 bg-zinc-900/80 transition-all duration-200 hover:bg-zinc-800"
           onClick={() => onOpenChange(false)}
         >
-          <CloseIcon className="h-5 w-5 text-slate-300 group-hover:text-white" />
+          <CloseIcon className="h-5 w-5 text-zinc-300 group-hover:text-white" />
         </button>
 
         <div className="px-4 pb-6 pt-4 text-center sm:px-6">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl border border-slate-600/50 bg-linear-to-br from-blue-500/30 to-purple-600/30 shadow-lg">
-            <SupportIcon className="h-10 w-10 text-blue-300" />
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl border border-zinc-500/30 bg-zinc-900 shadow-lg">
+            <SupportIcon className="h-10 w-10 text-zinc-200" />
           </div>
-          <h2 className="mb-2 text-xl font-bold text-slate-100 sm:text-2xl">
+          <h2 className="mb-2 text-xl font-bold text-zinc-100 sm:text-2xl">
             Contact Support
           </h2>
-          <p className="text-sm text-slate-300 sm:text-base">
+          <p className="text-sm text-zinc-300 sm:text-base">
             We&apos;re here to help you anytime!
           </p>
         </div>
@@ -132,15 +133,15 @@ export default function ContactSupport({
           <button
             type="button"
             onClick={() => copyToClipboard("7498242199", "phone")}
-            className="flex w-full items-center justify-between rounded-xl border border-slate-600/50 bg-slate-700/50 p-4 text-left transition-all duration-200 hover:border-slate-500/60 hover:bg-slate-600/60"
+            className="flex w-full items-center justify-between rounded-xl border border-zinc-500/20 bg-zinc-950/50 p-4 text-left transition-all duration-200 hover:border-zinc-400/40 hover:bg-zinc-900/70"
           >
             <div className="flex min-w-0 flex-1 items-center space-x-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-blue-400/30 bg-linear-to-br from-blue-500/40 to-blue-600/40 shadow-lg">
-                <PhoneIcon className="h-7 w-7 text-blue-200" />
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-zinc-400/25 bg-zinc-900 shadow-lg">
+                <PhoneIcon className="h-7 w-7 text-zinc-200" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-slate-400 sm:text-sm">Phone</p>
-                <p className="break-all text-base font-semibold text-slate-100 sm:text-lg">
+                <p className="text-xs font-medium text-zinc-400 sm:text-sm">Phone</p>
+                <p className="break-all text-base font-semibold text-zinc-100 sm:text-lg">
                   7498242199
                 </p>
               </div>
@@ -152,7 +153,7 @@ export default function ContactSupport({
                   <span className="hidden text-xs font-medium sm:inline">Copied!</span>
                 </div>
               ) : (
-                <CopyIcon className="h-4 w-4 text-slate-400 transition-colors group-hover:text-blue-300" />
+                <CopyIcon className="h-4 w-4 text-zinc-400 transition-colors group-hover:text-white" />
               )}
             </div>
           </button>
@@ -160,15 +161,15 @@ export default function ContactSupport({
           <button
             type="button"
             onClick={() => copyToClipboard("info@parasinfotech.co.in", "email")}
-            className="flex w-full items-center justify-between rounded-xl border border-slate-600/50 bg-slate-700/50 p-4 text-left transition-all duration-200 hover:border-slate-500/60 hover:bg-slate-600/60"
+            className="flex w-full items-center justify-between rounded-xl border border-zinc-500/20 bg-zinc-950/50 p-4 text-left transition-all duration-200 hover:border-zinc-400/40 hover:bg-zinc-900/70"
           >
             <div className="flex min-w-0 flex-1 items-center space-x-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-purple-400/30 bg-linear-to-br from-purple-500/40 to-purple-600/40 shadow-lg">
-                <MailIcon className="h-7 w-7 text-purple-200" />
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-zinc-400/25 bg-zinc-900 shadow-lg">
+                <MailIcon className="h-7 w-7 text-zinc-200" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-xs font-medium text-slate-400 sm:text-sm">Email</p>
-                <p className="break-all text-base font-semibold text-slate-100 sm:text-lg">
+                <p className="text-xs font-medium text-zinc-400 sm:text-sm">Email</p>
+                <p className="break-all text-base font-semibold text-zinc-100 sm:text-lg">
                   info@parasinfotech.co.in
                 </p>
               </div>
@@ -180,7 +181,7 @@ export default function ContactSupport({
                   <span className="hidden text-xs font-medium sm:inline">Copied!</span>
                 </div>
               ) : (
-                <CopyIcon className="h-4 w-4 text-slate-400" />
+                <CopyIcon className="h-4 w-4 text-zinc-400" />
               )}
             </div>
           </button>
@@ -188,14 +189,14 @@ export default function ContactSupport({
           <div className="mt-6 flex flex-col space-y-2 sm:flex-row sm:space-x-3 sm:space-y-0">
             <a
               href="tel:7498242199"
-              className="flex flex-1 items-center justify-center space-x-2 rounded-xl border border-blue-500/30 bg-linear-to-r from-blue-600 to-blue-700 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:from-blue-500 hover:to-blue-600 sm:text-base"
+              className="flex flex-1 items-center justify-center space-x-2 rounded-xl border border-zinc-300/20 bg-zinc-200 px-4 py-3 text-sm font-medium text-zinc-950 transition-all duration-200 hover:bg-white sm:text-base"
             >
               <PhoneIcon className="h-4 w-4" />
               <span>Call Now</span>
             </a>
             <a
               href="mailto:info@parasinfotech.co.in"
-              className="flex flex-1 items-center justify-center space-x-2 rounded-xl border border-purple-500/30 bg-linear-to-r from-purple-600 to-purple-700 px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:from-purple-500 hover:to-purple-600 sm:text-base"
+              className="flex flex-1 items-center justify-center space-x-2 rounded-xl border border-zinc-500/30 bg-zinc-900 px-4 py-3 text-sm font-medium text-zinc-100 transition-all duration-200 hover:bg-zinc-800 sm:text-base"
             >
               <MailIcon className="h-4 w-4" />
               <span>Email</span>
@@ -203,12 +204,18 @@ export default function ContactSupport({
           </div>
         </div>
 
-        <div className="rounded-b-2xl border-t border-slate-600/50 bg-slate-700/30 px-4 py-4 text-center sm:px-6">
-          <p className="text-xs text-slate-300 sm:text-sm">
+        <div className="rounded-b-2xl border-t border-zinc-500/20 bg-zinc-950/50 px-4 py-4 text-center sm:px-6">
+          <p className="text-xs text-zinc-300 sm:text-sm">
             We&apos;ll get back to you as soon as possible
           </p>
         </div>
       </div>
     </div>
   );
+
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(modal, document.body);
 }

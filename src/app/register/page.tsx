@@ -125,13 +125,13 @@ function RegisterPage() {
     }
   };
 
-  const classNameButton = `flex min-h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-700 px-5 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-stone-950 shadow-[0_16px_40px_rgba(251,191,36,0.2)] transition-all ${
+  const classNameButton = `flex min-h-[52px] w-full items-center justify-center rounded-2xl border border-zinc-300/20 bg-zinc-200 px-5 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-zinc-950 shadow-[0_16px_40px_rgba(0,0,0,0.24)] transition-all ${
     isLoading
       ? "cursor-wait opacity-70"
-      : "hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(251,191,36,0.28)]"
+      : "hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_20px_45px_rgba(0,0,0,0.32)]"
   }`;
 
-  const themedInputClass = `w-full rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-base text-white outline-none transition-all duration-300 placeholder:text-stone-500 focus:border-amber-400/60 focus:bg-white/8 focus:ring-2 focus:ring-amber-400/20 ${
+  const themedInputClass = `w-full rounded-2xl border border-zinc-500/20 bg-zinc-950/50 px-4 py-3 text-base text-white outline-none transition-all duration-300 placeholder:text-zinc-500 focus:border-zinc-300/60 focus:bg-zinc-950/70 focus:ring-2 focus:ring-zinc-300/15 ${
     isLoading ? "cursor-not-allowed opacity-70" : "hover:border-white/20"
   }`;
   const isDeviceReady = Boolean(deviceId);
@@ -139,16 +139,16 @@ function RegisterPage() {
   return (
     <Suspense fallback={<p>Loading...</p>}>
       <div
-        className="flex min-h-screen items-center justify-center bg-stone-950 px-4 py-8 text-stone-100 sm:px-6 lg:px-8"
+        className="flex min-h-screen items-center justify-center bg-[#0a0a0b] px-4 py-8 text-stone-100 sm:px-6 lg:px-8"
         style={{
           paddingTop: "calc(2rem + env(safe-area-inset-top))",
           paddingBottom: "calc(2rem + env(safe-area-inset-bottom))",
         }}
       >
-        <section className="w-full max-w-6xl rounded-4xl border border-amber-500/20 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.16),rgba(28,25,23,0.98)_55%)] p-6 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10">
+        <section className="w-full max-w-6xl rounded-4xl border border-zinc-400/20 bg-[#101012] p-6 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
             <div className="max-w-2xl">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-amber-300">
+              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-zinc-300">
                 Rate Board
               </p>
               <h2 className="text-3xl font-semibold text-white sm:text-4xl">
@@ -248,7 +248,7 @@ function RegisterPage() {
                     </span>
                   </p>
                   {!isDeviceReady && (
-                    <p className="mt-2 text-amber-300">
+                    <p className="mt-2 text-zinc-300">
                       {isDeviceIdLoading ? "Preparing device ID..." : "Waiting for device ID..."}
                     </p>
                   )}
@@ -261,7 +261,7 @@ function RegisterPage() {
                     disabled={isLoading || !clientData || !isDeviceReady}
                   >
                     {isLoading ? (
-                      <span className="flex items-center gap-2 text-stone-950">
+                      <span className="flex items-center gap-2 text-zinc-950">
                         <svg
                           className="h-5 w-5 animate-spin"
                           viewBox="0 0 24 24"

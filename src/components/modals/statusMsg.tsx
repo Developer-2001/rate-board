@@ -31,21 +31,21 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, heading, message }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative flex w-full max-w-md scale-100 flex-col items-center rounded-2xl bg-white p-8 text-center shadow-2xl transition-transform"
+        className="relative flex w-full max-w-md scale-100 flex-col items-center rounded-2xl border border-zinc-400/20 bg-[#101012] p-8 text-center text-zinc-100 shadow-2xl transition-transform"
         onClick={(event) => event.stopPropagation()}
       >
-        <h2 className="rounded-full border-2 border-gray-500 px-4 py-2 text-2xl font-bold text-red-400">
+        <h2 className="rounded-full border border-zinc-500/30 bg-zinc-950/60 px-4 py-2 text-2xl font-bold text-white">
           {heading}
         </h2>
-        <p className="mt-4 text-gray-700">{message}</p>
+        <p className="mt-4 text-zinc-300">{message}</p>
         <button
           type="button"
           onClick={onClose}
-          className="mt-6 rounded-lg bg-gray-500 px-6 py-2 text-white transition hover:bg-gray-600"
+          className="mt-6 rounded-lg border border-zinc-300/20 bg-zinc-200 px-6 py-2 font-medium text-zinc-950 transition hover:bg-white"
         >
           Close
         </button>

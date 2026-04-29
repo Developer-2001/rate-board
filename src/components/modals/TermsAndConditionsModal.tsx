@@ -12,15 +12,15 @@ export default function TermsAndConditionsModal({ isOpen, onClose }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-      <div className="bg-white rounded-xl shadow-2xl p-6 w-11/12 md:w-3/4 lg:w-1/2 max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0 animate-scale-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-11/12 overflow-y-auto rounded-2xl border border-zinc-400/20 bg-[#101012] p-6 text-zinc-100 shadow-2xl transition-all duration-300 md:w-3/4 lg:w-1/2">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-2xl font-bold text-white">
             Terms and Conditions
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-800 transition-colors"
+            className="rounded-xl border border-zinc-500/30 bg-zinc-900/80 p-2 text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-white"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +39,7 @@ export default function TermsAndConditionsModal({ isOpen, onClose }: Props) {
           </button>
         </div>
 
-        <div className="text-gray-700 space-y-4 text-sm leading-relaxed">
+        <div className="space-y-4 text-sm leading-relaxed text-zinc-300">
           <p>
             1. Acceptance of Terms: By accessing and using this
             administration portal, you accept and agree to be bound by the terms

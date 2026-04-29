@@ -19,23 +19,23 @@ export default function ClientLoginForm({
   loading,
   setShowTerms,
 }: Props) {
-  const inputClass = `w-full rounded-2xl border border-white/10 bg-white/6 px-4 py-3 text-base text-white outline-none transition-all duration-300 placeholder:text-stone-500 focus:border-amber-400/60 focus:bg-white/8 focus:ring-2 focus:ring-amber-400/20 ${
+  const inputClass = `w-full rounded-2xl border border-zinc-500/20 bg-zinc-950/50 px-4 py-3 text-base text-white outline-none transition-all duration-300 placeholder:text-zinc-500 focus:border-zinc-300/60 focus:bg-zinc-950/70 focus:ring-2 focus:ring-zinc-300/15 ${
     isLoading ? "cursor-not-allowed opacity-70" : "hover:border-white/20"
   }`;
 
-  const buttonClass = `flex min-h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-r from-amber-400 via-amber-500 to-amber-700 px-5 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-stone-950 shadow-[0_16px_40px_rgba(251,191,36,0.2)] transition-all duration-300 ${
+  const buttonClass = `flex min-h-[52px] w-full items-center justify-center rounded-2xl border border-zinc-300/20 bg-zinc-200 px-5 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-zinc-950 shadow-[0_16px_40px_rgba(0,0,0,0.24)] transition-all duration-300 ${
     isLoading || loading
       ? "cursor-wait opacity-70"
-      : "hover:-translate-y-0.5 hover:shadow-[0_20px_45px_rgba(251,191,36,0.28)]"
+      : "hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_20px_45px_rgba(0,0,0,0.32)]"
   }`;
 
   return (
-    <section className="relative w-full rounded-4xl border border-amber-500/20 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.16),rgba(28,25,23,0.98)_55%)] p-6 text-stone-100 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10">
+    <section className="relative w-full rounded-4xl border border-zinc-400/20 bg-[#101012] p-6 text-stone-100 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10">
       {loading && (
         <div className="absolute inset-0 z-10 flex items-center justify-center rounded-4xl bg-stone-950/70 backdrop-blur-sm">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-amber-500/30 border-t-amber-400" />
-            <p className="text-xs uppercase tracking-[0.35em] text-amber-300">
+            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-zinc-500/30 border-t-zinc-200" />
+            <p className="text-xs uppercase tracking-[0.35em] text-zinc-300">
               Preparing session
             </p>
           </div>
@@ -44,7 +44,7 @@ export default function ClientLoginForm({
 
       <div className="grid gap-8 lg:grid-cols-[1.15fr_0.95fr] lg:items-center">
         <div className="max-w-2xl">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-amber-300">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-zinc-300">
             Rate Board
           </p>
           <h2 className="text-3xl font-semibold text-white sm:text-4xl">
@@ -115,7 +115,7 @@ export default function ClientLoginForm({
             By proceeding, you agree to our{" "}
             <button
               type="button"
-              className="text-amber-300 underline underline-offset-4 transition-colors hover:text-amber-200"
+              className="text-zinc-200 underline underline-offset-4 transition-colors hover:text-white"
               onClick={() => setShowTerms(true)}
             >
               terms
@@ -123,7 +123,7 @@ export default function ClientLoginForm({
             and{" "}
             <button
               type="button"
-              className="text-amber-300 underline underline-offset-4 transition-colors hover:text-amber-200"
+              className="text-zinc-200 underline underline-offset-4 transition-colors hover:text-white"
               onClick={() => setShowTerms(true)}
             >
               conditions

@@ -7,10 +7,17 @@ interface AlertProps {
 }
 
 const variantClasses = {
-  success: "border-green-500 bg-green-100 text-green-800",
-  error: "border-red-500 bg-red-100 text-red-800",
-  warning: "border-yellow-500 bg-yellow-100 text-yellow-800",
-  info: "border-blue-500 bg-blue-100 text-blue-800",
+  success: "border-emerald-400/30 bg-[#101012] text-zinc-100",
+  error: "border-rose-400/35 bg-[#101012] text-zinc-100",
+  warning: "border-amber-300/35 bg-[#101012] text-zinc-100",
+  info: "border-zinc-300/30 bg-[#101012] text-zinc-100",
+};
+
+const titleClasses = {
+  success: "text-emerald-300",
+  error: "text-rose-300",
+  warning: "text-amber-200",
+  info: "text-zinc-200",
 };
 
 const icons = {
@@ -81,7 +88,7 @@ const Alert: React.FC<AlertProps> = ({ title, message, onClose }) => {
 
   return (
     <div
-      className={`fixed right-4 z-9999 px-4 py-2 rounded-lg shadow-lg text-lg p-4 animate-slideIn border ${variantClasses[title]} ${onClose ? "cursor-pointer" : ""}`}
+      className={`fixed right-4 z-9999 rounded-lg border p-4 text-lg shadow-[0_24px_70px_rgba(0,0,0,0.42)] animate-slideIn ${variantClasses[title]} ${onClose ? "cursor-pointer" : ""}`}
       onClick={onClose}
       role="alert"
       style={{
@@ -93,8 +100,8 @@ const Alert: React.FC<AlertProps> = ({ title, message, onClose }) => {
       <div className="flex items-start gap-4">
         <div className="mt-1">{icons[title]}</div>
         <div>
-          <h4 className="mb-1 text-base font-bold capitalize">{title}</h4>
-          <p className="text-sm">{message}</p>
+          <h4 className={`mb-1 text-base font-bold capitalize ${titleClasses[title]}`}>{title}</h4>
+          <p className="text-sm text-zinc-300">{message}</p>
         </div>
       </div>
     </div>

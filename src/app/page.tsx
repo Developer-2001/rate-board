@@ -13,9 +13,11 @@ import useDeviceId from "@/hooks/auth/useDeviceId";
 import useRateBoard from "@/hooks/useRateBoard";
 import { logout } from "@/utils/authApi";
 import {
+  CURRENT_RATE_BOARD_THEME_DEFAULT_VERSION,
   DEFAULT_RATE_BOARD_THEME_ID,
   getStoredRateBoardThemeId,
   RATE_BOARD_THEMES,
+  RATE_BOARD_THEME_DEFAULT_VERSION_STORAGE_KEY,
   RATE_BOARD_THEME_STORAGE_KEY,
   type RateBoardThemeId,
 } from "@/utils/rateBoardTheme";
@@ -224,6 +226,10 @@ export default function HomePage() {
   const handleThemeChange = (nextThemeId: RateBoardThemeId) => {
     setThemeId(nextThemeId);
     window.localStorage.setItem(RATE_BOARD_THEME_STORAGE_KEY, nextThemeId);
+    window.localStorage.setItem(
+      RATE_BOARD_THEME_DEFAULT_VERSION_STORAGE_KEY,
+      CURRENT_RATE_BOARD_THEME_DEFAULT_VERSION,
+    );
   };
 
   const handleLogout = async () => {
@@ -286,9 +292,6 @@ export default function HomePage() {
         <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 opacity-90">
             <div className={`absolute inset-0 ${theme.surface}`} />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_38%)]" />
-            <div className="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.18),transparent_68%)]" />
-            <div className="absolute inset-x-0 bottom-0 h-40 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_72%)]" />
           </div>
         </div>
 
@@ -301,7 +304,7 @@ export default function HomePage() {
                 <div className="min-w-0 self-center">
                   <p
                     suppressHydrationWarning
-                    className="text-[clamp(0.8rem,1.5vw,2rem)] font-extrabold uppercase tracking-[0.14em] text-white"
+                    className={`text-[clamp(0.8rem,1.5vw,2rem)] font-extrabold uppercase tracking-[0.14em] ${theme.headingAccent}`}
                   >
                     {formatBoardDate(now)}
                   </p>

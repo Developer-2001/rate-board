@@ -22,9 +22,6 @@ export default function RateBoardSkeleton({
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 opacity-90">
           <div className={`absolute inset-0 ${theme.surface}`} />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_38%)]" />
-          <div className="absolute inset-x-0 top-0 h-48 bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.16),transparent_68%)]" />
-          <div className="absolute inset-x-0 bottom-0 h-40 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05),transparent_72%)]" />
         </div>
       </div>
 

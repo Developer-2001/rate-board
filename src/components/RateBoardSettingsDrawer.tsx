@@ -26,46 +26,46 @@ const themeCardClasses: Record<
   }
 > = {
   amber: {
-    card: "border-amber-500/20 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.12),rgba(28,25,23,0.96)_68%)] hover:border-amber-300/35",
+    card: "border-amber-500/20 bg-[#1c1917] hover:border-amber-300/35",
     title: "text-amber-50",
     description: "text-amber-100/70",
     selected:
-      "border-amber-300 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.18),rgba(40,31,10,0.96)_68%)] shadow-[0_0_0_1px_rgba(252,211,77,0.22)]",
+      "border-amber-300 bg-[#281f0a] shadow-[0_0_0_1px_rgba(252,211,77,0.22)]",
   },
   emerald: {
-    card: "border-emerald-500/20 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.12),rgba(10,20,17,0.96)_68%)] hover:border-emerald-300/35",
+    card: "border-emerald-500/20 bg-[#0a1411] hover:border-emerald-300/35",
     title: "text-emerald-50",
     description: "text-emerald-100/70",
     selected:
-      "border-emerald-300 bg-[radial-gradient(circle_at_top,rgba(16,185,129,0.18),rgba(7,28,22,0.96)_68%)] shadow-[0_0_0_1px_rgba(110,231,183,0.22)]",
-  },
-  sapphire: {
-    card: "border-sky-500/20 bg-[radial-gradient(circle_at_top,rgba(14,165,233,0.12),rgba(10,16,29,0.96)_68%)] hover:border-sky-300/35",
-    title: "text-sky-50",
-    description: "text-sky-100/70",
-    selected:
-      "border-sky-300 bg-[radial-gradient(circle_at_top,rgba(14,165,233,0.18),rgba(8,21,43,0.96)_68%)] shadow-[0_0_0_1px_rgba(125,211,252,0.22)]",
+      "border-emerald-300 bg-[#071c16] shadow-[0_0_0_1px_rgba(110,231,183,0.22)]",
   },
   ruby: {
-    card: "border-rose-500/20 bg-[radial-gradient(circle_at_top,rgba(244,63,94,0.12),rgba(31,12,16,0.96)_68%)] hover:border-rose-300/35",
+    card: "border-rose-500/20 bg-[#1f0c10] hover:border-rose-300/35",
     title: "text-rose-50",
     description: "text-rose-100/70",
     selected:
-      "border-rose-300 bg-[radial-gradient(circle_at_top,rgba(244,63,94,0.18),rgba(45,11,20,0.96)_68%)] shadow-[0_0_0_1px_rgba(253,164,175,0.22)]",
+      "border-rose-300 bg-[#2d0b14] shadow-[0_0_0_1px_rgba(253,164,175,0.22)]",
   },
   graphite: {
-    card: "border-zinc-500/20 bg-[radial-gradient(circle_at_top,rgba(161,161,170,0.12),rgba(24,24,27,0.96)_68%)] hover:border-zinc-300/35",
+    card: "border-zinc-500/20 bg-zinc-950/50 hover:border-zinc-400/40 hover:bg-zinc-900/70",
     title: "text-zinc-50",
-    description: "text-zinc-300/70",
+    description: "text-zinc-300",
     selected:
-      "border-zinc-300 bg-[radial-gradient(circle_at_top,rgba(212,212,216,0.18),rgba(30,30,34,0.96)_68%)] shadow-[0_0_0_1px_rgba(212,212,216,0.18)]",
+      "border-zinc-300/50 bg-[#101012] shadow-[0_0_0_1px_rgba(212,212,216,0.18)]",
+  },
+  pearl: {
+    card: "border-zinc-300 bg-zinc-50 hover:border-zinc-500/50 hover:bg-white",
+    title: "text-zinc-950",
+    description: "text-zinc-600",
+    selected:
+      "border-zinc-950/50 bg-white shadow-[0_0_0_1px_rgba(24,24,27,0.16)]",
   },
   arctic: {
-    card: "border-cyan-400/20 bg-[radial-gradient(circle_at_top,rgba(103,232,249,0.12),rgba(10,22,24,0.96)_68%)] hover:border-cyan-300/35",
+    card: "border-cyan-400/20 bg-[#0a1618] hover:border-cyan-300/35",
     title: "text-cyan-50",
     description: "text-cyan-100/70",
     selected:
-      "border-cyan-300 bg-[radial-gradient(circle_at_top,rgba(103,232,249,0.18),rgba(10,31,34,0.96)_68%)] shadow-[0_0_0_1px_rgba(165,243,252,0.22)]",
+      "border-cyan-300 bg-[#0a1f22] shadow-[0_0_0_1px_rgba(165,243,252,0.22)]",
   },
 };
 
@@ -92,7 +92,7 @@ export default function RateBoardSettingsDrawer({
       />
 
       <aside
-        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-amber-500/20 bg-stone-950/95 text-stone-100 shadow-2xl backdrop-blur-xl transition-transform duration-300 ${
+        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-zinc-400/20 bg-stone-950/95 text-stone-100 shadow-2xl backdrop-blur-xl transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
         style={{
@@ -100,9 +100,9 @@ export default function RateBoardSettingsDrawer({
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        <div className="flex items-center justify-between border-b border-amber-500/20 px-6 py-3">
+        <div className="flex items-center justify-between border-b border-zinc-400/20 px-2 py-2">
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl bg-white/5 text-amber-300">
+            <div className="rounded-2xl bg-white/5 text-zinc-300">
               <Settings2 className="h-5 w-5" />
             </div>
             <div>
@@ -123,12 +123,10 @@ export default function RateBoardSettingsDrawer({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">
-          <section className="rounded-3xl border border-amber-500/20 bg-[radial-gradient(circle_at_top,rgba(251,191,36,0.12),rgba(28,25,23,0.96)_68%)] p-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-stone-400">
-              Firm Profile
-            </p>
-            <div className="mt-2 space-y-2">
+        <div className="flex-1 overflow-y-auto px-2 py-2">
+          <section className="rounded-3xl border border-zinc-400/20 bg-[#101012] p-5">
+            
+            <div className=" space-y-2">
               <div>
                 <p className="text-xs uppercase tracking-[0.24em] text-stone-500">
                   Firm Name
@@ -176,7 +174,7 @@ export default function RateBoardSettingsDrawer({
                     key={theme.id}
                     type="button"
                     onClick={() => onThemeChange(theme.id)}
-                    className={`rounded-3xl cursor-pointer border p-4 text-left transition ${
+                    className={`relative rounded-3xl cursor-pointer border p-4 text-left transition ${
                       isSelected ? cardTheme.selected : cardTheme.card
                     }`}
                   >
@@ -206,7 +204,7 @@ export default function RateBoardSettingsDrawer({
           </section>
         </div>
 
-        <div className="border-t border-amber-500/20 px-4 py-3">
+        <div className="border-t border-zinc-400/20 px-4 py-3">
           <button
             type="button"
             onClick={onLogout}
