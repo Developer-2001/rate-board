@@ -27,9 +27,9 @@ export default function Header() {
   return (
     <header
       className="flex w-full items-center justify-between border-b border-zinc-400/20 bg-stone-950/95 px-4 py-3 text-stone-100 shadow-[0_10px_40px_rgba(0,0,0,0.25)] backdrop-blur-sm"
-      style={{
-        paddingTop: "calc(0.75rem + env(safe-area-inset-top))",
-      }}
+      // style={{
+      //   paddingTop: "calc(0.75rem + env(safe-area-inset-top))",
+      // }}
     >
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-zinc-300/20 bg-zinc-200 text-sm font-bold text-zinc-950 shadow-md">

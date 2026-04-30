@@ -139,11 +139,11 @@ function RegisterPage() {
   return (
     <Suspense fallback={<p>Loading...</p>}>
       <div
-        className="flex min-h-screen items-center justify-center bg-[#0a0a0b] px-4 py-8 text-stone-100 sm:px-6 lg:px-8"
-        style={{
-          paddingTop: "calc(2rem + env(safe-area-inset-top))",
-          paddingBottom: "calc(2rem + env(safe-area-inset-bottom))",
-        }}
+        className="flex min-h-screen items-center justify-center bg-[#0a0a0b] px-2 py-4 text-stone-100 sm:px-4 lg:px-8"
+        // style={{
+        //   paddingTop: "calc(2rem + env(safe-area-inset-top))",
+        //   paddingBottom: "calc(2rem + env(safe-area-inset-bottom))",
+        // }}
       >
         <section className="w-full max-w-6xl rounded-4xl border border-zinc-400/20 bg-[#101012] p-6 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10">
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
@@ -160,7 +160,7 @@ function RegisterPage() {
                 platinum rates.
               </p>
 
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
+              <div className="mt-8 grid gap-4 grid-cols-2">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
                   <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
                     Client ID
@@ -211,6 +211,7 @@ function RegisterPage() {
                     value={deviceName}
                     onChange={(e) => setDeviceName(e.target.value)}
                     placeholder="Enter device name"
+                    autoFocus
                     required
                     className={themedInputClass}
                     autoComplete="off"

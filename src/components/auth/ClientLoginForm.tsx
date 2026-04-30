@@ -55,7 +55,7 @@ export default function ClientLoginForm({
             start streaming your live rate board data.
           </p>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+          <div className="mt-8 grid gap-4 grid-cols-2">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
               <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
                 Secure Storage
@@ -91,6 +91,7 @@ export default function ClientLoginForm({
                 autoComplete="off"
                 placeholder="e.g., JWP-12345"
                 value={corporateId}
+                autoFocus
                 onChange={(e) => {
                   const val = e.target.value.replace(/^\s+|\s+$/g, "");
                   setCorporateId(val);
