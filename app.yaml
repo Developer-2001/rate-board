@@ -9,11 +9,6 @@ entrypoint: npx next start -H 0.0.0.0 -p $PORT
 build_env_variables:
   GOOGLE_NODE_RUN_SCRIPTS: "build"
 
-env_variables:
-  NODE_ENV: "production"
-  NEXT_PUBLIC_BASE_API_URL: "https://mobileapp.parasinfotech.co.in/api"
-  NEXT_PUBLIC_SECRET_KEY: "S3cr3tK3y@123!"
-
 automatic_scaling:
   min_instances: 1
   max_instances: 2
