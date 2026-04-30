@@ -16,14 +16,10 @@ import useRateBoard, {
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { logout } from "@/utils/authApi";
 import {
-  CURRENT_RATE_BOARD_THEME_DEFAULT_VERSION,
-  DEFAULT_RATE_BOARD_THEME_ID,
-  getStoredRateBoardThemeId,
   RATE_BOARD_THEMES,
-  RATE_BOARD_THEME_DEFAULT_VERSION_STORAGE_KEY,
-  RATE_BOARD_THEME_STORAGE_KEY,
   type RateBoardThemeId,
 } from "@/utils/rateBoardTheme";
+import { useTheme } from "@/context/ThemeContext";
 
 const AUTO_RELOAD_FAILURE_COUNT = 4;
 const ALERT_TIMEOUT_MS = 5000;
@@ -73,10 +69,7 @@ function formatRate(value: number) {
 
 function getMetalDisplay(label: string, metal: "Gold" | "Silver") {
   if (metal === "Gold") {
-    const karat = label
-      .replace(/gold/gi, "")
-      .trim()
-      .replace(/\s+/g, " ");
+    const karat = label.replace(/gold/gi, "").trim().replace(/\s+/g, " ");
 
     return {
       title: karat || label,
@@ -110,13 +103,10 @@ export default function HomePage() {
   const [showFloatingButtons, setShowFloatingButtons] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
-  const [themeId, setThemeId] = useState<RateBoardThemeId>(
-    DEFAULT_RATE_BOARD_THEME_ID,
-  );
+  const { themeId, theme, setThemeId } = useTheme();
   const { board, rates, loading, error, hasFreshUpdate, consecutiveFailures } =
     useRateBoard(clientData?.ClientId ?? null);
 
-  const theme = RATE_BOARD_THEMES[themeId];
   const themeOptions = Object.values(RATE_BOARD_THEMES);
   const rowCount = Math.max(rates.length, 1);
   const boardTitle = board?.firm_name?.trim() || "Jewellers";
@@ -126,12 +116,6 @@ export default function HomePage() {
     color: theme.text,
     fontFamily: theme.fontBody,
   } as CSSProperties;
-
-  useEffect(() => {
-    queueMicrotask(() => {
-      setThemeId(getStoredRateBoardThemeId());
-    });
-  }, []);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -229,7 +213,10 @@ export default function HomePage() {
       try {
         await ScreenOrientation.lock({ orientation: "landscape" });
       } catch (error) {
-        console.debug("Screen orientation lock not available (web browser)", error);
+        console.debug(
+          "Screen orientation lock not available (web browser)",
+          error,
+        );
       }
     };
 
@@ -237,7 +224,10 @@ export default function HomePage() {
       try {
         await ScreenOrientation.unlock();
       } catch (error) {
-        console.debug("Screen orientation unlock not available (web browser)", error);
+        console.debug(
+          "Screen orientation unlock not available (web browser)",
+          error,
+        );
       }
     };
 
@@ -279,11 +269,6 @@ export default function HomePage() {
 
   const handleThemeChange = (nextThemeId: RateBoardThemeId) => {
     setThemeId(nextThemeId);
-    window.localStorage.setItem(RATE_BOARD_THEME_STORAGE_KEY, nextThemeId);
-    window.localStorage.setItem(
-      RATE_BOARD_THEME_DEFAULT_VERSION_STORAGE_KEY,
-      CURRENT_RATE_BOARD_THEME_DEFAULT_VERSION,
-    );
   };
 
   const handleLogout = async () => {
@@ -339,10 +324,7 @@ export default function HomePage() {
 
   return (
     <>
-      <div
-        className="relative h-screen overflow-hidden"
-        style={boardRootStyle}
-      >
+      <div className="relative h-screen overflow-hidden" style={boardRootStyle}>
         <div
           className="pointer-events-none absolute -right-[10%] -top-[20%] h-[60%] w-[60%] rounded-full"
           style={{
@@ -352,9 +334,7 @@ export default function HomePage() {
 
         <div className="relative z-10 flex h-full flex-col">
           <main className="mx-auto flex min-h-0 w-full max-w-[1920px] flex-1">
-            <section
-              className="relative flex min-h-0 w-full flex-col overflow-hidden px-[clamp(1rem,4.6vw,3rem)] py-[clamp(1rem,6.6vh,2.5rem)]"
-            >
+            <section className="relative flex min-h-0 w-full flex-col overflow-hidden px-[clamp(1rem,4.6vw,3rem)] py-[clamp(1rem,6.6vh,2.5rem)]">
               <header className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-3">
                 <div
                   className="min-w-0"
@@ -396,22 +376,20 @@ export default function HomePage() {
                     Today&apos;s Rate
                   </h1>
                   <div className="mt-2 flex items-center justify-center gap-3">
-                     <span
-                        className={`relative z-1 h-[clamp(0.38rem,0.75vw,0.55rem)] w-[clamp(0.38rem,0.75vw,0.55rem)] rounded-full ${
-                          hasFreshUpdate
-                            ? "animate-pulse"
-                            : "animate-[ratePulse_2s_ease-in-out_infinite]"
-                        }`}
-                        style={{
-                          background: theme.liveDot || "#e04040",
-                          boxShadow: `0 0 8px ${theme.liveDot || "#e04040"}aa`,
-                        }}
-                      />
-                      <span
-                        className="relative z-1 text-[clamp(0.48rem,0.95vw,0.9rem)] font-semibold uppercase tracking-[0.3em]"
-                      >
-                        Live
-                      </span>
+                    <span
+                      className={`relative z-1 h-[clamp(0.38rem,0.75vw,0.55rem)] w-[clamp(0.38rem,0.75vw,0.55rem)] rounded-full ${
+                        hasFreshUpdate
+                          ? "animate-pulse"
+                          : "animate-[ratePulse_2s_ease-in-out_infinite]"
+                      }`}
+                      style={{
+                        background: theme.liveDot || "#e04040",
+                        boxShadow: `0 0 8px ${theme.liveDot || "#e04040"}aa`,
+                      }}
+                    />
+                    <span className="relative z-1 text-[clamp(0.48rem,0.95vw,0.9rem)] font-semibold uppercase tracking-[0.3em]">
+                      Live
+                    </span>
                   </div>
                 </div>
 
@@ -452,19 +430,19 @@ export default function HomePage() {
                   style={{ background: theme.headerBg }}
                 >
                   <div
-                    className="text-left text-[clamp(0.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
+                    className="text-left text-[clamp(2.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
                     style={{ color: theme.accent }}
                   >
                     Metal
                   </div>
                   <div
-                    className="text-right text-[clamp(0.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
+                    className="text-right text-[clamp(2.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
                     style={{ color: theme.accent }}
                   >
                     Sale
                   </div>
                   <div
-                    className="text-right text-[clamp(0.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
+                    className="text-right text-[clamp(2.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
                     style={{ color: theme.accent }}
                   >
                     Purchase
@@ -472,11 +450,12 @@ export default function HomePage() {
                 </div>
 
                 {rates.length > 0 ? (
-                  <div
-                    className="mt-1 flex min-h-0 flex-1 flex-col gap-[clamp(0.08rem,0.35vh,0.18rem)] overflow-hidden"
-                  >
+                  <div className="mt-1 flex min-h-0 flex-1 flex-col gap-[clamp(0.08rem,0.35vh,0.18rem)] overflow-hidden">
                     {rates.map((item, index) => {
-                      const metalDisplay = getMetalDisplay(item.label, item.metal);
+                      const metalDisplay = getMetalDisplay(
+                        item.label,
+                        item.metal,
+                      );
                       const isSilver = item.metal === "Silver";
                       const startsSilver =
                         isSilver && rates[index - 1]?.metal !== "Silver";
@@ -486,7 +465,8 @@ export default function HomePage() {
                           key={item.id}
                           className="grid min-h-0 grid-cols-[1.4fr_1fr_1fr] items-center rounded-[clamp(0.25rem,0.6vw,0.4rem)] px-[clamp(1rem,2.3vw,1.5rem)] py-[clamp(0.7rem,min(calc(48vh/var(--rows)),2.3vw),1.15rem)]"
                           style={{
-                            background: index % 2 === 0 ? theme.rowAlt : "transparent",
+                            background:
+                              index % 2 === 0 ? theme.rowAlt : "transparent",
                             marginTop: startsSilver
                               ? "clamp(0.3rem, 1.2vh, 0.65rem)"
                               : undefined,
@@ -500,7 +480,7 @@ export default function HomePage() {
                             title={item.label}
                           >
                             <span
-                              className="align-baseline text-[clamp(1.12rem,min(calc(44vh/var(--rows)),2.4vw),2.65rem)] font-bold uppercase tracking-[0.02em]"
+                              className="align-baseline text-[clamp(2.12rem,min(calc(44vh/var(--rows)),2.4vw),2.65rem)] font-bold uppercase tracking-[0.02em]"
                               style={{
                                 color: theme.text,
                                 fontFamily: theme.fontBody,
@@ -509,7 +489,7 @@ export default function HomePage() {
                               {metalDisplay.title}
                             </span>
                             <span
-                              className="ml-2 align-baseline text-[clamp(0.62rem,1.15vw,1.15rem)] font-normal uppercase tracking-[0.06em]"
+                              className="ml-2 align-baseline text-[clamp(1.62rem,1.15vw,1.15rem)] font-normal uppercase tracking-[0.06em]"
                               style={{
                                 color: isSilver
                                   ? theme.textDim
@@ -521,7 +501,7 @@ export default function HomePage() {
                             </span>
                           </div>
                           <div
-                            className="text-right text-[clamp(1.12rem,min(calc(44vh/var(--rows)),2.35vw),2.65rem)] font-semibold leading-none tabular-nums"
+                            className="text-right text-[clamp(2.12rem,min(calc(44vh/var(--rows)),2.35vw),2.65rem)] font-semibold leading-none tabular-nums"
                             style={{
                               color: theme.text,
                             }}
@@ -529,7 +509,7 @@ export default function HomePage() {
                             ₹{formatRate(item.saleRate)}
                           </div>
                           <div
-                            className="text-right text-[clamp(1.12rem,min(calc(44vh/var(--rows)),2.35vw),2.65rem)] font-semibold leading-none tabular-nums"
+                            className="text-right text-[clamp(2.12rem,min(calc(44vh/var(--rows)),2.35vw),2.65rem)] font-semibold leading-none tabular-nums"
                             style={{
                               color: theme.text,
                             }}
@@ -555,7 +535,6 @@ export default function HomePage() {
                   </div>
                 )}
               </div>
-
             </section>
           </main>
         </div>

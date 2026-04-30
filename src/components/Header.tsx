@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
 import ContactSupport from "./modals/ContactSupport";
 
 function InfoIcon({ className = "" }: { className?: string }) {
@@ -23,21 +24,27 @@ function InfoIcon({ className = "" }: { className?: string }) {
 
 export default function Header() {
   const [contactSupportModalOpen, setContactSupportModalOpen] = useState(false);
+  const { theme } = useTheme();
 
   return (
     <header
-      className="flex w-full items-center justify-between border-b border-zinc-400/20 bg-stone-950/95 px-4 py-3 text-stone-100 shadow-[0_10px_40px_rgba(0,0,0,0.25)] backdrop-blur-sm"
-      // style={{
-      //   paddingTop: "calc(0.75rem + env(safe-area-inset-top))",
-      // }}
+      className={`flex w-full items-center justify-between border-b ${theme.panelBorder} ${theme.surface} px-4 py-3 shadow-md backdrop-blur-sm`}
+      style={{ color: theme.text }}
     >
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-zinc-300/20 bg-zinc-200 text-sm font-bold text-zinc-950 shadow-md">
+        <div 
+          className="flex h-10 w-10 items-center justify-center rounded-2xl border font-bold shadow-sm"
+          style={{ 
+            backgroundColor: theme.accent, 
+            color: theme.id === "pearl" ? "#fff" : theme.bg,
+            borderColor: `${theme.accent}33`
+          }}
+        >
           RB
         </div>
         <div>
-          <h1 className="text-md font-bold text-white">Rate Board Access</h1>
-          <p className="hidden text-xs leading-tight text-stone-400 md:block">
+          <h1 className="text-md font-bold" style={{ color: theme.text }}>Rate Board Access</h1>
+          <p className="hidden text-xs leading-tight md:block" style={{ color: theme.textDim }}>
             Corporate authentication console
           </p>
         </div>
@@ -48,7 +55,8 @@ export default function Header() {
           href="https://www.parasinfotech.co.in"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-stone-400 transition-colors hover:text-white"
+          className="transition-colors"
+          style={{ color: theme.textDim }}
         >
           Paras Infotech
         </Link>
@@ -58,7 +66,8 @@ export default function Header() {
         <button
           type="button"
           onClick={() => setContactSupportModalOpen(true)}
-          className="flex items-center gap-1 rounded-lg px-2 py-1 text-stone-300 transition-colors hover:text-white"
+          className="flex items-center gap-1 rounded-lg px-2 py-1 transition-colors"
+          style={{ color: theme.textDim }}
         >
           <InfoIcon className="h-4 w-4" />
           <span className="hidden text-sm font-medium md:block">Contact Support</span>

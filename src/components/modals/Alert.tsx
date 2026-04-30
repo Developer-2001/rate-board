@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { useTheme } from "@/context/ThemeContext";
 
 interface AlertProps {
   title: "success" | "error" | "warning" | "info";
@@ -76,6 +77,21 @@ const icons = {
 };
 
 const Alert: React.FC<AlertProps> = ({ title, message, onClose }) => {
+  const { theme } = useTheme();
+
+  const dynamicVariantClasses = {
+    success: `border-emerald-400/30 ${theme.surface}`,
+    error: `border-rose-400/35 ${theme.surface}`,
+    warning: `border-amber-300/35 ${theme.surface}`,
+    info: `border-zinc-300/30 ${theme.surface}`,
+  };
+
+  const dynamicTitleClasses = {
+    success: "text-emerald-500",
+    error: "text-rose-500",
+    warning: "text-amber-500",
+    info: theme.accent,
+  };
   useEffect(() => {
     if (onClose) {
       const timer = setTimeout(() => {
@@ -88,20 +104,24 @@ const Alert: React.FC<AlertProps> = ({ title, message, onClose }) => {
 
   return (
     <div
-      className={`fixed right-4 z-9999 rounded-lg border p-4 text-lg shadow-[0_24px_70px_rgba(0,0,0,0.42)] animate-slideIn ${variantClasses[title]} ${onClose ? "cursor-pointer" : ""}`}
+      className={`fixed right-4 z-[9999] rounded-lg border p-4 text-lg shadow-2xl animate-slideIn ${dynamicVariantClasses[title]} ${onClose ? "cursor-pointer" : ""}`}
       onClick={onClose}
       role="alert"
       style={{
         minWidth: 320,
         maxWidth: 400,
         top: "calc(1.5rem + env(safe-area-inset-top))",
+        color: theme.text,
       }}
     >
       <div className="flex items-start gap-4">
         <div className="mt-1">{icons[title]}</div>
-        <div>
-          <h4 className={`mb-1 text-base font-bold capitalize ${titleClasses[title]}`}>{title}</h4>
-          <p className="text-sm text-zinc-300">{message}</p>
+        <div className="flex-1">
+          <h4 
+            className={`mb-1 text-base font-bold capitalize`}
+            style={{ color: dynamicTitleClasses[title] }}
+          >{title}</h4>
+          <p className="text-sm" style={{ color: theme.textDim }}>{message}</p>
         </div>
       </div>
     </div>

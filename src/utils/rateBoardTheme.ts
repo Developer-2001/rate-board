@@ -53,8 +53,8 @@ export type RateBoardTheme = {
 export const RATE_BOARD_THEME_STORAGE_KEY = "rate-board.ui.theme";
 export const RATE_BOARD_THEME_DEFAULT_VERSION_STORAGE_KEY =
   "rate-board.ui.theme-default-version";
-export const CURRENT_RATE_BOARD_THEME_DEFAULT_VERSION = "graphite-pro-v1";
-export const DEFAULT_RATE_BOARD_THEME_ID: RateBoardThemeId = "graphite";
+export const CURRENT_RATE_BOARD_THEME_DEFAULT_VERSION = "ivory-gold-v1";
+export const DEFAULT_RATE_BOARD_THEME_ID: RateBoardThemeId = "pearl";
 
 export const RATE_BOARD_THEMES: Record<RateBoardThemeId, RateBoardTheme> = {
   graphite: {
@@ -99,7 +99,7 @@ export const RATE_BOARD_THEMES: Record<RateBoardThemeId, RateBoardTheme> = {
     appBg: "bg-[#f5f5f6]",
     surface: "border-zinc-950/20 bg-[#f9f9fa]",
     panelBorder: "border-zinc-950/20",
-    topButton: "border-zinc-950/10 bg-white/85 text-zinc-900",
+    topButton: "border-zinc-950/10 bg-[#96783a] text-white",
     topButtonHover: "hover:border-zinc-950/35 hover:text-black",
     headingAccent: "text-zinc-950",
     liveText: "text-emerald-700",

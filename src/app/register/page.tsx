@@ -8,6 +8,7 @@ import useDeviceId from "@/hooks/auth/useDeviceId";
 import { detectAndLogDevice } from "@/utils/identifyDevice";
 import { registerDevice } from "@/utils/authApi";
 import { useClient } from "@/context/ClientContext";
+import { useTheme } from "@/context/ThemeContext";
 
 function trimForBackend(value: string, maxLength: number) {
   return value.trim().slice(0, maxLength);
@@ -23,12 +24,16 @@ function RegisterPage() {
     os: "",
     location: "Unknown",
   });
+  const { theme } = useTheme();
 
   const router = useRouter();
   const { deviceId, loading: isDeviceIdLoading } = useDeviceId();
   const { clientData, isHydrated, isVerified } = useClient();
   const deviceIdentify = detectAndLogDevice();
-  const safeDeviceName = trimForBackend(deviceIdentify.name || "Android Device", 24);
+  const safeDeviceName = trimForBackend(
+    deviceIdentify.name || "Android Device",
+    24,
+  );
 
   useEffect(() => {
     if (!isHydrated) {
@@ -118,90 +123,140 @@ function RegisterPage() {
     } catch (error) {
       console.error("Error submitting form:", error);
       alert(
-        error instanceof Error ? error.message : "Failed to submit. Please try again."
+        error instanceof Error
+          ? error.message
+          : "Failed to submit. Please try again.",
       );
     } finally {
       setIsLoading(false);
     }
   };
 
-  const classNameButton = `flex min-h-[52px] w-full items-center justify-center rounded-2xl border border-zinc-300/20 bg-zinc-200 px-5 py-3 text-sm font-semibold uppercase tracking-[0.25em] text-zinc-950 shadow-[0_16px_40px_rgba(0,0,0,0.24)] transition-all ${
+  const classNameButton = `flex min-h-[52px] w-full items-center justify-center rounded-2xl border transition-all ${theme.topButton} ${theme.topButtonHover} text-sm font-semibold uppercase tracking-[0.25em] shadow-lg ${
     isLoading
       ? "cursor-wait opacity-70"
-      : "hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_20px_45px_rgba(0,0,0,0.32)]"
+      : "hover:-translate-y-0.5 hover:shadow-xl"
   }`;
 
-  const themedInputClass = `w-full rounded-2xl border border-zinc-500/20 bg-zinc-950/50 px-4 py-3 text-base text-white outline-none transition-all duration-300 placeholder:text-zinc-500 focus:border-zinc-300/60 focus:bg-zinc-950/70 focus:ring-2 focus:ring-zinc-300/15 ${
-    isLoading ? "cursor-not-allowed opacity-70" : "hover:border-white/20"
+  const themedInputClass = `w-full rounded-2xl border ${theme.panelBorder} bg-white/50 px-4 py-3 text-base outline-none transition-all duration-300 placeholder:text-zinc-400 focus:ring-2 focus:ring-${theme.accent}/15 ${
+    isLoading ? "cursor-not-allowed opacity-70" : "hover:border-zinc-400/40"
   }`;
   const isDeviceReady = Boolean(deviceId);
 
   return (
     <Suspense fallback={<p>Loading...</p>}>
       <div
-        className="flex min-h-screen items-center justify-center bg-[#0a0a0b] px-2 py-4 text-stone-100 sm:px-4 lg:px-8"
-        // style={{
-        //   paddingTop: "calc(2rem + env(safe-area-inset-top))",
-        //   paddingBottom: "calc(2rem + env(safe-area-inset-bottom))",
-        // }}
+        className={`flex min-h-screen items-center justify-center ${theme.appBg} px-2 py-4 sm:px-4 lg:px-8`}
+        style={{ color: theme.text, fontFamily: theme.fontBody }}
       >
-        <section className="w-full max-w-6xl rounded-4xl border border-zinc-400/20 bg-[#101012] p-6 shadow-[0_40px_120px_rgba(0,0,0,0.45)] sm:p-8 lg:p-10">
+        <section
+          className={`w-full max-w-6xl rounded-4xl border ${theme.surface} p-6 shadow-2xl sm:p-8 lg:p-10`}
+        >
           <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
             <div className="max-w-2xl">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-zinc-300">
+              <p
+                className="mb-3 text-xs font-semibold uppercase tracking-[0.35em]"
+                style={{ color: theme.accent }}
+              >
                 Rate Board
               </p>
-              <h2 className="text-3xl font-semibold text-white sm:text-4xl">
+              <h2
+                className="text-3xl font-semibold sm:text-4xl"
+                style={{ color: theme.text }}
+              >
                 Device registration
               </h2>
-              <p className="mt-3 text-sm leading-7 text-stone-300 sm:text-base">
-                This device is not registered yet. Send the registration request so
-                the store can approve this screen for live gold, silver, and
+              <p
+                className="mt-3 text-sm leading-7 sm:text-base"
+                style={{ color: theme.textDim }}
+              >
+                This device is not registered yet. Send the registration request
+                so the store can approve this screen for live gold, silver, and
                 platinum rates.
               </p>
 
               <div className="mt-8 grid gap-4 grid-cols-2">
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
+                <div
+                  className="rounded-2xl border bg-white/5 p-5"
+                  style={{ borderColor: `${theme.accent}22` }}
+                >
+                  <p
+                    className="text-xs uppercase tracking-[0.3em]"
+                    style={{ color: theme.textDim }}
+                  >
                     Client ID
                   </p>
-                  <p className="mt-2 text-xl font-medium text-white">
+                  <p
+                    className="mt-2 text-xl font-medium"
+                    style={{ color: theme.text }}
+                  >
                     {clientData?.ClientId || "-"}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
+                <div
+                  className="rounded-2xl border bg-white/5 p-5"
+                  style={{ borderColor: `${theme.accent}22` }}
+                >
+                  <p
+                    className="text-xs uppercase tracking-[0.3em]"
+                    style={{ color: theme.textDim }}
+                  >
                     System Name
                   </p>
-                  <p className="mt-2 text-xl font-medium text-white">
+                  <p
+                    className="mt-2 text-xl font-medium"
+                    style={{ color: theme.text }}
+                  >
                     {clientData?.SysName || "-"}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
+                <div
+                  className="rounded-2xl border bg-white/5 p-5"
+                  style={{ borderColor: `${theme.accent}22` }}
+                >
+                  <p
+                    className="text-xs uppercase tracking-[0.3em]"
+                    style={{ color: theme.textDim }}
+                  >
                     Browser
                   </p>
-                  <p className="mt-2 text-lg font-medium text-white">
+                  <p
+                    className="mt-2 text-lg font-medium"
+                    style={{ color: theme.text }}
+                  >
                     {deviceInfo.browser || "-"}
                   </p>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <p className="text-xs uppercase tracking-[0.3em] text-stone-400">
+                <div
+                  className="rounded-2xl border bg-white/5 p-5"
+                  style={{ borderColor: `${theme.accent}22` }}
+                >
+                  <p
+                    className="text-xs uppercase tracking-[0.3em]"
+                    style={{ color: theme.textDim }}
+                  >
                     Location
                   </p>
-                  <p className="mt-2 text-lg font-medium text-white">
+                  <p
+                    className="mt-2 text-lg font-medium"
+                    style={{ color: theme.text }}
+                  >
                     {deviceInfo.location || "-"}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] sm:p-6">
+            <div
+              className="rounded-[1.75rem] border bg-white/30 p-5 shadow-sm sm:p-6"
+              style={{ borderColor: `${theme.accent}33` }}
+            >
               <form onSubmit={handleRegister}>
                 <div className="mb-5">
                   <label
                     htmlFor="deviceName"
-                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em] text-stone-400"
+                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em]"
+                    style={{ color: theme.textDim }}
                   >
                     Device Name
                   </label>
@@ -213,7 +268,7 @@ function RegisterPage() {
                     placeholder="Enter device name"
                     autoFocus
                     required
-                    className={themedInputClass}
+                    className={`${themedInputClass} text-zinc-900`}
                     autoComplete="off"
                   />
                 </div>
@@ -221,7 +276,8 @@ function RegisterPage() {
                 <div className="mb-5">
                   <label
                     htmlFor="counter"
-                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em] text-stone-400"
+                    className="mb-2 block text-xs font-semibold uppercase tracking-[0.3em]"
+                    style={{ color: theme.textDim }}
                   >
                     Counter Name
                   </label>
@@ -232,25 +288,35 @@ function RegisterPage() {
                     onChange={(e) => setCounter(e.target.value)}
                     placeholder="Enter counter name"
                     required
-                    className={themedInputClass}
+                    className={`${themedInputClass} text-zinc-900`}
                     autoComplete="off"
                   />
                 </div>
 
-                <div className="mb-6 rounded-2xl border border-white/10 bg-stone-950/40 p-4 text-sm text-stone-300">
+                <div
+                  className="mb-6 rounded-2xl border bg-black/5 p-4 text-sm"
+                  style={{
+                    borderColor: `${theme.accent}22`,
+                    color: theme.textDim,
+                  }}
+                >
                   <p>
                     Device Type:{" "}
-                    <span className="font-medium text-white">{safeDeviceName}</span>
+                    <span className="font-medium" style={{ color: theme.text }}>
+                      {safeDeviceName}
+                    </span>
                   </p>
                   <p className="mt-2">
                     Device OS:{" "}
-                    <span className="font-medium text-white">
+                    <span className="font-medium" style={{ color: theme.text }}>
                       {deviceInfo.os || "-"}
                     </span>
                   </p>
                   {!isDeviceReady && (
                     <p className="mt-2 text-zinc-300">
-                      {isDeviceIdLoading ? "Preparing device ID..." : "Waiting for device ID..."}
+                      {isDeviceIdLoading
+                        ? "Preparing device ID..."
+                        : "Waiting for device ID..."}
                     </p>
                   )}
                 </div>

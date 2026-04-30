@@ -3,6 +3,7 @@
 import type { ClientData } from "@/types/auth";
 import type { RateBoardTheme, RateBoardThemeId } from "@/utils/rateBoardTheme";
 import { LogOut, Settings2, X } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
 
 type RateBoardSettingsDrawerProps = {
   open: boolean;
@@ -46,6 +47,7 @@ export default function RateBoardSettingsDrawer({
   onLogout,
   isLoggingOut,
 }: RateBoardSettingsDrawerProps) {
+  const { theme: currentTheme } = useTheme();
   const whiteThemes = themes.filter((t) => WHITE_THEME_IDS.includes(t.id));
   const blackThemes = themes.filter((t) => BLACK_THEME_IDS.includes(t.id));
   return (
@@ -60,24 +62,38 @@ export default function RateBoardSettingsDrawer({
       />
 
       <aside
-        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-zinc-400/20 bg-stone-950/95 text-stone-100 shadow-2xl backdrop-blur-xl transition-transform duration-300 ${
+        className={`fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l shadow-2xl transition-transform duration-300 ${
           open ? "translate-x-0" : "translate-x-full"
-        }`}
+        } ${currentTheme.surface}`}
         style={{
+          color: currentTheme.text,
+          borderColor: currentTheme.panelBorder,
           paddingTop: "env(safe-area-inset-top)",
           paddingBottom: "env(safe-area-inset-bottom)",
         }}
       >
-        <div className="flex items-center justify-between border-b border-zinc-400/20 px-2 py-2">
+        <div
+          className={`flex items-center justify-between border-b px-2 py-2`}
+          style={{ borderColor: currentTheme.panelBorder }}
+        >
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl bg-white/5 text-zinc-300">
-              <Settings2 className="h-5 w-5" />
+            <div
+              className="rounded-2xl p-1"
+              style={{ backgroundColor: `${currentTheme.accent}15` }}
+            >
+              <Settings2
+                className="h-5 w-5"
+                style={{ color: currentTheme.accent }}
+              />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-white">
+              <h2
+                className="text-lg font-semibold"
+                style={{ color: currentTheme.text }}
+              >
                 Display Settings
               </h2>
-              <p className="text-sm text-stone-400">
+              <p className="text-sm" style={{ color: currentTheme.textDim }}>
                 Customize this rate board
               </p>
             </div>
@@ -85,37 +101,60 @@ export default function RateBoardSettingsDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl border border-white/10 bg-white/5 p-2 text-stone-300 transition hover:border-white/20 hover:text-white"
+            className={`rounded-xl border p-2 transition ${currentTheme.topButton} ${currentTheme.topButtonHover}`}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-2 py-2">
-          <section className="rounded-3xl border border-zinc-400/20 bg-[#101012] p-5">
-            
+          <section
+            className={`rounded-3xl border p-5`}
+            style={{
+              backgroundColor: currentTheme.cardBg,
+              borderColor: currentTheme.panelBorder,
+            }}
+          >
             <div className=" space-y-2">
               <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-stone-500">
+                <p
+                  className="text-xs uppercase tracking-[0.24em]"
+                  style={{ color: currentTheme.textDim }}
+                >
                   Firm Name
                 </p>
-                <p className="mt-1 text-lg font-medium text-white">
+                <p
+                  className="mt-1 text-lg font-medium"
+                  style={{ color: currentTheme.text }}
+                >
                   {firmName || "-"}
                 </p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-stone-500">
+                <p
+                  className="text-xs uppercase tracking-[0.24em]"
+                  style={{ color: currentTheme.textDim }}
+                >
                   System Name
                 </p>
-                <p className="mt-1 text-base text-stone-200">
+                <p
+                  className="mt-1 text-base"
+                  style={{ color: currentTheme.text }}
+                >
                   {clientData?.SysName || "-"}
                 </p>
               </div>
               <div>
-                <p className="text-xs uppercase tracking-[0.24em] text-stone-500">
+                <p
+                  className="text-xs uppercase tracking-[0.24em]"
+                  style={{ color: currentTheme.textDim }}
+                >
                   Client ID
                 </p>
-                <p className="mt-1 text-base text-stone-200">
+                <p
+                  className="mt-1 text-base"
+                  style={{ color: currentTheme.text }}
+                >
                   {clientData?.ClientId || "-"}
                 </p>
               </div>
@@ -134,7 +173,10 @@ export default function RateBoardSettingsDrawer({
 
             {/* White Themes */}
             <div className="mb-4">
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-stone-500">
+              <h3
+                className="mb-3 text-xs font-semibold uppercase tracking-[0.25em]"
+                style={{ color: currentTheme.textDim }}
+              >
                 White Themes
               </h3>
               <div className="grid gap-3 grid-cols-2">
@@ -184,7 +226,10 @@ export default function RateBoardSettingsDrawer({
 
             {/* Black Themes */}
             <div>
-              <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-stone-500">
+              <h3
+                className="mb-3 text-xs font-semibold uppercase tracking-[0.25em]"
+                style={{ color: currentTheme.textDim }}
+              >
                 Black Themes
               </h3>
               <div className="grid gap-3 grid-cols-2">
@@ -234,7 +279,10 @@ export default function RateBoardSettingsDrawer({
           </section>
         </div>
 
-        <div className="border-t border-zinc-400/20 px-4 py-3">
+        <div
+          className="border-t px-4 py-3"
+          style={{ borderColor: currentTheme.panelBorder }}
+        >
           <button
             type="button"
             onClick={onLogout}
@@ -242,7 +290,7 @@ export default function RateBoardSettingsDrawer({
             className={`flex w-full items-center cursor-pointer justify-center gap-3 rounded-2xl border border-rose-400/30 px-4 py-3 text-sm font-semibold uppercase tracking-[0.25em] transition ${
               isLoggingOut
                 ? "cursor-wait bg-rose-500/20 text-rose-200"
-                : "bg-rose-500/10 text-rose-100 hover:bg-rose-500/20"
+                : "bg-rose-500/10 text-rose-700 hover:bg-rose-500/20"
             }`}
           >
             <LogOut className="h-4 w-4" />

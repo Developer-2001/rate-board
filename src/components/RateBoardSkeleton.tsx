@@ -1,23 +1,20 @@
 "use client";
 
-import {
-  DEFAULT_RATE_BOARD_THEME_ID,
-  RATE_BOARD_THEMES,
-  type RateBoardThemeId,
-} from "@/utils/rateBoardTheme";
+import { useTheme } from "@/context/ThemeContext";
+import { RATE_BOARD_THEMES, RateBoardThemeId } from "@/utils/rateBoardTheme";
 
 type RateBoardSkeletonProps = {
   themeId?: RateBoardThemeId;
 };
 
-export default function RateBoardSkeleton({
-  themeId = DEFAULT_RATE_BOARD_THEME_ID,
-}: RateBoardSkeletonProps) {
-  const theme = RATE_BOARD_THEMES[themeId];
+export default function RateBoardSkeleton({ themeId }: RateBoardSkeletonProps) {
+  const { theme: globalTheme } = useTheme();
+  const theme = themeId ? RATE_BOARD_THEMES[themeId] : globalTheme;
 
   return (
     <div
-      className={`relative flex min-h-screen flex-col overflow-hidden ${theme.appBg} text-stone-100`}
+      className={`relative flex min-h-screen flex-col overflow-hidden ${theme.appBg}`}
+      style={{ color: theme.text, fontFamily: theme.fontBody }}
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 opacity-90">
@@ -48,12 +45,16 @@ export default function RateBoardSkeleton({
             Getting Rates
           </h2>
 
-          <p className={`mt-3 text-sm font-medium uppercase tracking-[0.28em] ${theme.mutedText}`}>
+          <p
+            className={`mt-3 text-sm font-medium uppercase tracking-[0.28em] ${theme.mutedText}`}
+          >
             Please wait while we prepare the live rate board
           </p>
 
           <div className="mt-8 flex items-center justify-center gap-3">
-            <span className={`h-2.5 w-2.5 animate-bounce rounded-full ${theme.headingAccent.replace("text-", "bg-")}`} />
+            <span
+              className={`h-2.5 w-2.5 animate-bounce rounded-full ${theme.headingAccent.replace("text-", "bg-")}`}
+            />
             <span
               className={`h-2.5 w-2.5 animate-bounce rounded-full ${theme.headingAccent.replace("text-", "bg-")}`}
               style={{ animationDelay: "150ms" }}
@@ -71,7 +72,9 @@ export default function RateBoardSkeleton({
             />
           </div>
 
-          <div className={`mt-6 text-xs font-semibold uppercase tracking-[0.3em] ${theme.mutedText}`}>
+          <div
+            className={`mt-6 text-xs font-semibold uppercase tracking-[0.3em] ${theme.mutedText}`}
+          >
             Selected Theme: {theme.name}
           </div>
         </section>

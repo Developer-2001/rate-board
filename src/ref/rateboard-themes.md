@@ -9,7 +9,7 @@ This file documents the active theme set after merging the two reference files i
 | Graphite Pro | Existing app | Kept as a unique dark graphite option. |
 | Obsidian & Gold | `Rateboard Designs.html` | Replaces the old Amber Ledger slot to avoid a duplicate dark gold theme. |
 | Navy & Rose Gold | `Rateboard Designs.html` | Added from reference. |
-| Ivory & Gold | `Rateboard Designs.html` | Replaces the old Pearl Pro slot to avoid a duplicate light neutral theme. |
+| Ivory & Gold | `Rateboard Designs.html` | **Default Theme**. Replaces the old Pearl Pro slot. |
 | Emerald & Gold | `Rateboard Designs.html` | Replaces the old Emerald Hall slot to avoid duplicate green themes. |
 | Burgundy & Champagne | `Rateboard Designs.html` | Replaces the old Ruby Chamber slot to avoid duplicate red/burgundy themes. |
 | Arctic Mint | Existing app | Kept as a unique dark cyan option. |

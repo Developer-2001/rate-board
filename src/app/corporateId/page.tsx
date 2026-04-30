@@ -10,6 +10,7 @@ import Modal from "@/components/modals/statusMsg";
 import Header from "@/components/Header";
 import TermsAndConditionsModal from "@/components/modals/TermsAndConditionsModal";
 import Alert from "@/components/modals/Alert";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function CorporateIdPage() {
   const [corporateId, setCorporateId] = useState("");
@@ -21,6 +22,7 @@ export default function CorporateIdPage() {
   const [title, setTitle] = useState<"success" | "error" | "warning" | "info">(
     "info"
   );
+  const { theme } = useTheme();
 
   const router = useRouter();
   const { deviceId } = useDeviceId();
@@ -58,7 +60,10 @@ export default function CorporateIdPage() {
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#0a0a0b] text-stone-100">
+    <div 
+      className={`flex min-h-screen flex-col ${theme.appBg}`}
+      style={{ color: theme.text, fontFamily: theme.fontBody }}
+    >
       <Header />
       <main className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
         <div className="w-full max-w-6xl">
