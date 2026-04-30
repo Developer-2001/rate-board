@@ -13,6 +13,7 @@ import useDeviceId from "@/hooks/auth/useDeviceId";
 import useRateBoard, {
   RATE_BOARD_POLL_INTERVAL_MS,
 } from "@/hooks/useRateBoard";
+import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { logout } from "@/utils/authApi";
 import {
   CURRENT_RATE_BOARD_THEME_DEFAULT_VERSION,
@@ -220,6 +221,30 @@ export default function HomePage() {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  useEffect(() => {
+    const lockOrientation = async () => {
+      try {
+        await ScreenOrientation.lock({ orientation: "landscape" });
+      } catch (error) {
+        console.debug("Screen orientation lock not available (web browser)", error);
+      }
+    };
+
+    const unlockOrientation = async () => {
+      try {
+        await ScreenOrientation.unlock();
+      } catch (error) {
+        console.debug("Screen orientation unlock not available (web browser)", error);
+      }
+    };
+
+    lockOrientation();
+
+    return () => {
+      unlockOrientation();
     };
   }, []);
 
