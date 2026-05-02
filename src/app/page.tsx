@@ -10,9 +10,7 @@ import RateBoardSkeleton from "@/components/RateBoardSkeleton";
 import { useClient } from "@/context/ClientContext";
 import useAuthBootstrap from "@/hooks/auth/useAuthBootstrap";
 import useDeviceId from "@/hooks/auth/useDeviceId";
-import useRateBoard, {
-  RATE_BOARD_POLL_INTERVAL_MS,
-} from "@/hooks/useRateBoard";
+import useRateBoard from "@/hooks/useRateBoard";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { logout } from "@/utils/authApi";
 import {
@@ -324,7 +322,10 @@ export default function HomePage() {
 
   return (
     <>
-      <div className="relative h-screen overflow-hidden" style={boardRootStyle}>
+      <div
+        className="relative flex min-h-screen flex-col overflow-x-hidden"
+        style={boardRootStyle}
+      >
         <div
           className="pointer-events-none absolute -right-[10%] -top-[20%] h-[60%] w-[60%] rounded-full"
           style={{
@@ -332,9 +333,9 @@ export default function HomePage() {
           }}
         />
 
-        <div className="relative z-10 flex h-full flex-col">
-          <main className="mx-auto flex min-h-0 w-full max-w-[1920px] flex-1">
-            <section className="relative flex min-h-0 w-full flex-col overflow-hidden px-[clamp(1rem,4.6vw,3rem)] py-[clamp(1rem,6.6vh,2.5rem)]">
+        <div className="relative z-10 flex flex-1 flex-col">
+          <main className="mx-auto flex w-full max-w-[1920px] flex-1">
+            <section className="relative flex w-full flex-col px-[clamp(1rem,4.6vw,3rem)] py-[clamp(1rem,6.6vh,2.5rem)]">
               <header className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-3">
                 <div
                   className="min-w-0"
@@ -424,116 +425,144 @@ export default function HomePage() {
                 }}
               />
 
-              <div className="flex min-h-0 flex-1 flex-col">
-                <div
-                  className="grid shrink-0 grid-cols-[1.4fr_1fr_1fr] items-center rounded-[clamp(0.35rem,0.8vw,0.5rem)] px-[clamp(1rem,2.3vw,1.5rem)] py-[clamp(0.62rem,1.75vh,0.85rem)]"
-                  style={{ background: theme.headerBg }}
-                >
-                  <div
-                    className="text-left text-[clamp(2.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
-                    style={{ color: theme.accent }}
-                  >
-                    Metal
-                  </div>
-                  <div
-                    className="text-right text-[clamp(2.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
-                    style={{ color: theme.accent }}
-                  >
-                    Sale
-                  </div>
-                  <div
-                    className="text-right text-[clamp(2.58rem,1vw,1rem)] font-semibold uppercase tracking-[0.25em]"
-                    style={{ color: theme.accent }}
-                  >
-                    Purchase
-                  </div>
-                </div>
-
-                {rates.length > 0 ? (
-                  <div className="mt-1 flex min-h-0 flex-1 flex-col gap-[clamp(0.08rem,0.35vh,0.18rem)] overflow-hidden">
-                    {rates.map((item, index) => {
-                      const metalDisplay = getMetalDisplay(
-                        item.label,
-                        item.metal,
-                      );
-                      const isSilver = item.metal === "Silver";
-                      const startsSilver =
-                        isSilver && rates[index - 1]?.metal !== "Silver";
-
-                      return (
-                        <div
-                          key={item.id}
-                          className="grid min-h-0 grid-cols-[1.4fr_1fr_1fr] items-center rounded-[clamp(0.25rem,0.6vw,0.4rem)] px-[clamp(1rem,2.3vw,1.5rem)] py-[clamp(0.7rem,min(calc(48vh/var(--rows)),2.3vw),1.15rem)]"
+              <div className="flex flex-1 flex-col">
+                <div className="w-full flex-1 overflow-x-auto">
+                  <table className="h-full w-full table-fixed border-collapse">
+                    <thead>
+                      <tr style={{ background: theme.headerBg }}>
+                        <th
+                          className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.62rem,1.75vh,0.85rem)] text-left text-[clamp(1rem,min(calc(30vh/var(--rows)),2.4vw),6.3rem)] font-semibold uppercase tracking-[0.25em]"
                           style={{
-                            background:
-                              index % 2 === 0 ? theme.rowAlt : "transparent",
-                            marginTop: startsSilver
-                              ? "clamp(0.3rem, 1.2vh, 0.65rem)"
-                              : undefined,
-                            boxShadow: startsSilver
-                              ? `0 -1px 0 ${theme.border}`
-                              : undefined,
+                            color: theme.accent,
+                            borderRadius:
+                              "clamp(0.35rem,0.8vw,0.5rem) 0 0 clamp(0.35rem,0.8vw,0.5rem)",
                           }}
                         >
-                          <div
-                            className="min-w-0 truncate pr-4 text-left leading-none"
-                            title={item.label}
-                          >
-                            <span
-                              className="align-baseline text-[clamp(2.12rem,min(calc(44vh/var(--rows)),2.4vw),2.65rem)] font-bold uppercase tracking-[0.02em]"
+                          Metal
+                        </th>
+                        <th
+                          className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.62rem,1.75vh,0.85rem)] text-right text-[clamp(1rem,min(calc(30vh/var(--rows)),2.4vw),6.3rem)] font-semibold uppercase tracking-[0.25em]"
+                          style={{ color: theme.accent }}
+                        >
+                          Sale
+                        </th>
+                        <th
+                          className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.62rem,1.75vh,0.85rem)] text-right text-[clamp(1rem,min(calc(30vh/var(--rows)),2.4vw),6.3rem)] font-semibold uppercase tracking-[0.25em]"
+                          style={{
+                            color: theme.accent,
+                            borderRadius:
+                              "0 clamp(0.35rem,0.8vw,0.5rem) clamp(0.35rem,0.8vw,0.5rem) 0",
+                          }}
+                        >
+                          Purchase
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="before:block before:h-1 before:content-[''] md:before:h-2">
+                      {rates.length > 0 ? (
+                        rates.map((item, index) => {
+                          const metalDisplay = getMetalDisplay(
+                            item.label,
+                            item.metal,
+                          );
+                          const isSilver = item.metal === "Silver";
+                          const startsSilver =
+                            isSilver && rates[index - 1]?.metal !== "Silver";
+
+                          return (
+                            <tr
+                              key={item.id}
                               style={{
-                                color: theme.text,
-                                fontFamily: theme.fontBody,
+                                background:
+                                  index % 2 === 0
+                                    ? theme.rowAlt
+                                    : "transparent",
+                                boxShadow: startsSilver
+                                  ? `0 -1px 0 ${theme.border}`
+                                  : undefined,
                               }}
                             >
-                              {metalDisplay.title}
-                            </span>
-                            <span
-                              className="ml-2 align-baseline text-[clamp(1.62rem,1.15vw,1.15rem)] font-normal uppercase tracking-[0.06em]"
+                              <td
+                                className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.5rem,min(calc(45vh/var(--rows)),1.5vw),1.2rem)] text-left"
+                                style={{
+                                  borderRadius:
+                                    "clamp(0.25rem,0.6vw,0.4rem) 0 0 clamp(0.25rem,0.6vw,0.4rem)",
+                                  paddingTop: startsSilver
+                                    ? "clamp(0.8rem, 2vh, 1.5rem)"
+                                    : undefined,
+                                }}
+                              >
+                                <div className="flex flex-wrap items-baseline gap-1 md:gap-2">
+                                  <span
+                                    className="text-[clamp(1.08rem,min(calc(50vh/var(--rows)),3.4vw),6.3rem)] font-bold uppercase leading-none tracking-[0.02em]"
+                                    style={{
+                                      color: theme.text,
+                                      fontFamily: theme.fontBody,
+                                    }}
+                                  >
+                                    {metalDisplay.title}
+                                  </span>
+                                  <span
+                                    className="text-[clamp(0.72rem,min(calc(31vh/var(--rows)),2vw),3.15rem)] font-normal uppercase leading-none tracking-[0.06em]"
+                                    style={{
+                                      color: isSilver
+                                        ? theme.textDim
+                                        : theme.goldLabel || theme.textDim,
+                                      fontFamily: theme.fontBody,
+                                    }}
+                                  >
+                                    {metalDisplay.suffix}
+                                  </span>
+                                </div>
+                              </td>
+                              <td
+                                className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.5rem,min(calc(45vh/var(--rows)),1.5vw),1.2rem)] text-right text-[clamp(1.08rem,min(calc(50vh/var(--rows)),3.4vw),6.3rem)] font-semibold leading-none tabular-nums"
+                                style={{
+                                  color: theme.text,
+                                  paddingTop: startsSilver
+                                    ? "clamp(0.8rem, 2vh, 1.5rem)"
+                                    : undefined,
+                                }}
+                              >
+                                ₹{formatRate(item.saleRate)}
+                              </td>
+                              <td
+                                className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.5rem,min(calc(45vh/var(--rows)),1.5vw),1.2rem)] text-right text-[clamp(1.08rem,min(calc(50vh/var(--rows)),3.4vw),6.3rem)] font-semibold leading-none tabular-nums"
+                                style={{
+                                  color: theme.text,
+                                  borderRadius:
+                                    "0 clamp(0.25rem,0.6vw,0.4rem) clamp(0.25rem,0.6vw,0.4rem) 0",
+                                  paddingTop: startsSilver
+                                    ? "clamp(0.8rem, 2vh, 1.5rem)"
+                                    : undefined,
+                                }}
+                              >
+                                ₹{formatRate(item.purchaseRate)}
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td colSpan={3}>
+                            <div
+                              className="mt-4 flex flex-1 items-center justify-center rounded-md px-6 py-12 text-center"
                               style={{
-                                color: isSilver
-                                  ? theme.textDim
-                                  : theme.goldLabel || theme.textDim,
-                                fontFamily: theme.fontBody,
+                                background: theme.rowAlt,
+                                color: theme.textDim,
                               }}
                             >
-                              {metalDisplay.suffix}
-                            </span>
-                          </div>
-                          <div
-                            className="text-right text-[clamp(2.12rem,min(calc(44vh/var(--rows)),2.35vw),2.65rem)] font-semibold leading-none tabular-nums"
-                            style={{
-                              color: theme.text,
-                            }}
-                          >
-                            ₹{formatRate(item.saleRate)}
-                          </div>
-                          <div
-                            className="text-right text-[clamp(2.12rem,min(calc(44vh/var(--rows)),2.35vw),2.65rem)] font-semibold leading-none tabular-nums"
-                            style={{
-                              color: theme.text,
-                            }}
-                          >
-                            ₹{formatRate(item.purchaseRate)}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <div
-                    className="flex min-h-0 flex-1 items-center justify-center rounded-md px-6 text-center"
-                    style={{
-                      background: theme.rowAlt,
-                      color: theme.textDim,
-                    }}
-                  >
-                    <p className="text-xl font-semibold">
-                      No gold or silver rates with non-zero sale and purchase
-                      values are available.
-                    </p>
-                  </div>
-                )}
+                              <p className="text-xl font-semibold">
+                                No gold or silver rates with non-zero sale and
+                                purchase values are available.
+                              </p>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </section>
           </main>
@@ -573,8 +602,6 @@ export default function HomePage() {
 
       <RateBoardSettingsDrawer
         open={isSettingsOpen}
-        clientData={clientData}
-        firmName={board?.firm_name}
         themes={themeOptions}
         selectedThemeId={themeId}
         onClose={() => setIsSettingsOpen(false)}

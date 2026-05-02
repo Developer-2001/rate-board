@@ -1,7 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { DisplayRateItem, RateBoardResponse, RawRateItem } from "@/types/rateBoard";
+import {
+  DisplayRateItem,
+  RateBoardResponse,
+  RawRateItem,
+} from "@/types/rateBoard";
 import { fetchRateBoard } from "@/utils/rateBoardApi";
 
 type UseRateBoardResult = {
@@ -33,7 +37,7 @@ function getRateLabel(item: RawRateItem) {
 
 function getRateMultiplier(item: RawRateItem) {
   if (item.Metal_name === "G") {
-    return 100;
+    return 10;
   }
 
   return 1000;
@@ -68,7 +72,9 @@ function toDisplayRates(board: RateBoardResponse | null) {
     });
 }
 
-export default function useRateBoard(clientId: string | null): UseRateBoardResult {
+export default function useRateBoard(
+  clientId: string | null,
+): UseRateBoardResult {
   const [board, setBoard] = useState<RateBoardResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -120,7 +126,10 @@ export default function useRateBoard(clientId: string | null): UseRateBoardResul
         const nextBoard = (await fetchRateBoard(clientId)) as RateBoardResponse;
         const nextSignature = JSON.stringify(nextBoard.data);
 
-        if (previousSignatureRef.current && previousSignatureRef.current !== nextSignature) {
+        if (
+          previousSignatureRef.current &&
+          previousSignatureRef.current !== nextSignature
+        ) {
           setHasFreshUpdate(true);
           setLastChangedAt(new Date());
           clearFreshUpdateTimer();
@@ -143,7 +152,7 @@ export default function useRateBoard(clientId: string | null): UseRateBoardResul
         setError(
           fetchError instanceof Error
             ? fetchError.message
-            : "Unable to load live rates."
+            : "Unable to load live rates.",
         );
         setConsecutiveFailures((current) => current + 1);
       } finally {

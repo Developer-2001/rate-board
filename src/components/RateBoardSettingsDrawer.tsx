@@ -1,14 +1,11 @@
 "use client";
 
-import type { ClientData } from "@/types/auth";
 import type { RateBoardTheme, RateBoardThemeId } from "@/utils/rateBoardTheme";
 import { LogOut, Settings2, X } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 
 type RateBoardSettingsDrawerProps = {
   open: boolean;
-  clientData: ClientData | null;
-  firmName?: string | null;
   themes: RateBoardTheme[];
   selectedThemeId: RateBoardThemeId;
   onClose: () => void;
@@ -38,8 +35,6 @@ const BLACK_THEME_IDS: RateBoardThemeId[] = [
 
 export default function RateBoardSettingsDrawer({
   open,
-  clientData,
-  firmName,
   themes,
   selectedThemeId,
   onClose,
@@ -101,76 +96,14 @@ export default function RateBoardSettingsDrawer({
           <button
             type="button"
             onClick={onClose}
-            className={`rounded-xl border p-2 transition ${currentTheme.topButton} ${currentTheme.topButtonHover}`}
+            className={`rounded-xl cursor-pointer border p-2 transition ${currentTheme.topButton} ${currentTheme.topButtonHover}`}
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-2 py-2">
-          <section
-            className={`rounded-3xl border p-5`}
-            style={{
-              backgroundColor: currentTheme.cardBg,
-              borderColor: currentTheme.panelBorder,
-            }}
-          >
-            <div className=" space-y-2">
-              <div>
-                <p
-                  className="text-xs uppercase tracking-[0.24em]"
-                  style={{ color: currentTheme.textDim }}
-                >
-                  Firm Name
-                </p>
-                <p
-                  className="mt-1 text-lg font-medium"
-                  style={{ color: currentTheme.text }}
-                >
-                  {firmName || "-"}
-                </p>
-              </div>
-              <div>
-                <p
-                  className="text-xs uppercase tracking-[0.24em]"
-                  style={{ color: currentTheme.textDim }}
-                >
-                  System Name
-                </p>
-                <p
-                  className="mt-1 text-base"
-                  style={{ color: currentTheme.text }}
-                >
-                  {clientData?.SysName || "-"}
-                </p>
-              </div>
-              <div>
-                <p
-                  className="text-xs uppercase tracking-[0.24em]"
-                  style={{ color: currentTheme.textDim }}
-                >
-                  Client ID
-                </p>
-                <p
-                  className="mt-1 text-base"
-                  style={{ color: currentTheme.text }}
-                >
-                  {clientData?.ClientId || "-"}
-                </p>
-              </div>
-            </div>
-          </section>
-
-          <section className="mt-6">
-            {/* <div className="mb-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-stone-400">
-                Themes
-              </p>
-              <p className="mt-2 text-sm text-stone-500">
-                The selected theme is saved on this device for future visits.
-              </p>
-            </div> */}
-
+          <section className="mt-2">
             {/* White Themes */}
             <div className="mb-4">
               <h3
