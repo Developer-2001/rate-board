@@ -124,7 +124,7 @@ export default function RateBoardSettingsDrawer({
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-2 py-2">
+        <div className="flex-1 overflow-y-auto px-2 py-2 scrollbar-hide">
           <section className="mt-2">
             {/* Units Settings */}
             <div className="mb-6">

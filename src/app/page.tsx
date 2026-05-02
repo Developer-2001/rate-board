@@ -346,7 +346,7 @@ export default function HomePage() {
   return (
     <>
       <div
-        className="relative flex min-h-screen flex-col overflow-x-hidden"
+        className="relative flex min-h-screen flex-col overflow-x-hidden scrollbar-hide"
         style={boardRootStyle}
       >
         <div
@@ -449,7 +449,7 @@ export default function HomePage() {
               />
 
               <div className="flex flex-1 flex-col">
-                <div className="w-full flex-1 overflow-x-auto">
+                <div className="w-full flex-1 overflow-x-auto scrollbar-hide">
                   <table className="h-full w-full table-fixed border-collapse">
                     <thead>
                       <tr style={{ background: theme.headerBg }}>
