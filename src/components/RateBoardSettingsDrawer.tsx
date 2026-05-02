@@ -3,6 +3,8 @@
 import type { RateBoardTheme, RateBoardThemeId } from "@/utils/rateBoardTheme";
 import { LogOut, Settings2, X } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
+import type { DisplayRateItem } from "@/types/rateBoard";
+import { getMetalDisplay } from "@/utils/rateFormatter";
 
 type RateBoardSettingsDrawerProps = {
   open: boolean;
@@ -16,6 +18,15 @@ type RateBoardSettingsDrawerProps = {
   onGoldUnitChange: (unit: "Gm" | "10Gm") => void;
   silverUnit: "Gm" | "Kg";
   onSilverUnitChange: (unit: "Gm" | "Kg") => void;
+  rates: DisplayRateItem[];
+  metalOverrides: Record<string, { title: string; suffix: string }>;
+  onOverrideChange: (
+    id: string,
+    field: "title" | "suffix",
+    value: string,
+    defaultTitle: string,
+    defaultSuffix: string,
+  ) => void;
 };
 
 const WHITE_THEME_IDS: RateBoardThemeId[] = [
@@ -49,6 +60,9 @@ export default function RateBoardSettingsDrawer({
   onGoldUnitChange,
   silverUnit,
   onSilverUnitChange,
+  rates,
+  metalOverrides,
+  onOverrideChange,
 }: RateBoardSettingsDrawerProps) {
   const { theme: currentTheme } = useTheme();
   const whiteThemes = themes.filter((t) => WHITE_THEME_IDS.includes(t.id));
@@ -118,20 +132,34 @@ export default function RateBoardSettingsDrawer({
                 className="mb-3 text-xs font-semibold uppercase tracking-[0.25em]"
                 style={{ color: currentTheme.textDim }}
               >
-                Calculations
+                UNITS
               </h3>
-              
+
               <div className="mb-4">
-                <p className="mb-2 text-sm" style={{ color: currentTheme.text }}>Gold</p>
-                <div className="flex overflow-hidden rounded-xl border" style={{ borderColor: currentTheme.border }}>
+                <p
+                  className="mb-2 text-sm"
+                  style={{ color: currentTheme.text }}
+                >
+                  Gold
+                </p>
+                <div
+                  className="flex overflow-hidden rounded-xl border"
+                  style={{ borderColor: currentTheme.border }}
+                >
                   <button
                     type="button"
                     onClick={() => onGoldUnitChange("Gm")}
                     className="flex-1 py-2.5 text-sm font-semibold transition border-r"
                     style={{
                       borderColor: currentTheme.border,
-                      background: goldUnit === "Gm" ? `${currentTheme.accent}15` : "transparent",
-                      color: goldUnit === "Gm" ? currentTheme.accent : currentTheme.textDim,
+                      background:
+                        goldUnit === "Gm"
+                          ? `${currentTheme.accent}15`
+                          : "transparent",
+                      color:
+                        goldUnit === "Gm"
+                          ? currentTheme.accent
+                          : currentTheme.textDim,
                     }}
                   >
                     Per Gm
@@ -141,8 +169,14 @@ export default function RateBoardSettingsDrawer({
                     onClick={() => onGoldUnitChange("10Gm")}
                     className="flex-1 py-2.5 text-sm font-semibold transition"
                     style={{
-                      background: goldUnit === "10Gm" ? `${currentTheme.accent}15` : "transparent",
-                      color: goldUnit === "10Gm" ? currentTheme.accent : currentTheme.textDim,
+                      background:
+                        goldUnit === "10Gm"
+                          ? `${currentTheme.accent}15`
+                          : "transparent",
+                      color:
+                        goldUnit === "10Gm"
+                          ? currentTheme.accent
+                          : currentTheme.textDim,
                     }}
                   >
                     Per 10 Gm
@@ -151,16 +185,30 @@ export default function RateBoardSettingsDrawer({
               </div>
 
               <div className="mb-2">
-                <p className="mb-2 text-sm" style={{ color: currentTheme.text }}>Silver</p>
-                <div className="flex overflow-hidden rounded-xl border" style={{ borderColor: currentTheme.border }}>
+                <p
+                  className="mb-2 text-sm"
+                  style={{ color: currentTheme.text }}
+                >
+                  Silver
+                </p>
+                <div
+                  className="flex overflow-hidden rounded-xl border"
+                  style={{ borderColor: currentTheme.border }}
+                >
                   <button
                     type="button"
                     onClick={() => onSilverUnitChange("Gm")}
                     className="flex-1 py-2.5 text-sm font-semibold transition border-r"
                     style={{
                       borderColor: currentTheme.border,
-                      background: silverUnit === "Gm" ? `${currentTheme.accent}15` : "transparent",
-                      color: silverUnit === "Gm" ? currentTheme.accent : currentTheme.textDim,
+                      background:
+                        silverUnit === "Gm"
+                          ? `${currentTheme.accent}15`
+                          : "transparent",
+                      color:
+                        silverUnit === "Gm"
+                          ? currentTheme.accent
+                          : currentTheme.textDim,
                     }}
                   >
                     Per Gm
@@ -170,12 +218,166 @@ export default function RateBoardSettingsDrawer({
                     onClick={() => onSilverUnitChange("Kg")}
                     className="flex-1 py-2.5 text-sm font-semibold transition"
                     style={{
-                      background: silverUnit === "Kg" ? `${currentTheme.accent}15` : "transparent",
-                      color: silverUnit === "Kg" ? currentTheme.accent : currentTheme.textDim,
+                      background:
+                        silverUnit === "Kg"
+                          ? `${currentTheme.accent}15`
+                          : "transparent",
+                      color:
+                        silverUnit === "Kg"
+                          ? currentTheme.accent
+                          : currentTheme.textDim,
                     }}
                   >
                     Per Kg
                   </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Display Names Settings */}
+            <div className="mb-6">
+              <h3
+                className="mb-3 text-xs font-semibold uppercase tracking-[0.25em]"
+                style={{ color: currentTheme.textDim }}
+              >
+                Custom Names
+              </h3>
+
+              <div className="mb-4">
+                <p
+                  className="mb-2 text-sm"
+                  style={{ color: currentTheme.text }}
+                >
+                  Gold
+                </p>
+                <div className="flex flex-col gap-2">
+                  {rates
+                    .filter((r) => r.metal === "Gold")
+                    .map((rate) => {
+                      const defaultDisplay = getMetalDisplay(
+                        rate.label,
+                        rate.metal,
+                      );
+                      const titleValue =
+                        metalOverrides[rate.id]?.title ?? defaultDisplay.title;
+                      const suffixValue =
+                        metalOverrides[rate.id]?.suffix ??
+                        defaultDisplay.suffix;
+
+                      return (
+                        <div key={rate.id} className="flex gap-2">
+                          <input
+                            type="text"
+                            value={titleValue}
+                            onChange={(e) =>
+                              onOverrideChange(
+                                rate.id,
+                                "title",
+                                e.target.value,
+                                defaultDisplay.title,
+                                defaultDisplay.suffix,
+                              )
+                            }
+                            className="flex-1 uppercase rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none"
+                            style={{
+                              background: currentTheme.cardBg,
+                              borderColor: currentTheme.border,
+                              color: currentTheme.text,
+                            }}
+                            placeholder="Enter label"
+                          />
+                          <input
+                            type="text"
+                            value={suffixValue}
+                            onChange={(e) =>
+                              onOverrideChange(
+                                rate.id,
+                                "suffix",
+                                e.target.value,
+                                defaultDisplay.title,
+                                defaultDisplay.suffix,
+                              )
+                            }
+                            className="flex-1 uppercase rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none"
+                            style={{
+                              background: currentTheme.cardBg,
+                              borderColor: currentTheme.border,
+                              color: currentTheme.text,
+                            }}
+                            placeholder="Enter suffix"
+                          />
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+
+              <div className="mb-2">
+                <p
+                  className="mb-2 text-sm"
+                  style={{ color: currentTheme.text }}
+                >
+                  Silver
+                </p>
+                <div className="flex flex-col gap-2">
+                  {rates
+                    .filter((r) => r.metal === "Silver")
+                    .map((rate) => {
+                      const defaultDisplay = getMetalDisplay(
+                        rate.label,
+                        rate.metal,
+                      );
+                      const titleValue =
+                        metalOverrides[rate.id]?.title ?? defaultDisplay.title;
+                      const suffixValue =
+                        metalOverrides[rate.id]?.suffix ??
+                        defaultDisplay.suffix;
+
+                      return (
+                        <div key={rate.id} className="flex gap-2">
+                          <input
+                            type="text"
+                            value={titleValue}
+                            onChange={(e) =>
+                              onOverrideChange(
+                                rate.id,
+                                "title",
+                                e.target.value,
+                                defaultDisplay.title,
+                                defaultDisplay.suffix,
+                              )
+                            }
+                            className="flex-1 uppercase rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none"
+                            style={{
+                              background: currentTheme.cardBg,
+                              borderColor: currentTheme.border,
+                              color: currentTheme.text,
+                            }}
+                            placeholder="Enter label"
+                          />
+                          <input
+                            type="text"
+                            value={suffixValue}
+                            onChange={(e) =>
+                              onOverrideChange(
+                                rate.id,
+                                "suffix",
+                                e.target.value,
+                                defaultDisplay.title,
+                                defaultDisplay.suffix,
+                              )
+                            }
+                            className="flex-1 uppercase rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none"
+                            style={{
+                              background: currentTheme.cardBg,
+                              borderColor: currentTheme.border,
+                              color: currentTheme.text,
+                            }}
+                            placeholder="Enter suffix"
+                          />
+                        </div>
+                      );
+                    })}
                 </div>
               </div>
             </div>

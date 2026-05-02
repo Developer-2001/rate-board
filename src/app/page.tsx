@@ -13,6 +13,7 @@ import useDeviceId from "@/hooks/auth/useDeviceId";
 import useRateBoard from "@/hooks/useRateBoard";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
 import { logout } from "@/utils/authApi";
+import { getMetalDisplay } from "@/utils/rateFormatter";
 import {
   RATE_BOARD_THEMES,
   type RateBoardThemeId,
@@ -65,26 +66,7 @@ function formatRate(value: number) {
   }).format(value);
 }
 
-function getMetalDisplay(label: string, metal: "Gold" | "Silver") {
-  if (metal === "Gold") {
-    const karat = label.replace(/gold/gi, "").trim().replace(/\s+/g, " ");
 
-    return {
-      title: karat || label,
-      suffix: "GOLD",
-    };
-  }
-
-  const silverLabel = label
-    .replace(/silver/gi, "")
-    .trim()
-    .replace(/\s+/g, " ");
-
-  return {
-    title: "SILVER",
-    suffix: silverLabel || "PURE",
-  };
-}
 
 export default function HomePage() {
   const router = useRouter();
@@ -105,6 +87,7 @@ export default function HomePage() {
 
   const [goldUnit, setGoldUnit] = useState<"Gm" | "10Gm">("10Gm");
   const [silverUnit, setSilverUnit] = useState<"Gm" | "Kg">("Kg");
+  const [metalOverrides, setMetalOverrides] = useState<Record<string, { title: string; suffix: string }>>({});
 
   const { board, rates, loading, error, hasFreshUpdate, consecutiveFailures } =
     useRateBoard(clientData?.ClientId ?? null, goldUnit, silverUnit);
@@ -126,6 +109,13 @@ export default function HomePage() {
 
       const storedSilver = localStorage.getItem("rate-board-silver-unit") as "Gm" | "Kg";
       if (storedSilver === "Gm" || storedSilver === "Kg") setSilverUnit(storedSilver);
+
+      const storedOverrides = localStorage.getItem("rate-board-metal-overrides");
+      if (storedOverrides) {
+        try {
+          setMetalOverrides(JSON.parse(storedOverrides));
+        } catch (e) {}
+      }
     });
   }, []);
 
@@ -291,6 +281,15 @@ export default function HomePage() {
   const handleSilverUnitChange = (unit: "Gm" | "Kg") => {
     setSilverUnit(unit);
     localStorage.setItem("rate-board-silver-unit", unit);
+  };
+
+  const handleOverrideChange = (id: string, field: "title" | "suffix", value: string, defaultTitle: string, defaultSuffix: string) => {
+    setMetalOverrides((prev) => {
+      const currentOverride = prev[id] || { title: defaultTitle, suffix: defaultSuffix };
+      const next = { ...prev, [id]: { ...currentOverride, [field]: value } };
+      localStorage.setItem("rate-board-metal-overrides", JSON.stringify(next));
+      return next;
+    });
   };
 
   const handleLogout = async () => {
@@ -485,10 +484,15 @@ export default function HomePage() {
                     <tbody className="before:block before:h-1 before:content-[''] md:before:h-2">
                       {rates.length > 0 ? (
                         rates.map((item, index) => {
-                          const metalDisplay = getMetalDisplay(
+                          const defaultDisplay = getMetalDisplay(
                             item.label,
                             item.metal,
                           );
+                          const customDisplay = metalOverrides[item.id];
+                          const metalDisplay = {
+                            title: customDisplay?.title ?? defaultDisplay.title,
+                            suffix: customDisplay?.suffix ?? defaultDisplay.suffix,
+                          };
                           const isSilver = item.metal === "Silver";
                           const startsSilver =
                             isSilver && rates[index - 1]?.metal !== "Silver";
@@ -636,6 +640,9 @@ export default function HomePage() {
         onGoldUnitChange={handleGoldUnitChange}
         silverUnit={silverUnit}
         onSilverUnitChange={handleSilverUnitChange}
+        rates={rates}
+        metalOverrides={metalOverrides}
+        onOverrideChange={handleOverrideChange}
       />
 
       {alertMessage && (
