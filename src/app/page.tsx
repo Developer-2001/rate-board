@@ -102,8 +102,12 @@ export default function HomePage() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const { themeId, theme, setThemeId } = useTheme();
+
+  const [goldUnit, setGoldUnit] = useState<"Gm" | "10Gm">("10Gm");
+  const [silverUnit, setSilverUnit] = useState<"Gm" | "Kg">("Kg");
+
   const { board, rates, loading, error, hasFreshUpdate, consecutiveFailures } =
-    useRateBoard(clientData?.ClientId ?? null);
+    useRateBoard(clientData?.ClientId ?? null, goldUnit, silverUnit);
 
   const themeOptions = Object.values(RATE_BOARD_THEMES);
   const rowCount = Math.max(rates.length, 1);
@@ -114,6 +118,16 @@ export default function HomePage() {
     color: theme.text,
     fontFamily: theme.fontBody,
   } as CSSProperties;
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      const storedGold = localStorage.getItem("rate-board-gold-unit") as "Gm" | "10Gm";
+      if (storedGold === "Gm" || storedGold === "10Gm") setGoldUnit(storedGold);
+
+      const storedSilver = localStorage.getItem("rate-board-silver-unit") as "Gm" | "Kg";
+      if (storedSilver === "Gm" || storedSilver === "Kg") setSilverUnit(storedSilver);
+    });
+  }, []);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -267,6 +281,16 @@ export default function HomePage() {
 
   const handleThemeChange = (nextThemeId: RateBoardThemeId) => {
     setThemeId(nextThemeId);
+  };
+
+  const handleGoldUnitChange = (unit: "Gm" | "10Gm") => {
+    setGoldUnit(unit);
+    localStorage.setItem("rate-board-gold-unit", unit);
+  };
+
+  const handleSilverUnitChange = (unit: "Gm" | "Kg") => {
+    setSilverUnit(unit);
+    localStorage.setItem("rate-board-silver-unit", unit);
   };
 
   const handleLogout = async () => {
@@ -608,6 +632,10 @@ export default function HomePage() {
         onThemeChange={handleThemeChange}
         onLogout={handleLogout}
         isLoggingOut={isLoggingOut}
+        goldUnit={goldUnit}
+        onGoldUnitChange={handleGoldUnitChange}
+        silverUnit={silverUnit}
+        onSilverUnitChange={handleSilverUnitChange}
       />
 
       {alertMessage && (

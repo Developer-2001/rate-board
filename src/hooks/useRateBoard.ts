@@ -35,15 +35,23 @@ function getRateLabel(item: RawRateItem) {
   return `${metal} ${suffix}`.trim().replace(/\s+/g, " ");
 }
 
-function getRateMultiplier(item: RawRateItem) {
+function getRateMultiplier(
+  item: RawRateItem,
+  goldUnit: "Gm" | "10Gm",
+  silverUnit: "Gm" | "Kg"
+) {
   if (item.Metal_name === "G") {
-    return 10;
+    return goldUnit === "Gm" ? 1 : 10;
   }
 
-  return 1000;
+  return silverUnit === "Gm" ? 1 : 1000;
 }
 
-function toDisplayRates(board: RateBoardResponse | null) {
+function toDisplayRates(
+  board: RateBoardResponse | null,
+  goldUnit: "Gm" | "10Gm",
+  silverUnit: "Gm" | "Kg"
+) {
   if (!board) {
     return [];
   }
@@ -52,7 +60,7 @@ function toDisplayRates(board: RateBoardResponse | null) {
     .filter((item) => item.Metal_name === "G" || item.Metal_name === "S")
     .filter((item) => item.Srate > 0 && item.Prate > 0)
     .map((item) => {
-      const multiplier = getRateMultiplier(item);
+      const multiplier = getRateMultiplier(item, goldUnit, silverUnit);
 
       return {
         id: `${item.Metal_name}-${item.Caret}-${item.Name}`,
@@ -74,6 +82,8 @@ function toDisplayRates(board: RateBoardResponse | null) {
 
 export default function useRateBoard(
   clientId: string | null,
+  goldUnit: "Gm" | "10Gm",
+  silverUnit: "Gm" | "Kg"
 ): UseRateBoardResult {
   const [board, setBoard] = useState<RateBoardResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -174,7 +184,11 @@ export default function useRateBoard(
     };
   }, [clientId]);
 
-  const rates = useMemo(() => toDisplayRates(board), [board]);
+  const rates = useMemo(() => toDisplayRates(board, goldUnit, silverUnit), [
+    board,
+    goldUnit,
+    silverUnit,
+  ]);
 
   return {
     board,

@@ -12,6 +12,10 @@ type RateBoardSettingsDrawerProps = {
   onThemeChange: (themeId: RateBoardThemeId) => void;
   onLogout: () => void;
   isLoggingOut: boolean;
+  goldUnit: "Gm" | "10Gm";
+  onGoldUnitChange: (unit: "Gm" | "10Gm") => void;
+  silverUnit: "Gm" | "Kg";
+  onSilverUnitChange: (unit: "Gm" | "Kg") => void;
 };
 
 const WHITE_THEME_IDS: RateBoardThemeId[] = [
@@ -41,6 +45,10 @@ export default function RateBoardSettingsDrawer({
   onThemeChange,
   onLogout,
   isLoggingOut,
+  goldUnit,
+  onGoldUnitChange,
+  silverUnit,
+  onSilverUnitChange,
 }: RateBoardSettingsDrawerProps) {
   const { theme: currentTheme } = useTheme();
   const whiteThemes = themes.filter((t) => WHITE_THEME_IDS.includes(t.id));
@@ -104,6 +112,74 @@ export default function RateBoardSettingsDrawer({
 
         <div className="flex-1 overflow-y-auto px-2 py-2">
           <section className="mt-2">
+            {/* Units Settings */}
+            <div className="mb-6">
+              <h3
+                className="mb-3 text-xs font-semibold uppercase tracking-[0.25em]"
+                style={{ color: currentTheme.textDim }}
+              >
+                Calculations
+              </h3>
+              
+              <div className="mb-4">
+                <p className="mb-2 text-sm" style={{ color: currentTheme.text }}>Gold</p>
+                <div className="flex overflow-hidden rounded-xl border" style={{ borderColor: currentTheme.border }}>
+                  <button
+                    type="button"
+                    onClick={() => onGoldUnitChange("Gm")}
+                    className="flex-1 py-2.5 text-sm font-semibold transition border-r"
+                    style={{
+                      borderColor: currentTheme.border,
+                      background: goldUnit === "Gm" ? `${currentTheme.accent}15` : "transparent",
+                      color: goldUnit === "Gm" ? currentTheme.accent : currentTheme.textDim,
+                    }}
+                  >
+                    Per Gm
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onGoldUnitChange("10Gm")}
+                    className="flex-1 py-2.5 text-sm font-semibold transition"
+                    style={{
+                      background: goldUnit === "10Gm" ? `${currentTheme.accent}15` : "transparent",
+                      color: goldUnit === "10Gm" ? currentTheme.accent : currentTheme.textDim,
+                    }}
+                  >
+                    Per 10 Gm
+                  </button>
+                </div>
+              </div>
+
+              <div className="mb-2">
+                <p className="mb-2 text-sm" style={{ color: currentTheme.text }}>Silver</p>
+                <div className="flex overflow-hidden rounded-xl border" style={{ borderColor: currentTheme.border }}>
+                  <button
+                    type="button"
+                    onClick={() => onSilverUnitChange("Gm")}
+                    className="flex-1 py-2.5 text-sm font-semibold transition border-r"
+                    style={{
+                      borderColor: currentTheme.border,
+                      background: silverUnit === "Gm" ? `${currentTheme.accent}15` : "transparent",
+                      color: silverUnit === "Gm" ? currentTheme.accent : currentTheme.textDim,
+                    }}
+                  >
+                    Per Gm
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onSilverUnitChange("Kg")}
+                    className="flex-1 py-2.5 text-sm font-semibold transition"
+                    style={{
+                      background: silverUnit === "Kg" ? `${currentTheme.accent}15` : "transparent",
+                      color: silverUnit === "Kg" ? currentTheme.accent : currentTheme.textDim,
+                    }}
+                  >
+                    Per Kg
+                  </button>
+                </div>
+              </div>
+            </div>
+
             {/* White Themes */}
             <div className="mb-4">
               <h3
