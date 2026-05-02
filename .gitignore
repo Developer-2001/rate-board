@@ -60,3 +60,6 @@ android/**/*.iml
 *.jks
 *.keystore
 *.p12
+
+# App Configuration
+app.yaml
