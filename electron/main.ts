@@ -188,6 +188,10 @@ function ensureBearerToken() {
   return bearerToken;
 }
 
+function withRegisterDevicePrefix(deviceId: string) {
+  return deviceId.startsWith("R_") ? deviceId : `R_${deviceId}`;
+}
+
 async function fetchBearerToken() {
   const response = await fetch(`${BASE_API_URL}/sysfunction/gettokenmob`, {
     method: "POST",
@@ -323,7 +327,7 @@ ipcMain.handle(
     const payload = await fetchJson(
       `${BASE_API_URL}/login/device/${encodeURIComponent(params.clientId)}/${encodeURIComponent(
         params.SysName,
-      )}/${encodeURIComponent(params.fingerPrintId)}`,
+      )}/${encodeURIComponent(withRegisterDevicePrefix(params.fingerPrintId))}`,
       {
         method: "GET",
         headers: {

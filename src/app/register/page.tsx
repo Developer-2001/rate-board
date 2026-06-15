@@ -108,7 +108,7 @@ function RegisterPage() {
     const userRegisterData = {
       clientid: clientData.ClientId,
       sysname: clientData.SysName,
-      deviceid: deviceId,
+      deviceid: `R_${deviceId}`,
       devicename: safeDeviceName,
       deviceos: deviceInfo.os,
       requestby: trimForBackend(`${deviceName}-${counter}`, 40),

@@ -129,6 +129,9 @@ function ensureBearerToken() {
     }
     return bearerToken;
 }
+function withRegisterDevicePrefix(deviceId) {
+    return deviceId.startsWith("R_") ? deviceId : `R_${deviceId}`;
+}
 async function fetchBearerToken() {
     const response = await fetch(`${BASE_API_URL}/sysfunction/gettokenmob`, {
         method: "POST",
@@ -214,7 +217,7 @@ electron_1.ipcMain.handle("auth:fetchCorporateClientData", async (_event, corpor
     };
 });
 electron_1.ipcMain.handle("auth:verifyDevice", async (_event, params) => {
-    const payload = await fetchJson(`${BASE_API_URL}/login/device/${encodeURIComponent(params.clientId)}/${encodeURIComponent(params.SysName)}/${encodeURIComponent(params.fingerPrintId)}`, {
+    const payload = await fetchJson(`${BASE_API_URL}/login/device/${encodeURIComponent(params.clientId)}/${encodeURIComponent(params.SysName)}/${encodeURIComponent(withRegisterDevicePrefix(params.fingerPrintId))}`, {
         method: "GET",
         headers: {
             Authorization: `Bearer ${ensureBearerToken()}`,

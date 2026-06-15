@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
+function withRegisterDevicePrefix(deviceId: string) {
+  return deviceId.startsWith("R_") ? deviceId : `R_${deviceId}`;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const baseApiUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
@@ -33,7 +37,9 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await fetch(
-      `${baseApiUrl}/login/device/${clientId}/${SysName}/${fingerPrintId}`,
+      `${baseApiUrl}/login/device/${encodeURIComponent(clientId)}/${encodeURIComponent(
+        SysName,
+      )}/${encodeURIComponent(withRegisterDevicePrefix(fingerPrintId))}`,
       {
         method: "GET",
         headers: {

@@ -391,7 +391,7 @@ export default function HomePage() {
                     {boardTitle}
                   </p>
                   <h1
-                    className="mt-0.5 whitespace-nowrap text-[clamp(1.4rem,3.35vw,4.25rem)] font-bold uppercase leading-none tracking-[0.04em]"
+                    className="mt-0.5 whitespace-nowrap text-[clamp(1.4rem,3.35vw,3.25rem)] font-bold uppercase leading-none tracking-[0.04em]"
                     style={{
                       color: theme.text,
                       fontFamily: theme.fontHead,

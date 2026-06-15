@@ -5,7 +5,6 @@ import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.share
 import { useClient } from "@/context/ClientContext";
 import {
   clearAuthStorage,
-  hasCompleteAuthSession,
   hasRecoverableAuthSession,
   readAuthStorage,
 } from "@/utils/authStorage";
@@ -54,13 +53,6 @@ export default function useAuthBootstrap({
 
       try {
         const snapshot = readAuthStorage();
-
-        if (hasCompleteAuthSession(snapshot)) {
-          if (mode === "login") {
-            router.replace("/");
-          }
-          return;
-        }
 
         if (!hasRecoverableAuthSession(snapshot)) {
           if (mode === "home") {

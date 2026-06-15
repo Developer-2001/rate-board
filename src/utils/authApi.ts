@@ -33,6 +33,10 @@ const DEFAULT_HEADERS = {
   "Content-Type": "application/json",
 } as const;
 
+function withRegisterDevicePrefix(deviceId: string) {
+  return deviceId.startsWith("R_") ? deviceId : `R_${deviceId}`;
+}
+
 function getBaseApiUrl() {
   const baseApiUrl = process.env.NEXT_PUBLIC_BASE_API_URL;
 
@@ -231,8 +235,13 @@ export async function verifyDevice(params: {
   SysName: string;
   fingerPrintId: string;
 }) {
+  const prefixedParams = {
+    ...params,
+    fingerPrintId: withRegisterDevicePrefix(params.fingerPrintId),
+  };
+
   if (isElectronApp()) {
-    return getDesktopApi().auth.verifyDevice(params);
+    return getDesktopApi().auth.verifyDevice(prefixedParams);
   }
 
   if (!isNativeApp()) {
@@ -240,7 +249,7 @@ export async function verifyDevice(params: {
       method: "POST",
       headers: DEFAULT_HEADERS,
       credentials: "same-origin",
-      body: JSON.stringify(params),
+      body: JSON.stringify(prefixedParams),
     });
 
     return parseFetchResponse<VerifyResponse>(response, "Failed to fetch device data.");
@@ -249,8 +258,8 @@ export async function verifyDevice(params: {
   const token = await getStoredOrFreshToken();
   const payload = await requestNativeJson<VerifyResponse["data"]>(
     `${getBaseApiUrl()}/login/device/${encodeURIComponent(
-      params.clientId
-    )}/${encodeURIComponent(params.SysName)}/${encodeURIComponent(params.fingerPrintId)}`,
+      prefixedParams.clientId
+    )}/${encodeURIComponent(prefixedParams.SysName)}/${encodeURIComponent(prefixedParams.fingerPrintId)}`,
     {
       method: "GET",
       headers: {
