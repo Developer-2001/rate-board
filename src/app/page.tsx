@@ -352,14 +352,14 @@ export default function HomePage() {
     );
   }
 
-  if (themeId === "oldSoftware") {
+  if (themeId) {
     return (
       <>
         <div
-          className="relative flex min-h-screen flex-col overflow-hidden bg-white text-black"
+          className="relative flex min-h-screen flex-col overflow-hidden"
           style={{
+            ...boardRootStyle,
             "--rows": rowCount,
-            fontFamily: "Arial, Helvetica, sans-serif",
           } as CSSProperties}
         >
           <main className="flex h-screen flex-col px-[clamp(0.5rem,2vw,0.95rem)] py-[clamp(0.35rem,1.5vh,0.6rem)]">
@@ -368,12 +368,14 @@ export default function HomePage() {
                 <p
                   suppressHydrationWarning
                   className="text-[clamp(1.05rem,3.1vw,1.45rem)] leading-tight"
+                  style={{ color: theme.text }}
                 >
                   {new Intl.DateTimeFormat("en-GB").format(now)}
                 </p>
                 <p
                   suppressHydrationWarning
                   className="mt-[clamp(0.2rem,1vh,0.35rem)] text-[clamp(1.05rem,3.1vw,1.45rem)] leading-tight"
+                  style={{ color: theme.text }}
                 >
                   {new Intl.DateTimeFormat("en-US", {
                     weekday: "long",
@@ -382,10 +384,16 @@ export default function HomePage() {
               </div>
 
               <div className="min-w-0 text-center">
-                <p className="text-[clamp(0.72rem,1.75vw,0.95rem)] uppercase leading-tight text-[#333333]">
+                <p
+                  className="text-[clamp(0.72rem,1.75vw,0.95rem)] uppercase leading-tight"
+                  style={{ color: theme.textDim }}
+                >
                   {boardTitle}
                 </p>
-                <h1 className="text-[clamp(1.25rem,3.5vw,1.65rem)] font-normal leading-[0.95]">
+                <h1
+                  className="text-[clamp(1.25rem,3.5vw,1.65rem)] font-normal leading-[0.95]"
+                  style={{ color: theme.text, fontFamily: theme.fontHead }}
+                >
                   Today&apos;s Rate
                 </h1>
                 <div className="mt-2 flex items-center justify-center gap-3">
@@ -410,12 +418,14 @@ export default function HomePage() {
                 <p
                   suppressHydrationWarning
                   className="text-[clamp(1.05rem,3.1vw,1.45rem)] leading-tight"
+                  style={{ color: theme.text }}
                 >
                   {formatBoardTime(now)}
                 </p>
                 <p
                   suppressHydrationWarning
                   className="mt-[clamp(0.2rem,1vh,0.35rem)] text-[clamp(1.05rem,3.1vw,1.45rem)] leading-tight tabular-nums"
+                  style={{ color: theme.text }}
                 >
                   {formatBoardTimeWithSeconds(now)}
                 </p>
@@ -429,14 +439,21 @@ export default function HomePage() {
               {["METAL", "SALE", "PURCHASE"].map((heading) => (
                 <div
                   key={heading}
-                  className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] border-white bg-[#07007f] px-1 text-center text-[clamp(2.6rem,min(7.5vh,6.8vw),5.2rem)] font-bold leading-none text-white"
+                  className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-1 text-center text-[clamp(2.6rem,min(7.5vh,6.8vw),5.2rem)] font-bold leading-none"
+                  style={{
+                    background: theme.headerBg,
+                    borderColor: theme.bg,
+                    color:
+                      themeId === "oldSoftware" ? "#ffffff" : theme.accent,
+                    fontFamily: theme.fontBody,
+                  }}
                 >
                   {heading}
                 </div>
               ))}
 
               {rates.length > 0 ? (
-                rates.flatMap((item) => {
+                rates.flatMap((item, index) => {
                   const defaultDisplay = getMetalDisplay(
                     item.label,
                     item.metal,
@@ -446,14 +463,30 @@ export default function HomePage() {
                     title: customDisplay?.title ?? defaultDisplay.title,
                     suffix: customDisplay?.suffix ?? defaultDisplay.suffix,
                   };
+                  const isSilver = item.metal === "Silver";
                   const metalLabel = `${metalDisplay.suffix} ${metalDisplay.title}`.trim();
+                  const rowBackground =
+                    themeId === "oldSoftware"
+                      ? "#9fc4e6"
+                      : index % 2 === 0
+                        ? theme.rowAlt
+                        : theme.cardBg;
 
                   return [
                     <div
                       key={`${item.id}-metal`}
-                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] border-white bg-[#9fc4e6] px-1 text-center font-normal uppercase leading-none text-black"
+                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-1 text-center font-normal uppercase leading-none"
                       style={{
+                        background: rowBackground,
+                        borderColor: theme.bg,
+                        color:
+                          themeId === "oldSoftware"
+                            ? "#000000"
+                            : isSilver
+                              ? theme.textDim
+                              : theme.goldLabel || theme.text,
                         fontSize: getOldThemeMetalFontSize(metalLabel),
+                        fontFamily: theme.fontBody,
                       }}
                     >
                       <span className="block max-w-full whitespace-nowrap">
@@ -462,20 +495,40 @@ export default function HomePage() {
                     </div>,
                     <div
                       key={`${item.id}-sale`}
-                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] border-white bg-[#9fc4e6] px-1 text-center text-[clamp(3rem,min(calc(58vh/var(--rows)),7.5vw),8rem)] font-normal leading-none text-black tabular-nums"
+                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-1 text-center text-[clamp(3rem,min(calc(58vh/var(--rows)),7.5vw),8rem)] font-normal leading-none tabular-nums"
+                      style={{
+                        background: rowBackground,
+                        borderColor: theme.bg,
+                        color: themeId === "oldSoftware" ? "#000000" : theme.text,
+                        fontFamily: theme.fontBody,
+                      }}
                     >
                       {formatRate(item.saleRate)}
                     </div>,
                     <div
                       key={`${item.id}-purchase`}
-                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] border-white bg-[#9fc4e6] px-1 text-center text-[clamp(3rem,min(calc(58vh/var(--rows)),7.5vw),8rem)] font-normal leading-none text-black tabular-nums"
+                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-1 text-center text-[clamp(3rem,min(calc(58vh/var(--rows)),7.5vw),8rem)] font-normal leading-none tabular-nums"
+                      style={{
+                        background: rowBackground,
+                        borderColor: theme.bg,
+                        color: themeId === "oldSoftware" ? "#000000" : theme.text,
+                        fontFamily: theme.fontBody,
+                      }}
                     >
                       {formatRate(item.purchaseRate)}
                     </div>,
                   ];
                 })
               ) : (
-                <div className="col-span-3 flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] border-white bg-[#9fc4e6] px-4 text-center text-[clamp(2rem,6vw,4rem)] text-black">
+                <div
+                  className="col-span-3 flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-4 text-center text-[clamp(2rem,6vw,4rem)]"
+                  style={{
+                    background:
+                      themeId === "oldSoftware" ? "#9fc4e6" : theme.rowAlt,
+                    borderColor: theme.bg,
+                    color: themeId === "oldSoftware" ? "#000000" : theme.textDim,
+                  }}
+                >
                   No gold or silver rates with non-zero sale and purchase
                   values are available.
                 </div>
@@ -497,7 +550,7 @@ export default function HomePage() {
           <button
             type="button"
             onClick={() => setIsSettingsOpen(true)}
-            className="cursor-pointer rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-slate-950 shadow transition hover:border-blue-900 hover:text-blue-900"
+            className={`cursor-pointer rounded-lg border px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] shadow transition ${theme.topButton} ${theme.topButtonHover}`}
           >
             <Settings2 width={24} height={24} />
           </button>
@@ -505,7 +558,7 @@ export default function HomePage() {
           <button
             type="button"
             onClick={toggleFullscreen}
-            className="cursor-pointer rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-slate-950 shadow transition hover:border-blue-900 hover:text-blue-900"
+            className={`cursor-pointer rounded-lg border px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] shadow transition ${theme.topButton} ${theme.topButtonHover}`}
           >
             {isFullscreen ? (
               <Minimize width={24} height={24} />
@@ -557,9 +610,8 @@ export default function HomePage() {
         />
 
         <div className="relative z-10 flex flex-1 flex-col">
-          <main className="mx-auto flex w-full max-w-[1920px] flex-1">
-            <section className="relative flex w-full flex-col px-[clamp(1rem,4.6vw,3rem)] py-[clamp(1rem,6.6vh,2.5rem)]">
-              <header className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-3">
+          <main className="mx-auto flex h-screen w-full max-w-[1920px] flex-col px-[clamp(0.5rem,2vw,0.95rem)] py-[clamp(0.35rem,1.5vh,0.6rem)]">
+              <header className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-2 pb-[clamp(0.25rem,1vh,0.45rem)]">
                 <div
                   className="min-w-0"
                   style={{ minWidth: "clamp(7rem, 15vw, 15rem)" }}
@@ -642,19 +694,19 @@ export default function HomePage() {
               </header>
 
               <div
-                className="my-[clamp(0.9rem,2.8vh,2rem)] h-px shrink-0"
+                className="my-[clamp(0.2rem,0.8vh,0.45rem)] h-px shrink-0"
                 style={{
                   background: `linear-gradient(90deg, transparent, ${theme.accent}66, transparent)`,
                 }}
               />
 
-              <div className="flex flex-1 flex-col">
+              <div className="flex min-h-0 flex-1 flex-col">
                 <div className="w-full flex-1 overflow-x-auto scrollbar-hide">
                   <table className="h-full w-full table-fixed border-collapse">
-                    <thead>
+                    <thead className="h-[clamp(4.5rem,10vh,7rem)]">
                       <tr style={{ background: theme.headerBg }}>
                         <th
-                          className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.62rem,1.75vh,0.85rem)] text-left text-[clamp(1rem,min(calc(30vh/var(--rows)),2.4vw),6.3rem)] font-semibold uppercase tracking-[0.25em]"
+                          className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-0 text-center text-[clamp(2.4rem,min(7.2vh,6.4vw),5rem)] font-bold uppercase leading-none tracking-[0.08em]"
                           style={{
                             color: theme.accent,
                             borderRadius:
@@ -664,13 +716,13 @@ export default function HomePage() {
                           Metal
                         </th>
                         <th
-                          className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.62rem,1.75vh,0.85rem)] text-right text-[clamp(1rem,min(calc(30vh/var(--rows)),2.4vw),6.3rem)] font-semibold uppercase tracking-[0.25em]"
+                          className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-0 text-center text-[clamp(2.4rem,min(7.2vh,6.4vw),5rem)] font-bold uppercase leading-none tracking-[0.08em]"
                           style={{ color: theme.accent }}
                         >
                           Sale
                         </th>
                         <th
-                          className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.62rem,1.75vh,0.85rem)] text-right text-[clamp(1rem,min(calc(30vh/var(--rows)),2.4vw),6.3rem)] font-semibold uppercase tracking-[0.25em]"
+                          className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-0 text-center text-[clamp(2.4rem,min(7.2vh,6.4vw),5rem)] font-bold uppercase leading-none tracking-[0.08em]"
                           style={{
                             color: theme.accent,
                             borderRadius:
@@ -681,7 +733,7 @@ export default function HomePage() {
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="before:block before:h-1 before:content-[''] md:before:h-2">
+                    <tbody>
                       {rates.length > 0 ? (
                         rates.map((item, index) => {
                           const defaultDisplay = getMetalDisplay(
@@ -701,6 +753,7 @@ export default function HomePage() {
                             <tr
                               key={item.id}
                               style={{
+                                height: `calc((100% - clamp(4.5rem, 10vh, 7rem)) / ${rowCount})`,
                                 background:
                                   index % 2 === 0
                                     ? theme.rowAlt
@@ -711,7 +764,7 @@ export default function HomePage() {
                               }}
                             >
                               <td
-                                className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.5rem,min(calc(45vh/var(--rows)),1.5vw),1.2rem)] text-left"
+                                className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-0 text-center"
                                 style={{
                                   borderRadius:
                                     "clamp(0.25rem,0.6vw,0.4rem) 0 0 clamp(0.25rem,0.6vw,0.4rem)",
@@ -720,9 +773,9 @@ export default function HomePage() {
                                     : undefined,
                                 }}
                               >
-                                <div className="flex flex-wrap items-baseline gap-1 md:gap-2">
+                                <div className="flex h-full items-center justify-center gap-[clamp(0.3rem,0.9vw,0.8rem)] overflow-hidden">
                                   <span
-                                    className="text-[clamp(1.08rem,min(calc(50vh/var(--rows)),3.4vw),6.3rem)] font-bold uppercase leading-none tracking-[0.02em]"
+                                    className="whitespace-nowrap text-[clamp(2.4rem,min(calc(52vh/var(--rows)),6.2vw),7rem)] font-bold uppercase leading-none tracking-[0.02em]"
                                     style={{
                                       color: theme.text,
                                       fontFamily: theme.fontBody,
@@ -731,7 +784,7 @@ export default function HomePage() {
                                     {metalDisplay.title}
                                   </span>
                                   <span
-                                    className="text-[clamp(0.72rem,min(calc(31vh/var(--rows)),2vw),3.15rem)] font-normal uppercase leading-none tracking-[0.06em]"
+                                    className="whitespace-nowrap text-[clamp(1.8rem,min(calc(42vh/var(--rows)),4.6vw),5rem)] font-normal uppercase leading-none tracking-[0.04em]"
                                     style={{
                                       color: isSilver
                                         ? theme.textDim
@@ -744,7 +797,7 @@ export default function HomePage() {
                                 </div>
                               </td>
                               <td
-                                className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.5rem,min(calc(45vh/var(--rows)),1.5vw),1.2rem)] text-right text-[clamp(1.08rem,min(calc(50vh/var(--rows)),3.4vw),6.3rem)] font-semibold leading-none tabular-nums"
+                                className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-0 text-center text-[clamp(3rem,min(calc(58vh/var(--rows)),7.5vw),8rem)] font-semibold leading-none tabular-nums"
                                 style={{
                                   color: theme.text,
                                   paddingTop: startsSilver
@@ -755,7 +808,7 @@ export default function HomePage() {
                                 ₹{formatRate(item.saleRate)}
                               </td>
                               <td
-                                className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-[clamp(0.5rem,min(calc(45vh/var(--rows)),1.5vw),1.2rem)] text-right text-[clamp(1.08rem,min(calc(50vh/var(--rows)),3.4vw),6.3rem)] font-semibold leading-none tabular-nums"
+                                className="w-1/3 px-[clamp(0.5rem,2.3vw,1.5rem)] py-0 text-center text-[clamp(3rem,min(calc(58vh/var(--rows)),7.5vw),8rem)] font-semibold leading-none tabular-nums"
                                 style={{
                                   color: theme.text,
                                   borderRadius:
@@ -792,7 +845,6 @@ export default function HomePage() {
                   </table>
                 </div>
               </div>
-            </section>
           </main>
         </div>
       </div>
