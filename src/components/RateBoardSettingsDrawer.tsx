@@ -39,6 +39,8 @@ const WHITE_THEME_IDS: RateBoardThemeId[] = [
   "creamTerracotta",
 ];
 
+const OLD_THEME_IDS: RateBoardThemeId[] = ["oldSoftware"];
+
 const BLACK_THEME_IDS: RateBoardThemeId[] = [
   "graphite",
   "amber",
@@ -65,6 +67,7 @@ export default function RateBoardSettingsDrawer({
   onOverrideChange,
 }: RateBoardSettingsDrawerProps) {
   const { theme: currentTheme } = useTheme();
+  const oldThemes = themes.filter((t) => OLD_THEME_IDS.includes(t.id));
   const whiteThemes = themes.filter((t) => WHITE_THEME_IDS.includes(t.id));
   const blackThemes = themes.filter((t) => BLACK_THEME_IDS.includes(t.id));
   return (
@@ -379,6 +382,59 @@ export default function RateBoardSettingsDrawer({
                       );
                     })}
                 </div>
+              </div>
+            </div>
+
+            {/* Old Theme */}
+            <div className="mb-4">
+              <h3
+                className="mb-3 text-xs font-semibold uppercase tracking-[0.25em]"
+                style={{ color: currentTheme.textDim }}
+              >
+                Old Theme
+              </h3>
+              <div className="grid gap-3 grid-cols-2">
+                {oldThemes.map((theme) => {
+                  const isSelected = theme.id === selectedThemeId;
+
+                  return (
+                    <button
+                      key={theme.id}
+                      type="button"
+                      onClick={() => onThemeChange(theme.id)}
+                      className="relative cursor-pointer rounded-3xl border p-4 text-left transition hover:scale-[1.01]"
+                      style={{
+                        background: theme.cardBg,
+                        borderColor: isSelected ? theme.accent : "#d1d5db",
+                        boxShadow: isSelected
+                          ? `0 0 0 1px ${theme.accent}55`
+                          : "none",
+                      }}
+                    >
+                      <div className="flex gap-2">
+                        {theme.preview.map((color) => (
+                          <span
+                            key={color}
+                            className="h-4 w-8 rounded-full"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
+                      </div>
+                      <p
+                        className="mt-4 text-sm font-semibold uppercase tracking-[0.24em]"
+                        style={{ color: theme.text }}
+                      >
+                        {theme.name}
+                      </p>
+                      <p
+                        className="mt-2 text-sm leading-6"
+                        style={{ color: theme.textDim }}
+                      >
+                        {theme.description}
+                      </p>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 

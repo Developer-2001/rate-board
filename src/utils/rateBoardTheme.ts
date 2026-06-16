@@ -1,4 +1,5 @@
 export type RateBoardThemeId =
+  | "oldSoftware"
   | "amber"
   | "emerald"
   | "ruby"
@@ -57,6 +58,41 @@ export const CURRENT_RATE_BOARD_THEME_DEFAULT_VERSION = "ivory-gold-v1";
 export const DEFAULT_RATE_BOARD_THEME_ID: RateBoardThemeId = "pearl";
 
 export const RATE_BOARD_THEMES: Record<RateBoardThemeId, RateBoardTheme> = {
+  oldSoftware: {
+    id: "oldSoftware",
+    name: "Old Theme",
+    description: "Classic old software rate-board display.",
+    family: "legacy",
+    appBg: "bg-white",
+    surface: "border-slate-300 bg-white",
+    panelBorder: "border-slate-300",
+    topButton: "border-slate-300 bg-white text-slate-950",
+    topButtonHover: "hover:border-blue-900 hover:text-blue-900",
+    headingAccent: "text-slate-950",
+    liveText: "text-red-600",
+    tableShell: "border-white bg-white",
+    tableHeader: "bg-[#07007f]",
+    tableHeaderText: "text-white",
+    goldRow: "bg-[#9fc4e6] text-black",
+    silverRow: "bg-[#9fc4e6] text-black",
+    primaryValue: "text-black",
+    secondaryValue: "text-black",
+    mutedText: "text-slate-700",
+    preview: ["#07007f", "#9fc4e6", "#ffffff"],
+    bg: "#ffffff",
+    cardBg: "#ffffff",
+    accent: "#07007f",
+    accentDim: "#9fc4e6",
+    text: "#000000",
+    textDim: "#333333",
+    border: "#ffffff",
+    rowAlt: "#9fc4e6",
+    headerBg: "#07007f",
+    fontHead: "Arial, Helvetica, sans-serif",
+    fontBody: "Arial, Helvetica, sans-serif",
+    platinumColor: "#000000",
+    liveDot: "#e03131",
+  },
   graphite: {
     id: "graphite",
     name: "Graphite Pro",

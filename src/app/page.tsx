@@ -66,7 +66,12 @@ function formatRate(value: number) {
   }).format(value);
 }
 
+function getOldThemeMetalFontSize(label: string) {
+  const visibleLength = Math.max(label.replace(/\s+/g, "").length, 1);
+  const viewportFitSize = Math.min(7.5, Math.max(2.4, 48 / visibleLength));
 
+  return `clamp(2.4rem, min(calc(58vh / var(--rows)), ${viewportFitSize}vw), 8rem)`;
+}
 
 export default function HomePage() {
   const router = useRouter();
@@ -100,6 +105,10 @@ export default function HomePage() {
     background: theme.bg,
     color: theme.text,
     fontFamily: theme.fontBody,
+  } as CSSProperties;
+  const oldThemeGridStyle = {
+    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+    gridTemplateRows: `minmax(clamp(4.5rem, 10vh, 7rem), 0.72fr) repeat(${rowCount}, minmax(0, 1fr))`,
   } as CSSProperties;
 
   useEffect(() => {
@@ -332,6 +341,197 @@ export default function HomePage() {
     return (
       <>
         <RateBoardSkeleton themeId={themeId} />
+        {alertMessage && (
+          <Alert
+            title="error"
+            message={alertMessage}
+            onClose={() => setAlertMessage(null)}
+          />
+        )}
+      </>
+    );
+  }
+
+  if (themeId === "oldSoftware") {
+    return (
+      <>
+        <div
+          className="relative flex min-h-screen flex-col overflow-hidden bg-white text-black"
+          style={{
+            "--rows": rowCount,
+            fontFamily: "Arial, Helvetica, sans-serif",
+          } as CSSProperties}
+        >
+          <main className="flex h-screen flex-col px-[clamp(0.5rem,2vw,0.95rem)] py-[clamp(0.35rem,1.5vh,0.6rem)]">
+            <header className="grid shrink-0 grid-cols-[1fr_auto_1fr] items-start gap-2 pb-[clamp(0.25rem,1vh,0.45rem)]">
+              <div className="text-left">
+                <p
+                  suppressHydrationWarning
+                  className="text-[clamp(1.05rem,3.1vw,1.45rem)] leading-tight"
+                >
+                  {new Intl.DateTimeFormat("en-GB").format(now)}
+                </p>
+                <p
+                  suppressHydrationWarning
+                  className="mt-[clamp(0.2rem,1vh,0.35rem)] text-[clamp(1.05rem,3.1vw,1.45rem)] leading-tight"
+                >
+                  {new Intl.DateTimeFormat("en-US", {
+                    weekday: "long",
+                  }).format(now)}
+                </p>
+              </div>
+
+              <div className="min-w-0 text-center">
+                <p className="text-[clamp(0.72rem,1.75vw,0.95rem)] uppercase leading-tight text-[#333333]">
+                  {boardTitle}
+                </p>
+                <h1 className="text-[clamp(1.25rem,3.5vw,1.65rem)] font-normal leading-[0.95]">
+                  Today&apos;s Rate
+                </h1>
+                <div className="mt-2 flex items-center justify-center gap-3">
+                    <span
+                      className={`relative z-1 h-[clamp(0.38rem,0.75vw,0.55rem)] w-[clamp(0.38rem,0.75vw,0.55rem)] rounded-full ${
+                        hasFreshUpdate
+                          ? "animate-pulse"
+                          : "animate-[ratePulse_2s_ease-in-out_infinite]"
+                      }`}
+                      style={{
+                        background: theme.liveDot || "#e04040",
+                        boxShadow: `0 0 8px ${theme.liveDot || "#e04040"}aa`,
+                      }}
+                    />
+                    <span className="relative z-1 text-[clamp(0.48rem,0.95vw,0.9rem)] font-semibold uppercase tracking-[0.3em]">
+                      Live
+                    </span>
+                  </div>
+              </div>
+
+              <div className="text-right">
+                <p
+                  suppressHydrationWarning
+                  className="text-[clamp(1.05rem,3.1vw,1.45rem)] leading-tight"
+                >
+                  {formatBoardTime(now)}
+                </p>
+                <p
+                  suppressHydrationWarning
+                  className="mt-[clamp(0.2rem,1vh,0.35rem)] text-[clamp(1.05rem,3.1vw,1.45rem)] leading-tight tabular-nums"
+                >
+                  {formatBoardTimeWithSeconds(now)}
+                </p>
+              </div>
+            </header>
+
+            <div
+              className="grid min-h-0 flex-1 overflow-hidden"
+              style={oldThemeGridStyle}
+            >
+              {["METAL", "SALE", "PURCHASE"].map((heading) => (
+                <div
+                  key={heading}
+                  className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] border-white bg-[#07007f] px-1 text-center text-[clamp(2.6rem,min(7.5vh,6.8vw),5.2rem)] font-bold leading-none text-white"
+                >
+                  {heading}
+                </div>
+              ))}
+
+              {rates.length > 0 ? (
+                rates.flatMap((item) => {
+                  const defaultDisplay = getMetalDisplay(
+                    item.label,
+                    item.metal,
+                  );
+                  const customDisplay = metalOverrides[item.id];
+                  const metalDisplay = {
+                    title: customDisplay?.title ?? defaultDisplay.title,
+                    suffix: customDisplay?.suffix ?? defaultDisplay.suffix,
+                  };
+                  const metalLabel = `${metalDisplay.suffix} ${metalDisplay.title}`.trim();
+
+                  return [
+                    <div
+                      key={`${item.id}-metal`}
+                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] border-white bg-[#9fc4e6] px-1 text-center font-normal uppercase leading-none text-black"
+                      style={{
+                        fontSize: getOldThemeMetalFontSize(metalLabel),
+                      }}
+                    >
+                      <span className="block max-w-full whitespace-nowrap">
+                        {metalLabel}
+                      </span>
+                    </div>,
+                    <div
+                      key={`${item.id}-sale`}
+                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] border-white bg-[#9fc4e6] px-1 text-center text-[clamp(3rem,min(calc(58vh/var(--rows)),7.5vw),8rem)] font-normal leading-none text-black tabular-nums"
+                    >
+                      {formatRate(item.saleRate)}
+                    </div>,
+                    <div
+                      key={`${item.id}-purchase`}
+                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] border-white bg-[#9fc4e6] px-1 text-center text-[clamp(3rem,min(calc(58vh/var(--rows)),7.5vw),8rem)] font-normal leading-none text-black tabular-nums"
+                    >
+                      {formatRate(item.purchaseRate)}
+                    </div>,
+                  ];
+                })
+              ) : (
+                <div className="col-span-3 flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] border-white bg-[#9fc4e6] px-4 text-center text-[clamp(2rem,6vw,4rem)] text-black">
+                  No gold or silver rates with non-zero sale and purchase
+                  values are available.
+                </div>
+              )}
+            </div>
+          </main>
+        </div>
+
+        <div
+          className={`fixed right-4 z-20 flex flex-col gap-2 transition-all duration-300 sm:right-6 ${
+            showFloatingButtons
+              ? "translate-y-0 opacity-100"
+              : "pointer-events-none translate-y-3 opacity-0"
+          }`}
+          style={{
+            bottom: "calc(2.5rem + env(safe-area-inset-bottom))",
+          }}
+        >
+          <button
+            type="button"
+            onClick={() => setIsSettingsOpen(true)}
+            className="cursor-pointer rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-slate-950 shadow transition hover:border-blue-900 hover:text-blue-900"
+          >
+            <Settings2 width={24} height={24} />
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            className="cursor-pointer rounded-lg border border-slate-300 bg-white px-2 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-slate-950 shadow transition hover:border-blue-900 hover:text-blue-900"
+          >
+            {isFullscreen ? (
+              <Minimize width={24} height={24} />
+            ) : (
+              <Expand width={24} height={24} />
+            )}
+          </button>
+        </div>
+
+        <RateBoardSettingsDrawer
+          open={isSettingsOpen}
+          themes={themeOptions}
+          selectedThemeId={themeId}
+          onClose={() => setIsSettingsOpen(false)}
+          onThemeChange={handleThemeChange}
+          onLogout={handleLogout}
+          isLoggingOut={isLoggingOut}
+          goldUnit={goldUnit}
+          onGoldUnitChange={handleGoldUnitChange}
+          silverUnit={silverUnit}
+          onSilverUnitChange={handleSilverUnitChange}
+          rates={rates}
+          metalOverrides={metalOverrides}
+          onOverrideChange={handleOverrideChange}
+        />
+
         {alertMessage && (
           <Alert
             title="error"
