@@ -18,6 +18,10 @@ type RateBoardSettingsDrawerProps = {
   onGoldUnitChange: (unit: "Gm" | "10Gm") => void;
   silverUnit: "Gm" | "Kg";
   onSilverUnitChange: (unit: "Gm" | "Kg") => void;
+  metalTextScale: number;
+  onMetalTextScaleChange: (scale: number) => void;
+  rateFormat: "formatted" | "plain";
+  onRateFormatChange: (format: "formatted" | "plain") => void;
   rates: DisplayRateItem[];
   metalOverrides: Record<string, { title: string; suffix: string }>;
   onOverrideChange: (
@@ -62,6 +66,10 @@ export default function RateBoardSettingsDrawer({
   onGoldUnitChange,
   silverUnit,
   onSilverUnitChange,
+  metalTextScale,
+  onMetalTextScaleChange,
+  rateFormat,
+  onRateFormatChange,
   rates,
   metalOverrides,
   onOverrideChange,
@@ -232,6 +240,98 @@ export default function RateBoardSettingsDrawer({
                     }}
                   >
                     Per Kg
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Display Settings */}
+            <div className="mb-6">
+              <h3
+                className="mb-3 text-xs font-semibold uppercase tracking-[0.25em]"
+                style={{ color: currentTheme.textDim }}
+              >
+                Display
+              </h3>
+
+              <div className="mb-5">
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <p className="text-sm" style={{ color: currentTheme.text }}>
+                    Metal text size
+                  </p>
+                  <span
+                    className="rounded-lg px-2 py-1 text-xs font-semibold tabular-nums"
+                    style={{
+                      background: `${currentTheme.accent}15`,
+                      color: currentTheme.accent,
+                    }}
+                  >
+                    {metalTextScale}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={60}
+                  max={120}
+                  step={5}
+                  value={metalTextScale}
+                  onChange={(event) =>
+                    onMetalTextScaleChange(Number(event.target.value))
+                  }
+                  className="w-full accent-current"
+                  style={{ color: currentTheme.accent }}
+                />
+                <div
+                  className="mt-2 flex justify-between text-[11px] uppercase tracking-[0.2em]"
+                  style={{ color: currentTheme.textDim }}
+                >
+                  <span>Fit</span>
+                  <span>Large</span>
+                </div>
+              </div>
+
+              <div>
+                <p className="mb-2 text-sm" style={{ color: currentTheme.text }}>
+                  Rate format
+                </p>
+                <div
+                  className="flex overflow-hidden rounded-xl border"
+                  style={{ borderColor: currentTheme.border }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => onRateFormatChange("formatted")}
+                    className="flex-1 border-r py-2.5 text-sm font-semibold transition"
+                    style={{
+                      borderColor: currentTheme.border,
+                      background:
+                        rateFormat === "formatted"
+                          ? `${currentTheme.accent}15`
+                          : "transparent",
+                      color:
+                        rateFormat === "formatted"
+                          ? currentTheme.accent
+                          : currentTheme.textDim,
+                    }}
+                  >
+                    1,00,000
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onRateFormatChange("plain")}
+                    className="flex-1 py-2.5 text-sm font-semibold transition"
+                    style={{
+                      background:
+                        rateFormat === "plain"
+                          ? `${currentTheme.accent}15`
+                          : "transparent",
+                      color:
+                        rateFormat === "plain"
+                          ? currentTheme.accent
+                          : currentTheme.textDim,
+                    }}
+                  >
+                    100000
                   </button>
                 </div>
               </div>

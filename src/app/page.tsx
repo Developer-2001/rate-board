@@ -22,6 +22,10 @@ import { useTheme } from "@/context/ThemeContext";
 
 const AUTO_RELOAD_FAILURE_COUNT = 4;
 const ALERT_TIMEOUT_MS = 5000;
+const METAL_TEXT_SCALE_STORAGE_KEY = "rate-board-display-metal-text-scale";
+const RATE_FORMAT_STORAGE_KEY = "rate-board-display-rate-format";
+
+type RateFormat = "formatted" | "plain";
 
 function formatBoardDate(date: Date) {
   return new Intl.DateTimeFormat("en-GB", {
@@ -66,11 +70,23 @@ function formatRate(value: number) {
   }).format(value);
 }
 
-function getOldThemeMetalFontSize(label: string) {
-  const visibleLength = Math.max(label.replace(/\s+/g, "").length, 1);
-  const viewportFitSize = Math.min(7.5, Math.max(2.4, 48 / visibleLength));
+function formatDisplayRate(value: number, rateFormat: RateFormat) {
+  if (rateFormat === "plain") {
+    return String(Math.round(value));
+  }
 
-  return `clamp(2.4rem, min(calc(58vh / var(--rows)), ${viewportFitSize}vw), 8rem)`;
+  return formatRate(value);
+}
+
+function getOldThemeMetalFontSize(label: string, metalTextScale: number) {
+  const visibleLength = Math.max(label.replace(/\s+/g, "").length, 1);
+  const scale = metalTextScale / 100;
+  const viewportFitSize = Math.min(
+    7.5,
+    Math.max(1.6, (48 / visibleLength) * scale),
+  );
+
+  return `clamp(1.6rem, min(calc(58vh / var(--rows)), ${viewportFitSize}vw), 8rem)`;
 }
 
 export default function HomePage() {
@@ -92,6 +108,8 @@ export default function HomePage() {
 
   const [goldUnit, setGoldUnit] = useState<"Gm" | "10Gm">("10Gm");
   const [silverUnit, setSilverUnit] = useState<"Gm" | "Kg">("Kg");
+  const [metalTextScale, setMetalTextScale] = useState(100);
+  const [rateFormat, setRateFormat] = useState<RateFormat>("formatted");
   const [metalOverrides, setMetalOverrides] = useState<Record<string, { title: string; suffix: string }>>({});
 
   const { board, rates, loading, error, hasFreshUpdate, consecutiveFailures } =
@@ -118,6 +136,24 @@ export default function HomePage() {
 
       const storedSilver = localStorage.getItem("rate-board-silver-unit") as "Gm" | "Kg";
       if (storedSilver === "Gm" || storedSilver === "Kg") setSilverUnit(storedSilver);
+
+      const storedMetalTextScale = Number(
+        localStorage.getItem(METAL_TEXT_SCALE_STORAGE_KEY),
+      );
+      if (
+        Number.isFinite(storedMetalTextScale) &&
+        storedMetalTextScale >= 60 &&
+        storedMetalTextScale <= 120
+      ) {
+        setMetalTextScale(storedMetalTextScale);
+      }
+
+      const storedRateFormat = localStorage.getItem(
+        RATE_FORMAT_STORAGE_KEY,
+      ) as RateFormat | null;
+      if (storedRateFormat === "formatted" || storedRateFormat === "plain") {
+        setRateFormat(storedRateFormat);
+      }
 
       const storedOverrides = localStorage.getItem("rate-board-metal-overrides");
       if (storedOverrides) {
@@ -290,6 +326,20 @@ export default function HomePage() {
   const handleSilverUnitChange = (unit: "Gm" | "Kg") => {
     setSilverUnit(unit);
     localStorage.setItem("rate-board-silver-unit", unit);
+  };
+
+  const handleMetalTextScaleChange = (nextScale: number) => {
+    const normalizedScale = Math.min(120, Math.max(60, nextScale));
+    setMetalTextScale(normalizedScale);
+    localStorage.setItem(
+      METAL_TEXT_SCALE_STORAGE_KEY,
+      String(normalizedScale),
+    );
+  };
+
+  const handleRateFormatChange = (nextRateFormat: RateFormat) => {
+    setRateFormat(nextRateFormat);
+    localStorage.setItem(RATE_FORMAT_STORAGE_KEY, nextRateFormat);
   };
 
   const handleOverrideChange = (id: string, field: "title" | "suffix", value: string, defaultTitle: string, defaultSuffix: string) => {
@@ -485,7 +535,10 @@ export default function HomePage() {
                             : isSilver
                               ? theme.textDim
                               : theme.goldLabel || theme.text,
-                        fontSize: getOldThemeMetalFontSize(metalLabel),
+                        fontSize: getOldThemeMetalFontSize(
+                          metalLabel,
+                          metalTextScale,
+                        ),
                         fontFamily: theme.fontBody,
                       }}
                     >
@@ -503,7 +556,7 @@ export default function HomePage() {
                         fontFamily: theme.fontBody,
                       }}
                     >
-                      {formatRate(item.saleRate)}
+                      {formatDisplayRate(item.saleRate, rateFormat)}
                     </div>,
                     <div
                       key={`${item.id}-purchase`}
@@ -515,7 +568,7 @@ export default function HomePage() {
                         fontFamily: theme.fontBody,
                       }}
                     >
-                      {formatRate(item.purchaseRate)}
+                      {formatDisplayRate(item.purchaseRate, rateFormat)}
                     </div>,
                   ];
                 })
@@ -580,6 +633,10 @@ export default function HomePage() {
           onGoldUnitChange={handleGoldUnitChange}
           silverUnit={silverUnit}
           onSilverUnitChange={handleSilverUnitChange}
+          metalTextScale={metalTextScale}
+          onMetalTextScaleChange={handleMetalTextScaleChange}
+          rateFormat={rateFormat}
+          onRateFormatChange={handleRateFormatChange}
           rates={rates}
           metalOverrides={metalOverrides}
           onOverrideChange={handleOverrideChange}
@@ -892,6 +949,10 @@ export default function HomePage() {
         onGoldUnitChange={handleGoldUnitChange}
         silverUnit={silverUnit}
         onSilverUnitChange={handleSilverUnitChange}
+        metalTextScale={metalTextScale}
+        onMetalTextScaleChange={handleMetalTextScaleChange}
+        rateFormat={rateFormat}
+        onRateFormatChange={handleRateFormatChange}
         rates={rates}
         metalOverrides={metalOverrides}
         onOverrideChange={handleOverrideChange}
