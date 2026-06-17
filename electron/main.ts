@@ -20,6 +20,7 @@ const RATE_BOARD_API_URL =
 const APP_PROTOCOL = "app";
 const APP_HOST = "-";
 const OUT_DIR = path.join(__dirname, "..", "out");
+const WINDOW_ICON_PATH = path.join(__dirname, "..", "public", "rateboard.ico");
 const DEV_SERVER_URL = app.isPackaged
   ? undefined
   : process.env.ELECTRON_DEV_SERVER_URL;
@@ -257,6 +258,7 @@ function createWindow() {
     height: 960,
     minWidth: 1024,
     minHeight: 720,
+    icon: WINDOW_ICON_PATH,
     autoHideMenuBar: true,
     backgroundColor: "#0c0a09",
     webPreferences: {

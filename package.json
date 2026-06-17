@@ -63,6 +63,7 @@
     },
     "files": [
       "out/**/*",
+      "public/rateboard.ico",
       "electron/**/*",
       ".env",
       ".env.local",
@@ -72,7 +73,7 @@
       "main": "electron/main.js"
     },
     "win": {
-      "icon": "src/app/favicon.ico",
+      "icon": "public/rateboard.ico",
       "signAndEditExecutable": false,
       "target": [
         {

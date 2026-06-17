@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Background Radial Glow -->
+    <radialGradient id="bgGlow" cx="50%" cy="42%" r="40%">
+      <stop offset="0%" stop-color="#1e14b3" />
+      <stop offset="60%" stop-color="#0b0494" />
+      <stop offset="100%" stop-color="#07007f" />
+    </radialGradient>
+
+    <!-- Outer Golden Rim Gradient -->
+    <linearGradient id="rimGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF099" />
+      <stop offset="50%" stop-color="#D4AF37" />
+      <stop offset="100%" stop-color="#AA7C11" />
+    </linearGradient>
+
+    <!-- Diamond Face Gradients (Varying tones for 3D realism) -->
+    <linearGradient id="goldLight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFF5B3" />
+      <stop offset="100%" stop-color="#E6B800" />
+    </linearGradient>
+
+    <linearGradient id="goldMed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E6B800" />
+      <stop offset="100%" stop-color="#997300" />
+    </linearGradient>
+
+    <linearGradient id="goldDark" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#997300" />
+      <stop offset="100%" stop-color="#4D3900" />
+    </linearGradient>
+
+    <linearGradient id="goldBright" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="30%" stop-color="#FFF099" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+
+    <!-- Intense Diamond Ambient Glow Filter -->
+    <filter id="diamondGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="24" result="blur1" />
+      <feGaussianBlur stdDeviation="12" result="blur2" />
+      <feMerge>
+        <feMergeNode in="blur1" />
+        <feMergeNode in="blur2" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- PWA Maskable Base Area -->
+  <rect width="512" height="512" fill="#07007f" />
+
+  <!-- Main Circular Badge with Glow Interior -->
+  <circle cx="256" cy="256" r="242" fill="url(#bgGlow)" stroke="url(#rimGold)" stroke-width="5" />
+  <circle cx="256" cy="256" r="239" fill="none" stroke="#000000" stroke-width="1.5" opacity="0.3" />
+
+  <!-- DIAMOND GLOW BACKDROP (Simulating the golden atmosphere) -->
+  <circle cx="256" cy="215" r="90" fill="#FFD700" opacity="0.15" filter="url(#diamondGlow)" />
+
+  <!-- BRILLIANT CUT DIAMOND EMBLEM -->
+  <g id="diamond" filter="url(#diamondGlow)">
+    <!-- Crown / Top Row Facets -->
+    <polygon points="256,115 210,148 256,155" fill="url(#goldBright)" />
+    <polygon points="256,115 302,148 256,155" fill="url(#goldBright)" />
+    <polygon points="210,148 152,148 185,178" fill="url(#goldMed)" />
+    <polygon points="302,148 360,148 327,178" fill="url(#goldDark)" />
+    
+    <!-- Upper Girdle Facets -->
+    <polygon points="210,148 256,155 185,178" fill="url(#goldLight)" />
+    <polygon points="302,148 256,155 327,178" fill="url(#goldMed)" />
+    <polygon points="152,148 126,178 185,178" fill="url(#goldDark)" />
+    <polygon points="360,148 386,178 327,178" fill="url(#goldMed)" />
+    
+    <polygon points="185,178 256,155 256,200" fill="url(#goldLight)" />
+    <polygon points="327,178 256,155 256,200" fill="url(#goldBright)" />
+    <polygon points="185,178 256,200 240,215" fill="url(#goldMed)" />
+    <polygon points="327,178 256,200 272,215" fill="url(#goldLight)" />
+    
+    <polygon points="126,178 185,178 170,215" fill="url(#goldDark)" />
+    <polygon points="386,178 327,178 342,215" fill="url(#goldDark)" />
+    <polygon points="170,215 185,178 240,215" fill="url(#goldLight)" />
+    <polygon points="342,215 327,178 272,215" fill="url(#goldMed)" />
+
+    <!-- Pavilion / Lower Body Facets -->
+    <polygon points="126,178 170,215 256,315" fill="url(#goldDark)" />
+    <polygon points="386,178 342,215 256,315" fill="url(#goldMed)" />
+    <polygon points="170,215 240,215 256,315" fill="url(#goldMed)" />
+    <polygon points="342,215 272,215 256,315" fill="url(#goldDark)" />
+    <polygon points="240,215 256,200 256,315" fill="url(#goldLight)" />
+    <polygon points="272,215 256,200 256,315" fill="url(#goldBright)" />
+    
+    <!-- Central Flare Sparkle Core -->
+    <path d="M 256,170 L 260,195 L 285,199 L 260,203 L 256,228 L 252,203 L 227,199 L 252,195 Z" fill="#ffffff" opacity="0.75" />
+    <circle cx="256" cy="199" r="4" fill="#ffffff" filter="url(#diamondGlow)"/>
+  </g>
+
+  <!-- TEXT TYPOGRAPHY (Matches the clean bold sans-serif perfectly) -->
+  <text x="256" y="388" 
+        font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif" 
+        font-size="44" 
+        font-weight="700" 
+        letter-spacing="1.5"
+        fill="url(#rimGold)" 
+        text-anchor="middle">
+    RATE BOARD
+  </text>
+</svg>

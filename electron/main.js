@@ -22,6 +22,7 @@ const RATE_BOARD_API_URL = "https://report-api-742717265610.asia-south1.run.app/
 const APP_PROTOCOL = "app";
 const APP_HOST = "-";
 const OUT_DIR = node_path_1.default.join(__dirname, "..", "out");
+const WINDOW_ICON_PATH = node_path_1.default.join(__dirname, "..", "public", "rateboard.ico");
 const DEV_SERVER_URL = electron_1.app.isPackaged
     ? undefined
     : process.env.ELECTRON_DEV_SERVER_URL;
@@ -182,6 +183,7 @@ function createWindow() {
         height: 960,
         minWidth: 1024,
         minHeight: 720,
+        icon: WINDOW_ICON_PATH,
         autoHideMenuBar: true,
         backgroundColor: "#0c0a09",
         webPreferences: {
