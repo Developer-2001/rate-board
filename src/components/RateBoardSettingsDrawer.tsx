@@ -18,8 +18,8 @@ type RateBoardSettingsDrawerProps = {
   onGoldUnitChange: (unit: "Gm" | "10Gm") => void;
   silverUnit: "Gm" | "Kg";
   onSilverUnitChange: (unit: "Gm" | "Kg") => void;
-  metalTextScale: number;
-  onMetalTextScaleChange: (scale: number) => void;
+  tableTextScale: number;
+  onTableTextScaleChange: (scale: number) => void;
   rateFormat: "formatted" | "plain";
   onRateFormatChange: (format: "formatted" | "plain") => void;
   rates: DisplayRateItem[];
@@ -66,8 +66,8 @@ export default function RateBoardSettingsDrawer({
   onGoldUnitChange,
   silverUnit,
   onSilverUnitChange,
-  metalTextScale,
-  onMetalTextScaleChange,
+  tableTextScale,
+  onTableTextScaleChange,
   rateFormat,
   onRateFormatChange,
   rates,
@@ -257,7 +257,7 @@ export default function RateBoardSettingsDrawer({
               <div className="mb-5">
                 <div className="mb-2 flex items-center justify-between gap-3">
                   <p className="text-sm" style={{ color: currentTheme.text }}>
-                    Metal text size
+                    Table text size
                   </p>
                   <span
                     className="rounded-lg px-2 py-1 text-xs font-semibold tabular-nums"
@@ -266,7 +266,7 @@ export default function RateBoardSettingsDrawer({
                       color: currentTheme.accent,
                     }}
                   >
-                    {metalTextScale}%
+                    {tableTextScale}%
                   </span>
                 </div>
                 <input
@@ -274,9 +274,9 @@ export default function RateBoardSettingsDrawer({
                   min={60}
                   max={120}
                   step={5}
-                  value={metalTextScale}
+                  value={tableTextScale}
                   onChange={(event) =>
-                    onMetalTextScaleChange(Number(event.target.value))
+                    onTableTextScaleChange(Number(event.target.value))
                   }
                   className="w-full accent-current"
                   style={{ color: currentTheme.accent }}

@@ -1,7 +1,7 @@
 {
   "name": "rate-board",
-  "version": "0.1.0",
-  "description": "Paras Infotech Rate Board desktop and mobile app bundle",
+  "version": "1.8.0",
+  "description": "Rate Board",
   "author": "Paras Infotech",
   "private": true,
   "main": "electron/main.js",
@@ -72,6 +72,7 @@
     "extraMetadata": {
       "main": "electron/main.js"
     },
+    "afterPack": "scripts/after-pack.cjs",
     "win": {
       "icon": "public/rateboard.ico",
       "signAndEditExecutable": false,

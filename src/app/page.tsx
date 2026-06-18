@@ -22,7 +22,8 @@ import { useTheme } from "@/context/ThemeContext";
 
 const AUTO_RELOAD_FAILURE_COUNT = 4;
 const ALERT_TIMEOUT_MS = 5000;
-const METAL_TEXT_SCALE_STORAGE_KEY = "rate-board-display-metal-text-scale";
+const TABLE_TEXT_SCALE_STORAGE_KEY = "rate-board-display-table-text-scale";
+const LEGACY_METAL_TEXT_SCALE_STORAGE_KEY = "rate-board-display-metal-text-scale";
 const RATE_FORMAT_STORAGE_KEY = "rate-board-display-rate-format";
 
 type RateFormat = "formatted" | "plain";
@@ -78,15 +79,37 @@ function formatDisplayRate(value: number, rateFormat: RateFormat) {
   return formatRate(value);
 }
 
-function getOldThemeMetalFontSize(label: string, metalTextScale: number) {
+function getResponsiveTableFontSize(
+  label: string,
+  tableTextScale: number,
+  options: {
+    fitBaseVw?: number;
+    maxVw?: number;
+    minRem?: number;
+    maxRem?: number;
+    rowVh?: number;
+  } = {},
+) {
   const visibleLength = Math.max(label.replace(/\s+/g, "").length, 1);
-  const scale = metalTextScale / 100;
+  const scale = tableTextScale / 100;
+  const fitBaseVw = options.fitBaseVw ?? 48;
+  const maxVw = options.maxVw ?? 7.5;
+  const minRem = options.minRem ?? 1.6;
+  const maxRem = options.maxRem ?? 8;
+  const rowVh = options.rowVh ?? 58;
   const viewportFitSize = Math.min(
-    7.5,
-    Math.max(1.6, (48 / visibleLength) * scale),
+    maxVw,
+    Math.max(1.2, (fitBaseVw / visibleLength) * scale),
   );
 
-  return `clamp(1.6rem, min(calc(58vh / var(--rows)), ${viewportFitSize}vw), 8rem)`;
+  return `clamp(${minRem}rem, min(calc(${rowVh}vh / var(--rows)), ${viewportFitSize}vw), ${maxRem}rem)`;
+}
+
+function getResponsiveHeaderFontSize(label: string, tableTextScale: number) {
+  return getResponsiveTableFontSize(label, tableTextScale, {
+    fitBaseVw: 54,
+    maxVw: 7.5,
+  });
 }
 
 export default function HomePage() {
@@ -108,7 +131,7 @@ export default function HomePage() {
 
   const [goldUnit, setGoldUnit] = useState<"Gm" | "10Gm">("10Gm");
   const [silverUnit, setSilverUnit] = useState<"Gm" | "Kg">("Kg");
-  const [metalTextScale, setMetalTextScale] = useState(100);
+  const [tableTextScale, setTableTextScale] = useState(100);
   const [rateFormat, setRateFormat] = useState<RateFormat>("formatted");
   const [metalOverrides, setMetalOverrides] = useState<Record<string, { title: string; suffix: string }>>({});
 
@@ -126,7 +149,7 @@ export default function HomePage() {
   } as CSSProperties;
   const oldThemeGridStyle = {
     gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gridTemplateRows: `minmax(clamp(4.5rem, 10vh, 7rem), 0.72fr) repeat(${rowCount}, minmax(0, 1fr))`,
+    gridTemplateRows: `repeat(${rowCount + 1}, minmax(0, 1fr))`,
   } as CSSProperties;
 
   useEffect(() => {
@@ -137,15 +160,16 @@ export default function HomePage() {
       const storedSilver = localStorage.getItem("rate-board-silver-unit") as "Gm" | "Kg";
       if (storedSilver === "Gm" || storedSilver === "Kg") setSilverUnit(storedSilver);
 
-      const storedMetalTextScale = Number(
-        localStorage.getItem(METAL_TEXT_SCALE_STORAGE_KEY),
+      const storedTableTextScale = Number(
+        localStorage.getItem(TABLE_TEXT_SCALE_STORAGE_KEY) ??
+          localStorage.getItem(LEGACY_METAL_TEXT_SCALE_STORAGE_KEY),
       );
       if (
-        Number.isFinite(storedMetalTextScale) &&
-        storedMetalTextScale >= 60 &&
-        storedMetalTextScale <= 120
+        Number.isFinite(storedTableTextScale) &&
+        storedTableTextScale >= 60 &&
+        storedTableTextScale <= 120
       ) {
-        setMetalTextScale(storedMetalTextScale);
+        setTableTextScale(storedTableTextScale);
       }
 
       const storedRateFormat = localStorage.getItem(
@@ -328,11 +352,11 @@ export default function HomePage() {
     localStorage.setItem("rate-board-silver-unit", unit);
   };
 
-  const handleMetalTextScaleChange = (nextScale: number) => {
+  const handleTableTextScaleChange = (nextScale: number) => {
     const normalizedScale = Math.min(120, Math.max(60, nextScale));
-    setMetalTextScale(normalizedScale);
+    setTableTextScale(normalizedScale);
     localStorage.setItem(
-      METAL_TEXT_SCALE_STORAGE_KEY,
+      TABLE_TEXT_SCALE_STORAGE_KEY,
       String(normalizedScale),
     );
   };
@@ -489,13 +513,17 @@ export default function HomePage() {
               {["METAL", "SALE", "PURCHASE"].map((heading) => (
                 <div
                   key={heading}
-                  className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-1 text-center text-[clamp(2.6rem,min(7.5vh,6.8vw),5.2rem)] font-bold leading-none"
+                  className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-1 text-center font-normal leading-none"
                   style={{
                     background: theme.headerBg,
                     borderColor: theme.bg,
                     color:
                       themeId === "oldSoftware" ? "#ffffff" : theme.accent,
                     fontFamily: theme.fontBody,
+                    fontSize: getResponsiveHeaderFontSize(
+                      heading,
+                      tableTextScale,
+                    ),
                   }}
                 >
                   {heading}
@@ -515,6 +543,11 @@ export default function HomePage() {
                   };
                   const isSilver = item.metal === "Silver";
                   const metalLabel = `${metalDisplay.suffix} ${metalDisplay.title}`.trim();
+                  const saleLabel = formatDisplayRate(item.saleRate, rateFormat);
+                  const purchaseLabel = formatDisplayRate(
+                    item.purchaseRate,
+                    rateFormat,
+                  );
                   const rowBackground =
                     themeId === "oldSoftware"
                       ? "#9fc4e6"
@@ -535,9 +568,9 @@ export default function HomePage() {
                             : isSilver
                               ? theme.textDim
                               : theme.goldLabel || theme.text,
-                        fontSize: getOldThemeMetalFontSize(
+                        fontSize: getResponsiveTableFontSize(
                           metalLabel,
-                          metalTextScale,
+                          tableTextScale,
                         ),
                         fontFamily: theme.fontBody,
                       }}
@@ -548,27 +581,35 @@ export default function HomePage() {
                     </div>,
                     <div
                       key={`${item.id}-sale`}
-                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-1 text-center text-[clamp(3rem,min(calc(58vh/var(--rows)),7.5vw),8rem)] font-normal leading-none tabular-nums"
+                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-1 text-center font-normal leading-none tabular-nums"
                       style={{
                         background: rowBackground,
                         borderColor: theme.bg,
                         color: themeId === "oldSoftware" ? "#000000" : theme.text,
                         fontFamily: theme.fontBody,
+                        fontSize: getResponsiveTableFontSize(
+                          saleLabel,
+                          tableTextScale,
+                        ),
                       }}
                     >
-                      {formatDisplayRate(item.saleRate, rateFormat)}
+                      {saleLabel}
                     </div>,
                     <div
                       key={`${item.id}-purchase`}
-                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-1 text-center text-[clamp(3rem,min(calc(58vh/var(--rows)),7.5vw),8rem)] font-normal leading-none tabular-nums"
+                      className="flex min-h-0 items-center justify-center border-[clamp(0.15rem,0.55vw,0.32rem)] px-1 text-center font-normal leading-none tabular-nums"
                       style={{
                         background: rowBackground,
                         borderColor: theme.bg,
                         color: themeId === "oldSoftware" ? "#000000" : theme.text,
                         fontFamily: theme.fontBody,
+                        fontSize: getResponsiveTableFontSize(
+                          purchaseLabel,
+                          tableTextScale,
+                        ),
                       }}
                     >
-                      {formatDisplayRate(item.purchaseRate, rateFormat)}
+                      {purchaseLabel}
                     </div>,
                   ];
                 })
@@ -633,8 +674,8 @@ export default function HomePage() {
           onGoldUnitChange={handleGoldUnitChange}
           silverUnit={silverUnit}
           onSilverUnitChange={handleSilverUnitChange}
-          metalTextScale={metalTextScale}
-          onMetalTextScaleChange={handleMetalTextScaleChange}
+          tableTextScale={tableTextScale}
+          onTableTextScaleChange={handleTableTextScaleChange}
           rateFormat={rateFormat}
           onRateFormatChange={handleRateFormatChange}
           rates={rates}
@@ -949,8 +990,8 @@ export default function HomePage() {
         onGoldUnitChange={handleGoldUnitChange}
         silverUnit={silverUnit}
         onSilverUnitChange={handleSilverUnitChange}
-        metalTextScale={metalTextScale}
-        onMetalTextScaleChange={handleMetalTextScaleChange}
+        tableTextScale={tableTextScale}
+        onTableTextScaleChange={handleTableTextScaleChange}
         rateFormat={rateFormat}
         onRateFormatChange={handleRateFormatChange}
         rates={rates}
