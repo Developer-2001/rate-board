@@ -28,6 +28,10 @@ declare global {
         registerDevice: (
           payload: Record<string, unknown>
         ) => Promise<{ success: boolean; message: string }>;
+        updateLastLogin: (params: {
+          clientId: string;
+          deviceId: string;
+        }) => Promise<{ success: boolean; message: string }>;
         logout: () => Promise<void>;
       };
       rateBoard: {

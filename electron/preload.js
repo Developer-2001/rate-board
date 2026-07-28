@@ -10,6 +10,7 @@ electron_1.contextBridge.exposeInMainWorld("desktopApi", {
         fetchCorporateClientData: (corporateId) => electron_1.ipcRenderer.invoke("auth:fetchCorporateClientData", corporateId),
         verifyDevice: (params) => electron_1.ipcRenderer.invoke("auth:verifyDevice", params),
         registerDevice: (payload) => electron_1.ipcRenderer.invoke("auth:registerDevice", payload),
+        updateLastLogin: (params) => electron_1.ipcRenderer.invoke("auth:updateLastLogin", params),
         logout: () => electron_1.ipcRenderer.invoke("auth:logout"),
     },
     rateBoard: {

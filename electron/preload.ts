@@ -16,6 +16,8 @@ contextBridge.exposeInMainWorld("desktopApi", {
     }) => ipcRenderer.invoke("auth:verifyDevice", params),
     registerDevice: (payload: Record<string, unknown>) =>
       ipcRenderer.invoke("auth:registerDevice", payload),
+    updateLastLogin: (params: { clientId: string; deviceId: string }) =>
+      ipcRenderer.invoke("auth:updateLastLogin", params),
     logout: () => ipcRenderer.invoke("auth:logout"),
   },
   rateBoard: {

@@ -14,12 +14,12 @@ export async function POST() {
       );
     }
 
-    const tokenResponse = await fetch(`${baseApiUrl}/sysfunction/gettokenmob`, {
+    const tokenResponse = await fetch(`${baseApiUrl}/sysfunction/gettoken`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ userid: "abc", password: "xyz" }),
+      body: JSON.stringify({ userid: "AImzaSoyDbk23if7sll9aeW9", password: "5fm2B1o5TtVb8ayJi202Dl3G3Se9JIL" }),
     });
 
     const bearerToken = (await tokenResponse.text()).trim();

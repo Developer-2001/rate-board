@@ -185,10 +185,10 @@ export async function fetchBearerToken() {
     return null;
   }
 
-  const bearerToken = await requestNativeText(`${getBaseApiUrl()}/sysfunction/gettokenmob`, {
+  const bearerToken = await requestNativeText(`${getBaseApiUrl()}/sysfunction/gettoken`, {
     method: "POST",
     headers: DEFAULT_HEADERS,
-    data: { userid: "abc", password: "xyz" },
+    data: { userid: "AImzaSoyDbk23if7sll9aeW9", password: "5fm2B1o5TtVb8ayJi202Dl3G3Se9JIL" },
   });
 
   storeBearerToken(bearerToken);
@@ -308,6 +308,46 @@ export async function registerDevice(payload: Record<string, unknown>) {
   return {
     success: true,
     message: "Registered successfully.",
+  };
+}
+
+export async function updateLastLogin(params: { clientId: string; deviceId: string }) {
+  if (isElectronApp()) {
+    return getDesktopApi().auth.updateLastLogin(params);
+  }
+
+  if (!isNativeApp()) {
+    const response = await fetch("/api/auth/last_login", {
+      method: "POST",
+      headers: DEFAULT_HEADERS,
+      credentials: "same-origin",
+      body: JSON.stringify(params),
+    });
+
+    return parseFetchResponse<{ success: boolean; message: string }>(
+      response,
+      "Failed to update last login."
+    );
+  }
+
+  const token = await getStoredOrFreshToken();
+  await requestNativeText(`${getBaseApiUrl()}/login/last_login`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...DEFAULT_HEADERS,
+    },
+    data: {
+      client_id: String(params.clientId),
+      app_name: "account",
+      unique_id: withRegisterDevicePrefix(params.deviceId),
+      app_type: "R",
+    },
+  });
+
+  return {
+    success: true,
+    message: "Last login updated successfully.",
   };
 }
 

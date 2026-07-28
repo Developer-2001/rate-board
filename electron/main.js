@@ -134,12 +134,12 @@ function withRegisterDevicePrefix(deviceId) {
     return deviceId.startsWith("R_") ? deviceId : `R_${deviceId}`;
 }
 async function fetchBearerToken() {
-    const response = await fetch(`${BASE_API_URL}/sysfunction/gettokenmob`, {
+    const response = await fetch(`${BASE_API_URL}/sysfunction/gettoken`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userid: "abc", password: "xyz" }),
+        body: JSON.stringify({ userid: "AImzaSoyDbk23if7sll9aeW9", password: "5fm2B1o5TtVb8ayJi202Dl3G3Se9JIL" }),
     });
     const token = (await response.text()).trim();
     if (!response.ok || !token) {
@@ -249,6 +249,31 @@ electron_1.ipcMain.handle("auth:registerDevice", async (_event, payload) => {
     return {
         success: true,
         message: "Registered successfully.",
+    };
+});
+electron_1.ipcMain.handle("auth:updateLastLogin", async (_event, params) => {
+    const response = await fetch(`${BASE_API_URL}/login/last_login`, {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${ensureBearerToken()}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            client_id: String(params.clientId),
+            app_name: "account",
+            unique_id: withRegisterDevicePrefix(String(params.deviceId)),
+            app_type: "R",
+        }),
+    });
+    if (!response.ok) {
+        const message = (await response.text()) || "Failed to update last login.";
+        const error = new Error(message);
+        error.status = response.status;
+        throw error;
+    }
+    return {
+        success: true,
+        message: "Last login updated successfully.",
     };
 });
 electron_1.ipcMain.handle("auth:logout", async () => {

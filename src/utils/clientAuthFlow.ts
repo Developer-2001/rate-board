@@ -1,6 +1,6 @@
 "use client";
 
-import { fetchBearerToken, fetchCorporateClientData, verifyDevice } from "@/utils/authApi";
+import { fetchBearerToken, fetchCorporateClientData, updateLastLogin, verifyDevice } from "@/utils/authApi";
 import { storeClientData, storeVerificationStatus } from "@/utils/authStorage";
 import { ClientData } from "@/types/auth";
 
@@ -42,6 +42,15 @@ export async function runAuthenticationFlow(
   const warningMessage = corporateResponse.warningMessage ?? null;
 
   if (deviceStatus === "Y") {
+    try {
+      await updateLastLogin({
+        clientId: clientData.ClientId,
+        deviceId,
+      });
+    } catch (error) {
+      console.error("Failed to update last login timestamp.", error);
+    }
+
     storeVerificationStatus(true);
     return {
       status: "approved",
